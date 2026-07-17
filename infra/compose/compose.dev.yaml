@@ -1,0 +1,65 @@
+services:
+  be:
+    build:
+      context: ../..
+      dockerfile: infra/docker/be.Dockerfile
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+asyncpg://vai:vai@db:5432/vai_code
+      REDIS_URL: redis://redis:6379/0
+      KEYCLOAK_URL: http://localhost:8080
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      KEYCLOAK_ISSUER: http://localhost:8080/realms/vai-code
+      LITELLM_ENABLED: "false"
+      LANGFUSE_ENABLED: "false"
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../be/src:/app/be/src
+      - ../../be/migrations:/app/be/migrations
+    command: uv run --project /app/be --no-dev uvicorn --app-dir /app/be/src main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      keycloak:
+        condition: service_started
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/worker.Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://vai:vai@db:5432/vai_code
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ../../be/src:/app/be/src
+      - ../../worker/src:/app/worker/src
+    command: uv run --project /app/worker --no-dev python /app/worker/src/main.py
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  fe:
+    image: node:24-alpine
+    working_dir: /workspace
+    environment:
+      VITE_API_BASE_URL: /api/v1
+      VITE_KEYCLOAK_URL: http://localhost:8080
+      VITE_KEYCLOAK_REALM: vai-code
+      VITE_KEYCLOAK_CLIENT_ID: vai-code-fe
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../..:/workspace
+      - fe-node-modules:/workspace/node_modules
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm --dir fe dev --host 0.0.0.0"
+    depends_on:
+      - be
+
+volumes:
+  fe-node-modules:

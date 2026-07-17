@@ -1,0 +1,49 @@
+services:
+  be:
+    build:
+      context: ../..
+      dockerfile: infra/docker/be.Dockerfile
+    environment:
+      APP_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_INTERNAL_URL: ${KEYCLOAK_INTERNAL_URL:-}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE:-}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+    restart: unless-stopped
+    command: uv run --project /app/be --no-dev uvicorn --app-dir /app/be/src main:app --host 0.0.0.0 --port 8000
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/worker.Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+    restart: unless-stopped
+    command: uv run --project /app/worker --no-dev python /app/worker/src/main.py
+
+  fe:
+    build:
+      context: ../..
+      dockerfile: infra/docker/fe.Dockerfile
+    restart: unless-stopped
+
+  proxy:
+    image: vai-code-proxy
+    build:
+      context: ../..
+      dockerfile: infra/docker/proxy.Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - fe
+      - be
+
+  db:
+    restart: unless-stopped
+
+  redis:
+    restart: unless-stopped

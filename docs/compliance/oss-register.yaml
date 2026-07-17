@@ -1,0 +1,36 @@
+components:
+  - name: shadcn-ui-components
+    source: https://github.com/shadcn-ui/ui
+    commit: pending-pin-before-release
+    license: MIT
+    use: adapted UI primitives
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md
+  - name: keycloak
+    source: https://github.com/keycloak/keycloak
+    commit: 26.5.2-container
+    license: Apache-2.0
+    use: external identity provider
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: authentik-not-used
+    source: https://github.com/goauthentik/authentik
+    commit: not-used
+    license: MIT-with-component-exceptions
+    use: evaluated alternative only
+    modified: false
+    notice: null
+  - name: litellm
+    source: https://github.com/BerriAI/litellm
+    commit: v1.81.13-stable-container
+    license: MIT
+    use: optional OpenAI-compatible gateway
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: langfuse
+    source: https://github.com/langfuse/langfuse-python
+    commit: pending-pin-before-release
+    license: MIT
+    use: optional LLM observability adapter
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md

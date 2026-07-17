@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.3.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        working-directory: .
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.11.28
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --project be
+      - run: uv sync --project ai
+      - run: uv sync --project worker
+      - run: uv run --project be ruff check be/src be/tests
+      - run: uv run --project ai ruff check ai/src ai/tests
+      - run: uv run --project worker ruff check worker/src worker/tests
+      - run: uv run --project be pytest be/tests
+      - run: uv run --project ai pytest ai/tests
+      - run: uv run --project worker pytest worker/tests
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [frontend, python]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/be.Dockerfile
+          push: false
+          tags: vai-code/be:ci
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/worker.Dockerfile
+          push: false
+          tags: vai-code/worker:ci

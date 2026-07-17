@@ -1,0 +1,21 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:v1.81.13-stable
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-local-dev-key-change-me}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+    volumes:
+      - ../litellm/config.yaml:/app/config.yaml:ro
+    ports:
+      - "4000:4000"
+
+  be:
+    environment:
+      LITELLM_ENABLED: "true"
+      LITELLM_BASE_URL: http://litellm:4000
+      LITELLM_API_KEY: ${LITELLM_MASTER_KEY:-local-dev-key-change-me}
+      LITELLM_MODEL: mock-model
+    depends_on:
+      - litellm

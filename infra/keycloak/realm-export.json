@@ -1,0 +1,47 @@
+{
+  "realm": "vai-code",
+  "enabled": true,
+  "displayName": "VAI Code",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "verifyEmail": true,
+  "resetPasswordAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "loginTheme": "vai-code",
+  "accountTheme": "keycloak.v2",
+  "clients": [
+    {
+      "clientId": "vai-code-fe",
+      "name": "VAI Code frontend",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/*"
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "user", "description": "Default application user" },
+      { "name": "admin", "description": "Application administrator" }
+    ]
+  },
+  "smtpServer": {
+    "host": "mailpit",
+    "port": "1025",
+    "from": "noreply@vai-code.local",
+    "fromDisplayName": "VAI Code",
+    "auth": false,
+    "ssl": false,
+    "starttls": false
+  }
+}

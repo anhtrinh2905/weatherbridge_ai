@@ -1,0 +1,11 @@
+model_list:
+  - model_name: mock-model
+    litellm_params:
+      model: openai/${OPENAI_MODEL:-gpt-4o-mini}
+      api_key: os.environ/OPENAI_API_KEY
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+litellm_settings:
+  json_logs: true

@@ -1,0 +1,62 @@
+:root {
+  --vai-ink: #07131f;
+  --vai-panel: #0d1f2d;
+  --vai-panel-soft: #102838;
+  --vai-signal: #f1f36b;
+  --vai-mint: #a7f3d0;
+  --vai-lilac: #c4b5fd;
+  --vai-text: #f8fafc;
+  --vai-muted: #8ca0ad;
+  --vai-rule: rgba(255, 255, 255, 0.12);
+}
+
+html,
+body {
+  background: var(--vai-ink) !important;
+  color: var(--vai-text) !important;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif !important;
+}
+
+.pf-v5-c-login {
+  background: var(--vai-ink) !important;
+}
+
+.pf-v5-c-login__main,
+.pf-v5-c-login__main-header,
+.pf-v5-c-login__main-body {
+  background: var(--vai-panel) !important;
+  border-color: var(--vai-rule) !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main {
+  border: 1px solid var(--vai-rule) !important;
+  border-radius: 24px !important;
+}
+
+.pf-v5-c-login__header {
+  color: var(--vai-text) !important;
+}
+
+.pf-v5-c-form-control,
+.pf-v5-c-form-control:focus {
+  background: var(--vai-ink) !important;
+  border-color: var(--vai-rule) !important;
+  color: var(--vai-text) !important;
+  box-shadow: 0 0 0 3px rgba(241, 243, 107, 0.12) !important;
+}
+
+.pf-v5-c-button.pf-m-primary {
+  background: var(--vai-signal) !important;
+  border-radius: 12px !important;
+  color: var(--vai-ink) !important;
+  font-weight: 700 !important;
+}
+
+a {
+  color: var(--vai-signal) !important;
+}
+
+.pf-v5-c-login__footer {
+  color: var(--vai-muted) !important;
+}

@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: "/be"
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: "/worker"
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: "/ai"
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: "/infra/docker"
+    schedule:
+      interval: monthly

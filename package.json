@@ -1,0 +1,13 @@
+{
+  "name": "vai-code",
+  "private": true,
+  "packageManager": "pnpm@11.3.0",
+  "scripts": {
+    "dev": "pnpm --dir fe dev",
+    "lint": "pnpm --dir fe lint",
+    "typecheck": "pnpm --dir fe typecheck",
+    "test": "pnpm --dir fe test",
+    "build": "pnpm --dir fe build",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  }
+}

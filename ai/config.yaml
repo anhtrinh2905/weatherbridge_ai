@@ -1,0 +1,4 @@
+model: unset
+experiment: baseline
+seed: 42
+learning_rate: 0.0001
