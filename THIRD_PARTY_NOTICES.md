@@ -39,3 +39,8 @@ Transitive dependencies must be checked by CI before release.
 Vendored repositories must have their source URL, exact commit, license file,
 modification summary, and notice recorded in `third_party/` and
 `docs/compliance/oss-register.yaml`.
+
+- UI/UX Pro Max Skill: MIT; vendored under
+  `third_party/ui-ux-pro-max-skill/` from
+  `https://github.com/nextlevelbuilder/ui-ux-pro-max-skill` at commit
+  `f8ac5e1266dba8354ea96e19994d9f4345e7ec31`.

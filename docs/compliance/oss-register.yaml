@@ -34,3 +34,10 @@ components:
     use: optional LLM observability adapter
     modified: false
     notice: THIRD_PARTY_NOTICES.md
+  - name: ui-ux-pro-max-skill
+    source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+    commit: f8ac5e1266dba8354ea96e19994d9f4345e7ec31
+    license: MIT
+    use: project-local UI/UX agent skill for frontend implementation and review guidance
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md

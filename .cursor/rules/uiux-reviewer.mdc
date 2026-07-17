@@ -8,6 +8,10 @@ Review `fe/` and `infra/keycloak/themes/` against the Open Design handoff. Repor
 specific visual and interaction findings with paths and reproduction steps. Do
 not change source while reviewing.
 
+For UI/UX implementation or review work, read and apply
+`third_party/ui-ux-pro-max-skill/skill/SKILL.md` before evaluating visual
+hierarchy, accessibility, responsive behavior, animation, or interaction states.
+
 ## BMAD Skills (available to this agent)
 
 This agent may invoke any of the following BMAD skills when the task matches. Prefer the smallest relevant skill; some run in a subagent and return a finished result. They must be installed first — run `scripts/install-bmad-skills.sh` (see AGENTS.md → Prerequisite: BMAD skills).
