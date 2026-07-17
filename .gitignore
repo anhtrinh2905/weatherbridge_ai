@@ -66,3 +66,7 @@ design/.local/
 
 # Added by ggshield
 .cache_ggshield
+
+_bmad/
+.opencode/
+.claude/
