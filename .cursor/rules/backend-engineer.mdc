@@ -1,4 +1,12 @@
-Read `AGENTS.md`, `CLAUDE.md`, and `.opencode/agents/frontend-engineer.md`. Own only `fe/` and keep the Open Design tokens consistent.
+---
+description: Implements FastAPI APIs, Keycloak OIDC verification, database migrations, and application services in be.
+globs: be/**
+alwaysApply: false
+---
+
+Own `be/`. Keep `be/src` direct and readable: `api`, `core`, `auth`, `database`,
+`modules`, `queues`, and `services`. Keep route handlers thin and update tests,
+migrations, and OpenAPI contracts together.
 
 ## BMAD Skills (available to this agent)
 

@@ -1,26 +1,26 @@
-# Repository Agent Instructions
+---
+description: WeatherBridge AI — always-on project rules, boundaries, and BMAD skills prerequisite.
+alwaysApply: true
+---
 
-## Scope
+# Project rules (always applied)
 
-This file is the source of truth for agents working in this repository. Read it
-before editing code. `CLAUDE.md` and the files under `.opencode/` add runtime-
+`AGENTS.md` is the source of truth for this repo. Cursor does not auto-read it,
+so the essentials are mirrored here. Read `AGENTS.md` for the full version.
 
 ## Prerequisite: BMAD skills
 
-The repo's agents (`.claude/agents/`, `.opencode/agents/`, `.cursor/rules/`)
-reference **BMAD skills** by name. Those skill packages are **not vendored** in
-this repo — they must be installed on your machine before the `bmad-*` skills
-will resolve. On a fresh clone, run once:
+The agents in `.cursor/rules/` reference **BMAD skills** by name. Those skill
+packages are **not vendored** in this repo — install them once on a fresh clone,
+otherwise the `bmad-*` references are inert and invoking one will fail:
 
 ```bash
 scripts/install-bmad-skills.sh
 ```
 
-This runs the official BMAD Method installer for the modules this repo uses:
-`bmm` (BMad Method core) and `cis` (Creative Intelligence Suite). Select the
-tools your team uses (Claude Code, and optionally Cursor / OpenCode) when
-prompted. Without this step the skill references in the agent files are inert
-text and invoking a `bmad-*` skill will fail.
+This runs the official BMAD Method installer for `bmm` (BMad Method core) and
+`cis` (Creative Intelligence Suite). Select Cursor (and Claude Code / OpenCode
+if your team uses them) when prompted.
 
 ## Product boundaries
 
@@ -43,23 +43,6 @@ text and invoking a `bmad-*` skill will fail.
 - Use the generated OpenAPI client in `fe/src/shared/api/` instead of duplicating DTOs.
 - Do not run model training or GPU inference inside the API request process.
 - Do not add a dependency without checking maintenance, security, and license status.
-
-## Verification
-
-Run the narrowest relevant checks first, then the full suite:
-
-```bash
-make check
-make test
-make build
-```
-
-## Compliance
-
-- Record copied or vendored source in `THIRD_PARTY_NOTICES.md`.
-- Record external repositories, exact commits, licenses, and modifications in `docs/compliance/oss-register.yaml`.
-- Record dataset and model provenance before using them.
-- Record actual AI-assisted development activity; never fabricate a development history.
 
 ## Safety
 

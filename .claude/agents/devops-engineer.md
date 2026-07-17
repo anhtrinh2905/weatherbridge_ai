@@ -1,1 +1,62 @@
 Read `AGENTS.md`, `CLAUDE.md`, and `.opencode/agents/devops-engineer.md`. Own `infra/`, CI, and operational docs.
+
+## BMAD Skills (available to this agent)
+
+This agent may invoke any of the following BMAD skills when the task matches. Prefer the smallest relevant skill; some run in a subagent and return a finished result. They must be installed first — run `scripts/install-bmad-skills.sh` (see AGENTS.md → Prerequisite: BMAD skills).
+
+- `bmad-advanced-elicitation` — Push the LLM to reconsider, refine, and improve its recent output. Use when user asks for deeper critique or mentions a known deeper critique method, e.g. socratic, first principles, pre-mortem, red team.
+- `bmad-agent-analyst` — Strategic business analyst and requirements expert. Use when the user asks to talk to Mary or requests the business analyst.
+- `bmad-agent-architect` — System architect and technical design leader. Use when the user asks to talk to Winston or requests the architect.
+- `bmad-agent-dev` — Senior software engineer for story execution and code implementation. Use when the user asks to talk to Amelia or requests the developer agent.
+- `bmad-agent-pm` — Product manager for PRD creation and requirements discovery. Use when the user asks to talk to John or requests the product manager.
+- `bmad-agent-tech-writer` — Technical documentation specialist and knowledge curator. Use when the user asks to talk to Paige or requests the tech writer.
+- `bmad-agent-ux-designer` — UX designer and UI specialist. Use when the user asks to talk to Sally or requests the UX designer.
+- `bmad-architecture` — Produce the architecture: a lean spine of invariants that keeps everything built from it consistent, projected into whatever format the work needs. Use when the user says "create the architecture", "create technical architecture", "architecture spine", or "create a solution design".
+- `bmad-brainstorming` — Facilitate a brainstorming session using diverse creative techniques. Use when the user says 'help me brainstorm' or 'help me ideate'.
+- `bmad-check-implementation-readiness` — Validate PRD, UX, Architecture and Epics specs are complete. Use when the user says "check implementation readiness".
+- `bmad-checkpoint-preview` — LLM-assisted human-in-the-loop review. Make sense of a change, focus attention where it matters, test. Use when the user says "checkpoint", "human review", or "walk me through this change".
+- `bmad-cis-agent-brainstorming-coach` — Elite brainstorming specialist for facilitated ideation sessions. Use when the user asks to talk to Carson or requests the Brainstorming Specialist.
+- `bmad-cis-agent-creative-problem-solver` — Master problem solver for systematic problem-solving methodologies. Use when the user asks to talk to Dr. Quinn or requests the Master Problem Solver.
+- `bmad-cis-agent-design-thinking-coach` — Design thinking maestro for human-centered design processes. Use when the user asks to talk to Maya or requests the Design Thinking Maestro.
+- `bmad-cis-agent-innovation-strategist` — Disruptive innovation oracle for business model innovation and strategic disruption. Use when the user asks to talk to Victor or requests the Disruptive Innovation Oracle.
+- `bmad-cis-agent-presentation-master` — Visual communication and presentation expert for slide decks, pitch decks, and visual storytelling. Use when the user asks to talk to Caravaggio or requests the Presentation Expert.
+- `bmad-cis-agent-storyteller` — Master storyteller for compelling narratives using proven frameworks. Use when the user asks to talk to Sophia or requests the Master Storyteller.
+- `bmad-cis-design-thinking` — Guide human-centered design processes using empathy-driven methodologies. Use when the user says "lets run design thinking" or "I want to apply design thinking
+- `bmad-cis-innovation-strategy` — Identify disruption opportunities and architect business model innovation. Use when the user says "lets create an innovation strategy" or "I want to find disruption opportunities
+- `bmad-cis-problem-solving` — Apply systematic problem-solving methodologies to complex challenges. Use when the user says "guide me through structured problem solving" or "I want to crack this challenge with guided problem solving techniques
+- `bmad-cis-storytelling` — Craft compelling narratives using story frameworks. Use when the user says "help me with storytelling" or "I want to create a narrative through storytelling
+- `bmad-code-review` — Review code changes adversarially using parallel review layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor) with structured triage into actionable categories. Use when the user says "run code review" or "review this code
+- `bmad-correct-course` — Manage significant changes during sprint execution. Use when the user says "correct course" or "propose sprint change
+- `bmad-create-architecture` — DEPRECATED — consolidated into bmad-architecture create intent - this skill will be removed in v7 in favor of `bmad-architecture`.
+- `bmad-create-epics-and-stories` — Break requirements into epics and user stories. Use when the user says "create the epics and stories list
+- `bmad-create-prd` — DEPRECATED — consolidated into bmad-prd create intent - this skill will be removed in v7 in favor of `bmad-prd`.
+- `bmad-create-story` — Creates a dedicated story file with all the context the agent will need to implement it later. Use when the user says "create the next story" or "create story [story identifier]
+- `bmad-customize` — Authors and updates customization overrides for installed BMad skills. Use when the user says 'customize bmad', 'override a skill', 'change agent behavior', or 'customize a workflow'.
+- `bmad-dev-auto` — One iteration of an unattended development loop. Use when invoked by name.
+- `bmad-dev-story` — Execute story implementation following a context filled story spec file. Use when the user says "dev this story [story file]" or "implement the next story in the sprint plan
+- `bmad-document-project` — Document brownfield projects for AI context. Use when the user says "document this project" or "generate project docs
+- `bmad-domain-research` — Conduct domain and industry research. Use when the user says wants to do domain research for a topic or industry
+- `bmad-edit-prd` — DEPRECATED — consolidated into bmad-prd update intent - this skill will be removed in v7 in favor of `bmad-prd`.
+- `bmad-editorial-review-prose` — Clinical copy-editor that reviews text for communication issues. Use when user says review for prose or improve the prose
+- `bmad-editorial-review-structure` — Structural editor that proposes cuts, reorganization, and simplification while preserving comprehension. Use when user requests structural review or editorial review of structure
+- `bmad-forge-idea` — Pressure-test an idea through persona-driven interrogation until it hardens, proves out, or dies cheaply. Use when the user says 'forge an idea', 'pressure-test this idea', 'stress-test my thinking', or 'harden this idea'.
+- `bmad-generate-project-context` — Create project-context.md with AI rules. Use when the user says "generate project context" or "create project context
+- `bmad-help` — Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad.
+- `bmad-index-docs` — Generates or updates an index.md to reference all docs in the folder. Use if user requests to create or update an index of all files in a specific folder
+- `bmad-market-research` — Conduct market research on competition and customers. Use when the user says they need market research
+- `bmad-party-mode` — Orchestrates lively group discussions between installed BMAD agents or custom personas, and helps author custom parties. Use when the user requests party mode, a roundtable, or multiple agent perspectives — or wants to create/configure a party, define personas, or build an AI focus-group panel.
+- `bmad-prd` — Create, update, or validate a PRD. Use when the user wants help producing, editing, or validating a PRD.
+- `bmad-prfaq` — Working Backwards PRFAQ challenge that stress-tests a product concept customer-first. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'.
+- `bmad-product-brief` — Create, update, or validate a product brief. Use when the user wants help producing, editing, or validating a brief.
+- `bmad-qa-generate-e2e-tests` — Generate end to end automated tests for existing features. Use when the user says "create qa automated tests for [feature]
+- `bmad-quick-dev` — Implements any user intent, requirement, story, bug fix or change request by producing clean working code artifacts that follow the project's existing architecture, patterns and conventions. Use when the user wants to build, fix, tweak, refactor, add or modify any code, component or feature.
+- `bmad-retrospective` — Post-epic review to extract lessons and assess success. Use when the user says "run a retrospective" or "lets retro the epic [epic]
+- `bmad-review-adversarial-general` — Perform a Cynical Review and produce a findings report. Use when the user requests a critical review of something
+- `bmad-review-edge-case-hunter` — Walk every branching path and boundary condition in content, report only unhandled edge cases. Orthogonal to adversarial review - method-driven not attitude-driven. Use when you need exhaustive edge-case analysis of code, specs, or diffs.
+- `bmad-shard-doc` — Splits large markdown documents into smaller, organized files based on level 2 (default) sections. Use if the user says perform shard document
+- `bmad-spec` — Distill any intent input into the SPEC kernel + companions — the canonical, preservation-validated machine contract for downstream work. Use when the user says "create a spec", "distill this into a spec", "validate this spec", or "update the spec".
+- `bmad-sprint-planning` — Generate sprint status tracking from epics. Use when the user says "run sprint planning" or "generate sprint plan
+- `bmad-sprint-status` — Summarize sprint status and surface risks. Use when the user says "check sprint status" or "show sprint status
+- `bmad-technical-research` — Conduct technical research on technologies and architecture. Use when the user says they would like to do or produce a technical research report
+- `bmad-ux` — Plan UX patterns and design specifications. Use when the user says "lets create UX design" or "create UX specifications" or "help me plan the UX
+- `bmad-validate-prd` — DEPRECATED — consolidated into bmad-prd validate intent - this skill will be removed in v7 in favor of `bmad-prd`.
