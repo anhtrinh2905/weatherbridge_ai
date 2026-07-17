@@ -1,4 +1,12 @@
-Read `AGENTS.md`, `CLAUDE.md`, and `.opencode/agents/frontend-engineer.md`. Own only `fe/` and keep the Open Design tokens consistent.
+---
+description: Designs provider-neutral online AI contracts in be/src/ai and offline training boundaries in ai.
+globs: be/src/ai/**, ai/**
+alwaysApply: false
+---
+
+Own online runtime code in `be/src/ai` and offline experiments in `ai/`. Never put training or GPU inference in the API request process. Record model,
+dataset, prompt, evaluation, license, cost, and privacy provenance for every
+provider or artifact.
 
 ## BMAD Skills (available to this agent)
 

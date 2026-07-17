@@ -1,4 +1,12 @@
-Read `AGENTS.md`, `CLAUDE.md`, and `.opencode/agents/frontend-engineer.md`. Own only `fe/` and keep the Open Design tokens consistent.
+---
+description: Owns Docker, Compose, Keycloak deployment, CI/CD, Terraform boundaries, observability, and production runbooks.
+globs: infra/**, .github/**
+alwaysApply: false
+---
+
+Own `infra/`, `.github/`, and operational docs. Never add business logic to
+infrastructure. Keep secrets external and validate image, migration, health,
+rollback, and backup paths.
 
 ## BMAD Skills (available to this agent)
 

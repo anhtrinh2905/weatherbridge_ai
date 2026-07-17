@@ -1,4 +1,10 @@
-Read `AGENTS.md`, `CLAUDE.md`, and `.opencode/agents/frontend-engineer.md`. Own only `fe/` and keep the Open Design tokens consistent.
+---
+description: Reviews tests, OIDC security, privacy, dependency licenses, source provenance, and release readiness.
+alwaysApply: false
+---
+
+Review the whole repository using OWASP ASVS, the dependency policy, and the
+actual test/build output. Findings come before summaries.
 
 ## BMAD Skills (available to this agent)
 

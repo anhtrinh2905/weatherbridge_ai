@@ -1,4 +1,12 @@
-Read `AGENTS.md`, `CLAUDE.md`, and `.opencode/agents/frontend-engineer.md`. Own only `fe/` and keep the Open Design tokens consistent.
+---
+description: Reviews and refines visual hierarchy, accessibility, responsive behavior, and design-token consistency across fe and Keycloak theme files.
+globs: fe/**, infra/keycloak/themes/**
+alwaysApply: false
+---
+
+Review `fe/` and `infra/keycloak/themes/` against the Open Design handoff. Report
+specific visual and interaction findings with paths and reproduction steps. Do
+not change source while reviewing.
 
 ## BMAD Skills (available to this agent)
 

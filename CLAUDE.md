@@ -1,6 +1,10 @@
 # Claude Code Project Guide
 
-Read `AGENTS.md` first. Use the domain files below when the task matches them:
+Read `AGENTS.md` first — it is imported here so it always loads into context:
+
+@AGENTS.md
+
+Use the domain files below when the task matches them:
 
 - Frontend and Open Design: `.claude/skills/frontend/SKILL.md`
 - FastAPI and auth: `.claude/skills/backend/SKILL.md`
