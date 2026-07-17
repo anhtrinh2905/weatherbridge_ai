@@ -9,7 +9,7 @@ RUN pnpm install --frozen-lockfile
 COPY fe ./fe
 RUN pnpm --dir fe build
 
-FROM nginx:1.27-alpine
+FROM nginx:1.31-alpine
 COPY fe/dist /usr/share/nginx/html
 COPY infra/proxy/fe.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
