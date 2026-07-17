@@ -8,7 +8,7 @@ from job_queue import next_job
 
 class FakeRedis:
     async def blpop(self, _key: str, **kwargs: int) -> tuple[str, str]:
-        return "vai-code:jobs", json.dumps({"job_id": str(uuid4())})
+        return "weather-bridge:jobs", json.dumps({"job_id": str(uuid4())})
 
 
 @pytest.mark.asyncio

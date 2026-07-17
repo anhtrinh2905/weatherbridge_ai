@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import Keycloak, { type KeycloakInstance } from "keycloak-js";
+import { useLocation } from "react-router-dom";
 
 export interface AuthUser {
   id: string;
@@ -24,26 +25,24 @@ interface AuthContextValue {
 
 export const keycloak = new Keycloak({
   url: import.meta.env.VITE_KEYCLOAK_URL ?? "http://localhost:8080",
-  realm: import.meta.env.VITE_KEYCLOAK_REALM ?? "vai-code",
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "vai-code-fe",
+  realm: import.meta.env.VITE_KEYCLOAK_REALM ?? "weather-bridge",
+  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "weather-bridge-fe",
 });
 
 let initialization: Promise<boolean> | undefined;
-const AUTH_INIT_TIMEOUT_MS = 5_000;
 
 function initializeKeycloak() {
-  initialization ??= Promise.race([
-    keycloak.init({
-      onLoad: "check-sso",
+  initialization ??= keycloak
+    .init({
       pkceMethod: "S256",
       checkLoginIframe: false,
-      silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
-    }),
-    new Promise<boolean>((resolve) => {
-      window.setTimeout(() => resolve(false), AUTH_INIT_TIMEOUT_MS);
-    }),
-  ]);
+    })
+    .catch(() => false);
   return initialization;
+}
+
+function hasAuthCallback() {
+  return /(?:^|[&#])(code|error|state)=/.test(window.location.hash);
 }
 
 function mapUser(): AuthUser | null {
@@ -65,11 +64,14 @@ function mapUser(): AuthUser | null {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const location = useLocation();
   const [initialized, setInitialized] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
+    if (location.pathname !== "/workspace" && !hasAuthCallback()) return;
+
     let mounted = true;
     keycloak.onTokenExpired = async () => {
       try {
@@ -95,22 +97,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [location.pathname]);
 
   const value: AuthContextValue = {
     keycloak,
     initialized,
     authenticated,
     user,
-    login: async () => { await keycloak.login({ redirectUri: window.location.href }); },
-    register: async () => { await keycloak.register({ redirectUri: `${window.location.origin}/workspace` }); },
-    recoverPassword: async () => { await keycloak.login({ action: "UPDATE_PASSWORD", redirectUri: window.location.href }); },
-    logout: async () => { await keycloak.logout({ redirectUri: window.location.origin }); },
+    login: async () => {
+      await initializeKeycloak();
+      await keycloak.login({ redirectUri: `${window.location.origin}/workspace` });
+    },
+    register: async () => {
+      await initializeKeycloak();
+      await keycloak.register({ redirectUri: `${window.location.origin}/workspace` });
+    },
+    recoverPassword: async () => {
+      await initializeKeycloak();
+      await keycloak.login({ action: "UPDATE_PASSWORD", redirectUri: window.location.href });
+    },
+    logout: async () => {
+      await initializeKeycloak();
+      await keycloak.logout({ redirectUri: window.location.origin });
+    },
   };
 
-  if (!initialized) {
-    return <div className="grid min-h-screen place-items-center bg-slate-950 text-slate-300">Connecting to identity provider...</div>;
-  }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

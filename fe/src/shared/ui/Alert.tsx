@@ -7,9 +7,9 @@ export function Alert({ children, variant = "error" }: { children: ReactNode; va
       role="alert"
       className={cn(
         "rounded-xl border px-4 py-3 text-sm",
-        variant === "error" && "border-rose-400/25 bg-rose-400/10 text-rose-100",
-        variant === "info" && "border-cyan-300/25 bg-cyan-300/10 text-cyan-100",
-        variant === "success" && "border-emerald-300/25 bg-emerald-300/10 text-emerald-100",
+        variant === "error" && "border-danger/25 bg-danger/10 text-danger",
+        variant === "info" && "border-accent/25 bg-accent/10 text-accent",
+        variant === "success" && "border-positive/25 bg-positive/10 text-positive",
       )}
     >
       {children}

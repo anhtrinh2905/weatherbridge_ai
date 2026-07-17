@@ -3,11 +3,11 @@ from collections.abc import AsyncIterator
 from pathlib import Path
 
 os.environ.setdefault("APP_ENV", "test")
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./test_vai_code.db")
+os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./test_weather_bridge.db")
 os.environ.setdefault("REDIS_URL", "redis://localhost:6399/0")
 os.environ.setdefault("KEYCLOAK_URL", "http://localhost:8080")
-os.environ.setdefault("KEYCLOAK_REALM", "vai-code")
-os.environ.setdefault("KEYCLOAK_CLIENT_ID", "vai-code-fe")
+os.environ.setdefault("KEYCLOAK_REALM", "weather-bridge")
+os.environ.setdefault("KEYCLOAK_CLIENT_ID", "weather-bridge-fe")
 os.environ.setdefault("CORS_ORIGINS", "http://testserver")
 
 import pytest
@@ -21,7 +21,7 @@ from database import Base
 from database.session import get_db
 from main import create_app
 
-TEST_DB = Path(__file__).parent / "test_vai_code.db"
+TEST_DB = Path(__file__).parent / "test_weather_bridge.db"
 test_engine = create_async_engine(
     f"sqlite+aiosqlite:///{TEST_DB}", connect_args={"check_same_thread": False}
 )

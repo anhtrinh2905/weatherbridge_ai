@@ -21,8 +21,8 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           version: 0.11.28
-      - run: uv export --project be --no-dev --no-hashes --format requirements.txt > /tmp/vai-code-requirements.txt
-      - run: uvx pip-audit --requirement /tmp/vai-code-requirements.txt
+      - run: uv export --project be --no-dev --no-hashes --format requirements.txt > /tmp/weather-bridge-requirements.txt
+      - run: uvx pip-audit --requirement /tmp/weather-bridge-requirements.txt
 
   secret-scan:
     runs-on: ubuntu-latest

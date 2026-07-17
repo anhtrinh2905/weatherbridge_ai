@@ -7,7 +7,7 @@ frontend client is public and uses Authorization Code with PKCE (`S256`). It has
 no client secret because it runs in the browser.
 
 The custom login theme lives at
-`infra/keycloak/themes/vai-code/login`. It uses the VAI Code visual tokens while
+`infra/keycloak/themes/weather-bridge/login`. It uses the Weather Bridge AI visual tokens while
 Keycloak retains ownership of password and recovery forms.
 
 ## Production requirements

@@ -7,7 +7,7 @@ from train import train
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="VAI Code offline AI workspace")
+    parser = argparse.ArgumentParser(description="Weather Bridge AI offline AI workspace")
     parser.add_argument("command", choices=["prepare", "train", "pretrain", "evaluate"])
     command = parser.parse_args().command
     actions = {"prepare": prepare, "train": train, "pretrain": pretrain, "evaluate": evaluate}

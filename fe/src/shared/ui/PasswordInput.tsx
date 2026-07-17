@@ -13,8 +13,8 @@ export function PasswordInput({ className, ...props }: InputHTMLAttributes<HTMLI
       <Button
         type="button"
         variant="ghost"
-        aria-label={visible ? "Hide password" : "Show password"}
-        className="absolute right-1 top-1 min-h-10 px-3 text-slate-400"
+        aria-label={visible ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+        className="absolute right-1 top-1 min-h-10 px-3 text-muted"
         onClick={() => setVisible((value) => !value)}
       >
         {visible ? <EyeOff size={17} /> : <Eye size={17} />}

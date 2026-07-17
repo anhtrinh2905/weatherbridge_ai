@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập · Weather Bridge AI</title>
+<meta name="description" content="Keycloak-bridged sign in and registration entry for Weather Bridge AI." />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  .auth-bg {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(40rem 30rem at 10% 20%, rgba(61,214,164,0.07), transparent 60%),
+      radial-gradient(44rem 32rem at 90% 80%, rgba(242,169,59,0.08), transparent 60%),
+      var(--bg);
+  }
+  .auth {
+    min-height: 100vh; min-height: 100dvh;
+    display: grid; grid-template-columns: 1.05fr 0.95fr;
+    transition: grid-template-columns 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .auth.is-register { grid-template-columns: 0.95fr 1.05fr; }
+  .auth.is-register .stage { order: 1; }
+  .auth.is-register .rail { order: 2; border-right: 0; border-left: 1px solid var(--border-soft); }
+  /* Left rail */
+  .rail {
+    padding: clamp(2rem, 5vw, 4rem);
+    display: flex; flex-direction: column; justify-content: space-between; gap: var(--sp-32);
+    border-right: 1px solid var(--border-soft);
+    position: relative;
+  }
+  .rail__top { display: flex; flex-direction: column; gap: var(--sp-16); }
+  .rail__brand { margin-bottom: var(--sp-24); }
+  .rail__kicker { margin-bottom: var(--sp-16); }
+  .rail__h2 {
+    font-size: clamp(1.7rem, 3vw, 2.2rem); line-height: 1.1; font-weight: var(--fw-800);
+    color: var(--fg-strong); letter-spacing: -0.02em; margin: 0 0 var(--sp-16);
+  }
+  .rail__h2 .accent { color: var(--accent); }
+  .rail__p { color: var(--muted); font-size: var(--fs-15); line-height: var(--lh-base); max-width: 42ch; margin: 0 0 var(--sp-20); }
+  .rail__pills { display: flex; flex-wrap: wrap; gap: var(--sp-8); }
+
+  .rail__viz { margin-top: var(--sp-8); max-width: 420px; }
+  .rail__foot {
+    font-family: var(--font-mono); font-size: var(--fs-12); color: var(--muted-2);
+    letter-spacing: 0.04em; display: flex; align-items: center; gap: var(--sp-12); flex-wrap: wrap;
+  }
+  .rail__foot .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--positive); box-shadow: 0 0 0 3px var(--positive-faint); }
+  .rail__foot .sep { color: var(--border-strong); }
+
+  /* Right content */
+  .stage {
+    display: flex; align-items: center; justify-content: center;
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+  .auth-card {
+    width: 100%; max-width: 440px;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    box-shadow: var(--sh-3);
+  }
+  .auth-card__eyebrow { display: flex; align-items: center; gap: var(--sp-8); margin-bottom: var(--sp-16); }
+  .auth-card__title { font-size: var(--fs-30); font-weight: var(--fw-800); color: var(--fg-strong); letter-spacing: -0.02em; margin: 0 0 var(--sp-8); }
+  .auth-card__desc { color: var(--muted); font-size: var(--fs-14); line-height: var(--lh-base); margin: 0 0 var(--sp-24); }
+
+  .info {
+    display: flex; gap: var(--sp-12); align-items: flex-start;
+    padding: var(--sp-12) var(--sp-16);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    margin-bottom: var(--sp-24);
+  }
+  .info__icon {
+    color: var(--accent); flex: none; margin-top: 1px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .info__t { font-size: var(--fs-13); font-weight: var(--fw-600); color: var(--fg-strong); margin-bottom: 2px; }
+  .info__d { font-size: var(--fs-13); color: var(--muted); line-height: 1.5; }
+  .info__d code { font-family: var(--font-mono); color: var(--fg); font-size: var(--fs-12); }
+
+  .footnote {
+    margin-top: var(--sp-20);
+    padding-top: var(--sp-16);
+    border-top: 1px solid var(--border-soft);
+    font-family: var(--font-mono); font-size: var(--fs-11); color: var(--muted-2);
+    letter-spacing: 0.05em; text-align: center;
+  }
+  .footnote .ok { color: var(--positive); }
+
+  .toggle { margin-top: var(--sp-16); text-align: center; font-size: var(--fs-14); color: var(--muted); }
+  .toggle a { color: var(--accent); font-weight: var(--fw-600); }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 880px) {
+    .auth { grid-template-columns: 1fr; }
+    .auth.is-register { grid-template-columns: 1fr; }
+    .rail, .auth.is-register .rail { order: 0; border: 0; border-bottom: 1px solid var(--border-soft); }
+    .stage, .auth.is-register .stage { order: 1; }
+    .rail__viz { display: none; }
+  }
+</style>
+</head>
+<body data-od-id="auth-screen">
+  <div class="auth-bg" aria-hidden="true"></div>
+
+  <main class="auth" id="top">
+    <!-- Left rail -->
+    <aside class="rail" data-od-id="auth-rail">
+      <div class="rail__top">
+        <a class="brand rail__brand" href="landing.html" data-od-id="brand">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h12a3 3 0 1 0-3-3"/><path d="M3 13h17a3 3 0 1 1-3 3"/><path d="M3 18h7"/></svg>
+          </span>
+          <span class="wordmark">Weather Bridge <span class="wb-div">AI</span></span>
+        </a>
+        <div class="kicker rail__kicker">— Định danh an toàn</div>
+        <h2 class="rail__h2">Biến dự báo thành <span class="accent">hành động đúng hạn</span>.</h2>
+        <p class="rail__p">
+          Đăng nhập qua Keycloak để theo dõi dự báo theo bản, nhận bản tin hành động và xác nhận
+          cảnh báo đã đến được từng hộ. Ứng dụng không bao giờ lưu mật khẩu của bạn.
+        </p>
+        <div class="rail__pills">
+          <span class="pill pill--accent"><span class="pill__dot"></span> Bản tin 4 phần</span>
+          <span class="pill pill--positive"><span class="pill__dot"></span> Dữ liệu kiểm chứng</span>
+        </div>
+      </div>
+
+      <!-- Compact signal panel -->
+      <div class="rail__viz" data-od-id="signal-panel">
+        <div class="panel signal-panel">
+          <div class="signal-panel__head">
+            <div>
+              <div class="signal-panel__title">Tủa Chùa / 1.400m</div>
+              <div class="signal-panel__sub">sương muối · rét hại</div>
+            </div>
+            <span class="pill pill--positive"><span class="pill__dot pill__dot--live"></span> Đang theo dõi</span>
+          </div>
+          <div class="signal-panel__body">
+            <div class="signal-grid">
+              <div class="signal-cell">
+                <div class="signal-cell__k">Nhiệt độ</div>
+                <div class="signal-cell__v">2<span class="unit">°C</span></div>
+              </div>
+              <div class="signal-cell">
+                <div class="signal-cell__k">Độ cao</div>
+                <div class="signal-cell__v">1400<span class="unit">m</span></div>
+              </div>
+              <div class="signal-cell">
+                <div class="signal-cell__k">Gió</div>
+                <div class="signal-cell__v">8.7<span class="unit">m/s</span></div>
+              </div>
+              <div class="signal-cell">
+                <div class="signal-cell__k">Độ ẩm</div>
+                <div class="signal-cell__v">91<span class="unit">%</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="signal-row" style="margin-bottom:8px;">
+                <span class="signal-row__label">Mức cảnh báo</span>
+                <span class="signal-row__value" style="color:var(--positive);">Chuẩn bị</span>
+              </div>
+              <div class="signal-bar signal-bar--pos"><i style="width:86%"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rail__foot">
+        <span class="dot"></span>
+        <span>HỆ THỐNG · SẴN SÀNG</span>
+        <span class="sep">/</span>
+        <span>Bảo vệ bởi Keycloak</span>
+        <span class="sep">/</span>
+        <span>OIDC + PKCE</span>
+      </div>
+    </aside>
+
+    <!-- Right content -->
+    <section class="stage" data-od-id="auth-stage">
+      <div class="panel panel--raised auth-card" data-od-id="auth-card">
+        <div class="auth-card__eyebrow">
+          <span class="pill pill--accent"><span class="pill__dot"></span> Đăng nhập</span>
+        </div>
+        <h1 class="auth-card__title">Chào mừng trở lại.</h1>
+        <p class="auth-card__desc">
+          Weather Bridge AI giao việc xác thực cho Keycloak. Tiếp tục để đăng nhập an toàn;
+          mật khẩu không bao giờ đi qua ứng dụng này.
+        </p>
+
+        <div class="info" data-od-id="secure-handoff">
+          <span class="info__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="M10 13.5 17 6"/><path d="m14 4 4 4-2 2-4-4z"/></svg>
+          </span>
+          <div>
+            <div class="info__t">Chuyển giao định danh an toàn</div>
+            <div class="info__d">Bạn đăng nhập tại Keycloak bằng <code>OIDC Authorization Code</code> và <code>PKCE</code>. Ứng dụng chỉ nhận danh tính đã xác minh.</div>
+          </div>
+        </div>
+
+        <a class="btn btn--primary btn--block" href="keycloak.html" data-od-id="continue-signin" style="height:48px;font-size:var(--fs-15);">
+          Tiếp tục đăng nhập
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+
+        <div class="footnote">
+          <span>OIDC Authorization Code + PKCE</span> &nbsp;·&nbsp; <span class="ok">Keycloak v2</span>
+        </div>
+
+        <p class="toggle">
+          Chưa có tài khoản? <a href="#" data-od-id="register-toggle">Tạo tài khoản</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Register toggle — cosmetic switch of eyebrow/title/desc only (no real backend)
+    var t = document.querySelector('[data-od-id="register-toggle"]');
+    var state = { signIn: true };
+    function render() {
+      document.querySelector('.auth').classList.toggle('is-register', !state.signIn);
+      var eyebrow = document.querySelector('.auth-card__eyebrow .pill');
+      var title = document.querySelector('.auth-card__title');
+      var desc = document.querySelector('.auth-card__desc');
+      var btn = document.querySelector('[data-od-id="continue-signin"]');
+      var link = t;
+      if (state.signIn) {
+        eyebrow.innerHTML = '<span class="pill__dot"></span> Đăng nhập';
+        title.textContent = 'Chào mừng trở lại.';
+        desc.textContent = 'Weather Bridge AI giao việc xác thực cho Keycloak. Mật khẩu không bao giờ đi qua ứng dụng này.';
+        btn.childNodes[0].nodeValue = 'Tiếp tục đăng nhập';
+        link.textContent = 'Tạo tài khoản';
+      } else {
+        eyebrow.innerHTML = '<span class="pill__dot"></span> Tạo tài khoản';
+        title.textContent = 'Tạo cầu cảnh báo.';
+        desc.textContent = 'Đăng ký qua Keycloak để mở trung tâm cảnh báo Weather Bridge AI và xác minh email an toàn.';
+        btn.childNodes[0].nodeValue = 'Tiếp tục đăng ký';
+        link.textContent = 'Quay lại đăng nhập';
+      }
+    }
+    t.addEventListener('click', function (e) { e.preventDefault(); state.signIn = !state.signIn; render(); });
+  </script>
+</body>
+</html>

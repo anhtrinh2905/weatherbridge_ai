@@ -6,8 +6,8 @@ from httpx import AsyncClient
 async def test_identity_config_is_public(client: AsyncClient) -> None:
     response = await client.get("/api/v1/auth/config")
     assert response.status_code == 200
-    assert response.json()["realm"] == "vai-code"
-    assert response.json()["client_id"] == "vai-code-fe"
+    assert response.json()["realm"] == "weather-bridge"
+    assert response.json()["client_id"] == "weather-bridge-fe"
 
 
 @pytest.mark.asyncio

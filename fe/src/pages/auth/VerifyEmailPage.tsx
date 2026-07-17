@@ -5,8 +5,8 @@ import { Button } from "../../shared/ui/Button";
 
 export function VerifyEmailPage() {
   return (
-    <AuthLayout eyebrow="Email verification" title="Check your inbox" description="Keycloak sent the verification message. Follow the link there, then return to sign in.">
-      <div className="space-y-6 text-center"><MailCheck className="mx-auto text-cyan-300" size={46} /><p className="text-sm leading-6 text-slate-400">If you do not see it, check your spam folder or start registration again to request a new message.</p><Link to="/login"><Button className="w-full">Go to sign in</Button></Link></div>
+    <AuthLayout eyebrow="Xác minh email" title="Kiểm tra hộp thư" description="Keycloak đã gửi email xác minh. Mở liên kết trong email rồi quay lại đăng nhập.">
+      <div className="space-y-6 text-center"><MailCheck className="mx-auto text-accent" size={46} /><p className="text-sm leading-6 text-muted">Nếu chưa thấy email, hãy kiểm tra thư rác hoặc đăng ký lại để yêu cầu một liên kết mới.</p><Link to="/login"><Button className="w-full">Đi tới đăng nhập</Button></Link></div>
     </AuthLayout>
   );
 }

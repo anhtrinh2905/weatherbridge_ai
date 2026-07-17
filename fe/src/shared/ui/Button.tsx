@@ -13,10 +13,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   ref,
 ) {
   const variants: Record<ButtonVariant, string> = {
-    primary: "bg-cyan-300 text-slate-950 shadow-lg shadow-cyan-300/15 hover:bg-cyan-200",
-    secondary: "border border-white/15 bg-white/8 text-white hover:bg-white/14",
-    ghost: "text-slate-300 hover:bg-white/8 hover:text-white",
-    danger: "bg-rose-500 text-white hover:bg-rose-400",
+    primary: "bg-accent text-[#1A1206] shadow-lg shadow-accent/20 hover:bg-accent-hover",
+    secondary: "border border-border-strong bg-surface-2 text-fg hover:bg-surface-3",
+    ghost: "text-muted hover:bg-surface hover:text-fg",
+    danger: "bg-danger text-white hover:bg-danger/90",
   };
 
   return (
@@ -24,13 +24,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || isLoading}
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50",
         variants[variant],
         className,
       )}
       {...props}
     >
-      {isLoading ? "Working..." : children}
+      {isLoading ? "Đang xử lý..." : children}
     </button>
   );
 });

@@ -59,10 +59,10 @@ jobs:
           context: .
           file: infra/docker/be.Dockerfile
           push: false
-          tags: vai-code/be:ci
+          tags: weather-bridge/be:ci
       - uses: docker/build-push-action@v6
         with:
           context: .
           file: infra/docker/worker.Dockerfile
           push: false
-          tags: vai-code/worker:ci
+          tags: weather-bridge/worker:ci

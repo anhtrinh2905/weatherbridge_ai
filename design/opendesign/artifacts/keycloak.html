@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập · Weather Bridge AI · Keycloak</title>
+<meta name="description" content="Keycloak account login for Weather Bridge AI — secured identity handoff." />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  .kc-bg {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(36rem 28rem at 50% -10%, rgba(242,169,59,0.10), transparent 60%),
+      radial-gradient(40rem 30rem at 50% 110%, rgba(61,214,164,0.06), transparent 60%),
+      var(--bg);
+  }
+  .kc-grid-fade {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .28;
+    background-image:
+      linear-gradient(var(--border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+    background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(40rem 30rem at 50% 40%, #000 25%, transparent 70%);
+            mask-image: radial-gradient(40rem 30rem at 50% 40%, #000 25%, transparent 70%);
+  }
+
+  .kc-stage {
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: var(--sp-32) var(--sp-24);
+  }
+
+  .kc-card {
+    width: 100%; max-width: 408px;
+    padding: clamp(1.75rem, 4vw, 2.5rem);
+    box-shadow: var(--sh-3);
+  }
+  .kc-brand {
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-12);
+    margin-bottom: var(--sp-20);
+  }
+  .kc-h1 {
+    font-size: var(--fs-24); font-weight: var(--fw-700); color: var(--fg-strong);
+    letter-spacing: -0.02em; text-align: center; margin: 0 0 var(--sp-8);
+  }
+  .kc-sub {
+    text-align: center; font-family: var(--font-mono); font-size: var(--fs-12);
+    color: var(--muted); letter-spacing: 0.04em; margin: 0 0 var(--sp-24);
+  }
+  .kc-sub .ok { color: var(--positive); }
+
+  .kc-form { display: flex; flex-direction: column; gap: var(--sp-16); }
+  .kc-field { display: flex; flex-direction: column; gap: var(--sp-8); }
+  .kc-field > label {
+    font-family: var(--font-mono); font-size: var(--fs-12);
+    letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--muted);
+  }
+  .kc-input-wrap { position: relative; display: flex; align-items: center; }
+  .kc-input {
+    width: 100%; height: 44px; padding: 0 var(--sp-16);
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: var(--r-md); color: var(--fg);
+    font-family: var(--font-sans); font-size: var(--fs-15);
+    transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+  }
+  .kc-input::placeholder { color: var(--muted-2); }
+  .kc-input:hover { border-color: var(--border-strong); }
+  .kc-input:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-faint); background: var(--bg);
+  }
+  .kc-input.kc-input--pw { padding-right: 48px; }
+  .kc-toggle-pw {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border: none; background: transparent;
+    color: var(--muted); cursor: pointer; border-radius: var(--r-sm);
+    transition: color var(--t-fast), background var(--t-fast);
+  }
+  .kc-toggle-pw:hover { color: var(--fg); background: var(--surface-2); }
+
+  .kc-shotcut {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--sp-12);
+    font-size: var(--fs-13);
+  }
+  .kc-remember { display: inline-flex; align-items: center; gap: var(--sp-8); cursor: pointer; color: var(--muted); user-select: none; }
+  .kc-check {
+    appearance: none; -webkit-appearance: none;
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 1px solid var(--border-strong); background: var(--bg-elev);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: border-color var(--t-fast), background var(--t-fast);
+    flex: none;
+  }
+  .kc-check:hover { border-color: var(--accent); }
+  .kc-check:checked { background: var(--accent); border-color: var(--accent); }
+  .kc-check:checked::after {
+    content: ""; width: 5px; height: 9px;
+    border: solid #1A1206; border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translateY(-1px);
+  }
+  .kc-check:focus-visible { box-shadow: var(--sh-focus); border-radius: 5px; }
+  .kc-forgot { color: var(--accent); font-weight: var(--fw-600); font-size: var(--fs-13); }
+  .kc-forgot:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+
+  .kc-primary {
+    height: 48px; margin-top: var(--sp-8);
+    font-size: var(--fs-15); font-weight: var(--fw-700);
+  }
+
+  .kc-divider { height: 1px; background: var(--border-soft); margin: var(--sp-8) 0; border: none; }
+  .kc-secondary-row { text-align: center; font-size: var(--fs-14); color: var(--muted); }
+  .kc-secondary-row a { color: var(--accent); font-weight: var(--fw-600); }
+
+  .kc-foot {
+    margin-top: var(--sp-24);
+    padding-top: var(--sp-16);
+    border-top: 1px solid var(--border-soft);
+    text-align: center;
+    font-family: var(--font-mono); font-size: var(--fs-11);
+    color: var(--muted-2); letter-spacing: 0.05em;
+  }
+  .kc-foot .shield { color: var(--accent); }
+
+  .kc-alert {
+    display: flex; gap: var(--sp-8); align-items: center;
+    padding: var(--sp-8) var(--sp-12);
+    border: 1px solid var(--border); border-left: 2px solid var(--positive);
+    border-radius: var(--r-md); background: var(--surface-2);
+    font-size: var(--fs-12); color: var(--muted); margin-bottom: var(--sp-16);
+  }
+  .kc-alert .ok { color: var(--positive); flex: none; }
+
+  /* Small screen niceties */
+  @media (max-width: 420px) {
+    .kc-card { border-radius: var(--r-lg); }
+  }
+</style>
+</head>
+<body data-od-id="keycloak-login">
+  <div class="kc-bg" aria-hidden="true"></div>
+  <div class="kc-grid-fade" aria-hidden="true"></div>
+
+  <main class="kc-stage">
+    <div class="panel panel--raised kc-card" data-od-id="kc-card">
+      <!-- Brand -->
+      <div class="kc-brand" data-od-id="kc-brand">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h12a3 3 0 1 0-3-3"/><path d="M3 13h17a3 3 0 1 1-3 3"/><path d="M3 18h7"/></svg>
+        </span>
+        <span class="wordmark">Weather Bridge <span class="wb-div">AI</span></span>
+      </div>
+
+      <h1 class="kc-h1" data-od-id="kc-heading">Đăng nhập tài khoản</h1>
+      <p class="kc-sub">Định danh an toàn · <span class="ok">Keycloak v2</span></p>
+
+      <div class="kc-alert" role="status">
+        <svg class="ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
+        Bạn sẽ trở lại Weather Bridge AI sau khi xác thực thành công.
+      </div>
+
+      <form class="kc-form" id="kcForm" novalidate onsubmit="return false;">
+        <div class="kc-field">
+          <label for="kcUsername">Địa chỉ email</label>
+          <div class="kc-input-wrap">
+            <input id="kcUsername" name="username" class="kc-input" type="text" autocomplete="username" placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <div class="kc-field">
+          <label for="kcPassword">Mật khẩu</label>
+          <div class="kc-input-wrap">
+            <input id="kcPassword" name="password" class="kc-input kc-input--pw" type="password" autocomplete="current-password" placeholder="••••••••" />
+            <button type="button" class="kc-toggle-pw" id="kcTogglePw" aria-label="Hiện mật khẩu" aria-pressed="false">
+              <svg id="kcEye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="kc-shotcut">
+          <label class="kc-remember">
+            <input type="checkbox" class="kc-check" name="rememberMe" />
+            <span>Duy trì đăng nhập</span>
+          </label>
+          <a class="kc-forgot" href="#" data-od-id="kc-forgot">Quên mật khẩu?</a>
+        </div>
+
+        <button type="submit" class="btn btn--primary kc-primary kc-primary--block btn--block" data-od-id="kc-signin">
+          Đăng nhập
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+
+      <hr class="kc-divider" />
+      <p class="kc-secondary-row">Chưa có tài khoản? <a href="#" data-od-id="kc-register">Tạo tài khoản</a>.</p>
+
+      <p class="kc-foot">
+        <span class="shield">◆</span> Bảo vệ bởi Keycloak · Weather Bridge AI
+      </p>
+    </div>
+  </main>
+
+  <script>
+    // Password show/hide
+    var btn = document.getElementById('kcTogglePw');
+    var input = document.getElementById('kcPassword');
+    var eye = document.getElementById('kcEye');
+    function paint(open) {
+      btn.setAttribute('aria-pressed', String(open));
+      eye.innerHTML = open
+        ? '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a13.2 13.2 0 0 1-2.16 2.97"/><path d="M6.1 6.1A13.6 13.6 0 0 0 2 12s3.5 7 10 7a9 9 0 0 0 3.4-.66"/><path d="m2 2 20 20"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'
+        : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+    }
+    btn.addEventListener('click', function () {
+      var open = input.type === 'password';
+      input.type = open ? 'text' : 'password';
+      paint(open);
+    });
+    // Submit feedback (cosmetic — no backend in this mock)
+    document.getElementById('kcForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var b = document.querySelector('[data-od-id="kc-signin"]');
+      b.style.pointerEvents = 'none';
+      var original = b.innerHTML;
+      b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.6-8.7" opacity="0.4"/><path d="M12 3v9l5 3" stroke-width="2.2"/></svg> Verifying…';
+      setTimeout(function () { b.innerHTML = original; b.style.pointerEvents = ''; }, 1400);
+    });
+  </script>
+</body>
+</html>

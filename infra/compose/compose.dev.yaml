@@ -5,11 +5,11 @@ services:
       dockerfile: infra/docker/be.Dockerfile
     environment:
       APP_ENV: development
-      DATABASE_URL: postgresql+asyncpg://vai:vai@db:5432/vai_code
+      DATABASE_URL: postgresql+asyncpg://vai:vai@db:5432/weather_bridge
       REDIS_URL: redis://redis:6379/0
       KEYCLOAK_URL: http://localhost:8080
       KEYCLOAK_INTERNAL_URL: http://keycloak:8080
-      KEYCLOAK_ISSUER: http://localhost:8080/realms/vai-code
+      KEYCLOAK_ISSUER: http://localhost:8080/realms/weather-bridge
       LITELLM_ENABLED: "false"
       LANGFUSE_ENABLED: "false"
       CORS_ORIGINS: http://localhost:5173
@@ -32,7 +32,7 @@ services:
       context: ../..
       dockerfile: infra/docker/worker.Dockerfile
     environment:
-      DATABASE_URL: postgresql+asyncpg://vai:vai@db:5432/vai_code
+      DATABASE_URL: postgresql+asyncpg://vai:vai@db:5432/weather_bridge
       REDIS_URL: redis://redis:6379/0
     volumes:
       - ../../be/src:/app/be/src
@@ -50,8 +50,8 @@ services:
     environment:
       VITE_API_BASE_URL: /api/v1
       VITE_KEYCLOAK_URL: http://localhost:8080
-      VITE_KEYCLOAK_REALM: vai-code
-      VITE_KEYCLOAK_CLIENT_ID: vai-code-fe
+      VITE_KEYCLOAK_REALM: weather-bridge
+      VITE_KEYCLOAK_CLIENT_ID: weather-bridge-fe
     ports:
       - "5173:5173"
     volumes:

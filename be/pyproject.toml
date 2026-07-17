@@ -1,7 +1,7 @@
 [project]
-name = "vai-code-be"
+name = "weather-bridge-be"
 version = "0.1.0"
-description = "VAI Code FastAPI backend"
+description = "Weather Bridge AI FastAPI backend"
 requires-python = ">=3.12,<3.15"
 dependencies = [
   "alembic>=1.16.0,<2",

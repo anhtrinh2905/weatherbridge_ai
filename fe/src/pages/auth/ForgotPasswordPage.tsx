@@ -7,8 +7,8 @@ import { Button } from "../../shared/ui/Button";
 export function ForgotPasswordPage() {
   const { recoverPassword } = useAuth();
   return (
-    <AuthLayout eyebrow="Account recovery" title="Recover your account" description="Keycloak will guide you through the secure reset flow and return you to the product afterward.">
-      <div className="space-y-5"><div className="rounded-2xl border border-white/10 bg-white/5 p-5"><KeyRound className="text-cyan-300" /><p className="mt-4 text-sm leading-6 text-slate-400">Use the hosted recovery flow so reset tokens, expiration, and email delivery never pass through the application.</p></div><Button className="w-full" onClick={() => void recoverPassword()}>Open recovery flow</Button><p className="text-center text-sm text-slate-500"><Link to="/login" className="font-semibold text-cyan-300 hover:text-cyan-200">Back to sign in</Link></p></div>
+    <AuthLayout eyebrow="Khôi phục tài khoản" title="Lấy lại quyền truy cập" description="Keycloak sẽ hướng dẫn quy trình đặt lại mật khẩu an toàn rồi đưa bạn trở lại Weather Bridge AI.">
+      <div className="space-y-5"><div className="rounded-2xl border border-border bg-surface-2 p-5"><KeyRound className="text-accent" /><p className="mt-4 text-sm leading-6 text-muted">Mã đặt lại, thời hạn và email khôi phục đều được xử lý ngoài ứng dụng để bảo vệ tài khoản của bạn.</p></div><Button className="w-full" onClick={() => void recoverPassword()}>Mở quy trình khôi phục</Button><p className="text-center text-sm text-muted"><Link to="/login" className="font-semibold text-accent hover:text-accent-hover">Quay lại đăng nhập</Link></p></div>
     </AuthLayout>
   );
 }

@@ -1375,61 +1375,6 @@ wheels = [
 ]
 
 [[package]]
-name = "vai-code-be"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "alembic" },
-    { name = "asyncpg" },
-    { name = "email-validator" },
-    { name = "fastapi" },
-    { name = "httpx" },
-    { name = "langfuse" },
-    { name = "pydantic-settings" },
-    { name = "pyjwt", extra = ["crypto"] },
-    { name = "python-multipart" },
-    { name = "redis" },
-    { name = "sqlalchemy", extra = ["asyncio"] },
-    { name = "structlog" },
-    { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "aiosqlite" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "alembic", specifier = ">=1.16.0,<2" },
-    { name = "asyncpg", specifier = ">=0.30.0,<1" },
-    { name = "email-validator", specifier = ">=2.2.0,<3" },
-    { name = "fastapi", specifier = ">=0.128.0,<0.129" },
-    { name = "httpx", specifier = ">=0.28.0,<1" },
-    { name = "langfuse", specifier = ">=3.0.0,<4" },
-    { name = "pydantic-settings", specifier = ">=2.7.0,<3" },
-    { name = "pyjwt", extras = ["crypto"], specifier = ">=2.10.0,<3" },
-    { name = "python-multipart", specifier = ">=0.0.20,<1" },
-    { name = "redis", specifier = ">=6.0.0,<7" },
-    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.36,<3" },
-    { name = "structlog", specifier = ">=25.4.0,<26" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0,<1" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "aiosqlite", specifier = ">=0.20.0,<1" },
-    { name = "mypy", specifier = ">=1.15.0,<2" },
-    { name = "pytest", specifier = ">=8.3.0,<9" },
-    { name = "pytest-asyncio", specifier = ">=0.25.0,<1" },
-    { name = "ruff", specifier = ">=0.9.0,<1" },
-]
-
-[[package]]
 name = "watchfiles"
 version = "1.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1502,6 +1447,61 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/51/cf/3b10b268b4b7f0fc26e9debb5eef1998b515887840f444cd3ec80c688755/watchfiles-1.2.0-cp314-cp314t-manylinux_2_31_riscv64.whl", hash = "sha256:4c887eba18b7945ac73067a8b4a66f21cd46c2539b2bc68588f7be6c7eb6d26b", size = 463494, upload-time = "2026-05-18T04:31:33.826Z" },
     { url = "https://files.pythonhosted.org/packages/3d/3e/a4302545cd589262a0dc7d140e86f7688eba3f9c72776c27f7e23b8864c4/watchfiles-1.2.0-cp314-cp314t-musllinux_1_1_aarch64.whl", hash = "sha256:3416ff151bb6b5a8d8d11664974fbef4d9305b9b2957839ab5a270468fd8df30", size = 629383, upload-time = "2026-05-18T04:31:15.596Z" },
     { url = "https://files.pythonhosted.org/packages/db/99/d5649df0a9a410d45b7c882304d0b790903ac9b6e8f2cfd12114e0c6b9f2/watchfiles-1.2.0-cp314-cp314t-musllinux_1_1_x86_64.whl", hash = "sha256:0e831a271c035d89789cffc386b6aa1375f39f1cd25eb7ca0997e4970d152fc5", size = 656093, upload-time = "2026-05-18T04:31:58.707Z" },
+]
+
+[[package]]
+name = "weather-bridge-be"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "alembic" },
+    { name = "asyncpg" },
+    { name = "email-validator" },
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "langfuse" },
+    { name = "pydantic-settings" },
+    { name = "pyjwt", extra = ["crypto"] },
+    { name = "python-multipart" },
+    { name = "redis" },
+    { name = "sqlalchemy", extra = ["asyncio"] },
+    { name = "structlog" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "aiosqlite" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "alembic", specifier = ">=1.16.0,<2" },
+    { name = "asyncpg", specifier = ">=0.30.0,<1" },
+    { name = "email-validator", specifier = ">=2.2.0,<3" },
+    { name = "fastapi", specifier = ">=0.128.0,<0.129" },
+    { name = "httpx", specifier = ">=0.28.0,<1" },
+    { name = "langfuse", specifier = ">=3.0.0,<4" },
+    { name = "pydantic-settings", specifier = ">=2.7.0,<3" },
+    { name = "pyjwt", extras = ["crypto"], specifier = ">=2.10.0,<3" },
+    { name = "python-multipart", specifier = ">=0.0.20,<1" },
+    { name = "redis", specifier = ">=6.0.0,<7" },
+    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.36,<3" },
+    { name = "structlog", specifier = ">=25.4.0,<26" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0,<1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "aiosqlite", specifier = ">=0.20.0,<1" },
+    { name = "mypy", specifier = ">=1.15.0,<2" },
+    { name = "pytest", specifier = ">=8.3.0,<9" },
+    { name = "pytest-asyncio", specifier = ">=0.25.0,<1" },
+    { name = "ruff", specifier = ">=0.9.0,<1" },
 ]
 
 [[package]]

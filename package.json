@@ -1,5 +1,5 @@
 {
-  "name": "vai-code",
+  "name": "weather-bridge-ai",
   "private": true,
   "packageManager": "pnpm@11.3.0",
   "scripts": {

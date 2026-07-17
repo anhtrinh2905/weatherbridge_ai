@@ -49,11 +49,11 @@ test:
 
 build:
 	pnpm --dir fe build
-	docker build -f infra/docker/be.Dockerfile -t vai-code-be .
-	docker build -f infra/docker/worker.Dockerfile -t vai-code-worker .
-	docker build -f infra/docker/fe.Dockerfile -t vai-code-fe .
-	docker build -f infra/docker/keycloak.Dockerfile -t vai-code-keycloak .
-	docker build -f infra/docker/proxy.Dockerfile -t vai-code-proxy .
+	docker build -f infra/docker/be.Dockerfile -t weather-bridge-be .
+	docker build -f infra/docker/worker.Dockerfile -t weather-bridge-worker .
+	docker build -f infra/docker/fe.Dockerfile -t weather-bridge-fe .
+	docker build -f infra/docker/keycloak.Dockerfile -t weather-bridge-keycloak .
+	docker build -f infra/docker/proxy.Dockerfile -t weather-bridge-proxy .
 
 format:
 	uv run --project be ruff format be/src be/tests
