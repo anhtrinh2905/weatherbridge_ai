@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     langfuse_host: str = "https://cloud.langfuse.com"
     langfuse_environment: str = "development"
     cors_origins: str = "http://localhost:5173"
+    web_push_subject: str = "mailto:dev@weatherbridge.local"
+    web_push_vapid_private_key: str | None = None
+    web_push_vapid_public_key: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env",

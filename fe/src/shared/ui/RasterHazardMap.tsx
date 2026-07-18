@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { SetStateAction } from "react";
 import { RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { BOUNDARY } from "../../features/demo/boundary";
 import { EVENT_MARKER } from "../../features/demo/terrain";
@@ -22,8 +23,17 @@ interface PointerPosition {
   y: number;
 }
 
+interface ViewportState {
+  key: string;
+  viewport: Viewport;
+}
+
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
+}
+
+function defaultViewport(): Viewport {
+  return { zoom: MIN_ZOOM, panX: 0, panY: 0 };
 }
 
 function clampViewport(viewport: Viewport, width: number, height: number): Viewport {
@@ -63,8 +73,21 @@ export function RasterHazardMap({
   const dragRef = useRef<{ start: PointerPosition; viewport: Viewport; moved: boolean } | null>(null);
   const pinchRef = useRef<{ distance: number; midpoint: PointerPosition; viewport: Viewport } | null>(null);
   const suppressClickRef = useRef(false);
-  const [viewport, setViewport] = useState<Viewport>({ zoom: MIN_ZOOM, panX: 0, panY: 0 });
+  const viewportKey = `${layer}:${day}`;
+  const [viewportState, setViewportState] = useState<ViewportState>({
+    key: viewportKey,
+    viewport: defaultViewport(),
+  });
+  const viewport = viewportState.key === viewportKey ? viewportState.viewport : defaultViewport();
   const [isPanning, setIsPanning] = useState(false);
+
+  const setViewport = (next: SetStateAction<Viewport>) => {
+    setViewportState((current) => {
+      const currentViewport = current.key === viewportKey ? current.viewport : defaultViewport();
+      const viewport = typeof next === "function" ? next(currentViewport) : next;
+      return { key: viewportKey, viewport };
+    });
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -85,10 +108,6 @@ export function RasterHazardMap({
     ctx.strokeStyle = "rgba(180, 60, 90, 0.9)";
     ctx.lineWidth = 1;
     ctx.stroke();
-  }, [day, layer]);
-
-  useEffect(() => {
-    setViewport({ zoom: MIN_ZOOM, panX: 0, panY: 0 });
   }, [day, layer]);
 
   useEffect(() => {

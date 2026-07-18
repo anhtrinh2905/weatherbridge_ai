@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShieldCheck, HandHelping } from "lucide-react";
 import { useAuth } from "../../features/auth/hooks";
+import { WebPushPanel } from "../../features/notifications/WebPushPanel";
 import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { VillageMap } from "../../shared/ui/VillageMap";
@@ -35,8 +36,9 @@ export function ResidentHomePage() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="px-4 sm:px-0">
+      <div className="space-y-4 px-4 sm:px-0">
         <SafetyDisclaimer />
+        <WebPushPanel />
       </div>
 
       <div className="px-4 sm:px-0">
