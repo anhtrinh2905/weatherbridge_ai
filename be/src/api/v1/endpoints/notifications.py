@@ -26,9 +26,18 @@ async def notification_channels(
 ) -> list[NotificationChannelResponse]:
     transport_enabled = settings.notification_delivery_mode in {"simulate", "configured"}
     return [
-        NotificationChannelResponse(channel="web_push", available=bool(settings.web_push_vapid_public_key)),
-        NotificationChannelResponse(channel="sms", available=transport_enabled and settings.sms_provider != "disabled"),
-        NotificationChannelResponse(channel="zalo", available=transport_enabled and settings.zalo_provider != "disabled"),
+        NotificationChannelResponse(
+            channel="web_push",
+            available=bool(settings.web_push_vapid_public_key),
+        ),
+        NotificationChannelResponse(
+            channel="sms",
+            available=transport_enabled and settings.sms_provider != "disabled",
+        ),
+        NotificationChannelResponse(
+            channel="zalo",
+            available=transport_enabled and settings.zalo_provider != "disabled",
+        ),
     ]
 
 

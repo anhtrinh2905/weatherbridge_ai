@@ -48,7 +48,9 @@ class AlertService:
         elif context.domain_role in {"commune_officer", "village_head"}:
             if not context.area_ids:
                 raise AppError(403, "No area is assigned", "area_unassigned")
-            query = query.join(AlertTarget).where(AlertTarget.geo_location_id.in_(context.area_ids))
+            query = query.join(AlertTarget).where(
+                AlertTarget.geo_location_id.in_(context.area_ids)
+            )
         elif context.domain_role == "resident":
             resident = await self._resident_for_profile(context.profile.id)
             query = query.join(AlertRecipient).where(AlertRecipient.resident_id == resident.id)
@@ -326,19 +328,28 @@ class AlertService:
             for recipient, alert, content in rows
         ]
 
-    async def delivery_summary(self, alert_id: UUID, user: CurrentUser) -> list[DeliverySummaryItem]:
+    async def delivery_summary(
+        self, alert_id: UUID, user: CurrentUser
+    ) -> list[DeliverySummaryItem]:
         context = await self.profiles.access_context(user)
         await self._scoped_alert(alert_id, context)
         rows = (
             await self.session.execute(
-                select(NotificationOutbox.channel, NotificationOutbox.status, func.count(NotificationOutbox.id))
+                select(
+                    NotificationOutbox.channel,
+                    NotificationOutbox.status,
+                    func.count(NotificationOutbox.id),
+                )
                 .join(AlertRecipient, AlertRecipient.id == NotificationOutbox.alert_recipient_id)
                 .where(AlertRecipient.alert_id == alert_id)
                 .group_by(NotificationOutbox.channel, NotificationOutbox.status)
                 .order_by(NotificationOutbox.channel, NotificationOutbox.status)
             )
         ).all()
-        return [DeliverySummaryItem(channel=channel, status=status, count=count) for channel, status, count in rows]
+        return [
+            DeliverySummaryItem(channel=channel, status=status, count=count)
+            for channel, status, count in rows
+        ]
 
     async def acknowledge(
         self, alert_id: UUID, payload: AcknowledgeAlertRequest, user: CurrentUser

@@ -81,4 +81,6 @@ async def update_subscription(
     session: AsyncSession = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> SubscriptionResponse:
-    return await ResidentService(session, settings).update_subscription(subscription_id, payload, user)
+    return await ResidentService(session, settings).update_subscription(
+        subscription_id, payload, user
+    )
