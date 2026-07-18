@@ -2,6 +2,7 @@
   "realm": "weather-bridge",
   "enabled": true,
   "displayName": "Weather Bridge AI",
+  "attributes": { "weatherBridgeMigrationVersion": "1" },
   "sslRequired": "none",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
