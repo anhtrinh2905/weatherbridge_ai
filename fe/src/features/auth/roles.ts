@@ -7,9 +7,9 @@ const KNOWN_ROLES: Role[] = ["admin", "commune_officer", "village_head", "reside
 const ROLE_PRIORITY: Role[] = ["admin", "commune_officer", "village_head", "resident"];
 
 const ROLE_HOME: Record<Role, string> = {
-  admin: "/admin/overview",
+  admin: "/admin/heatmap",
   commune_officer: "/officer/heatmap",
-  village_head: "/village-head/overview",
+  village_head: "/village-head/map",
   resident: "/resident",
 };
 

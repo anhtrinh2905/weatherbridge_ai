@@ -9,9 +9,11 @@ export type SafetyStatus = "unknown" | "safe" | "need_help";
 export interface Village {
   id: string;
   name: string;
-  lat: number;
-  lon: number;
-  elevationM: number;
+  /** WGS84 — null until a cited survey/geocode source exists (no estimates). */
+  lat: number | null;
+  lon: number | null;
+  elevationM: number | null;
+  coordinateStatus: "resolved" | "unresolved";
   hazardBaseline: "cao" | "chua_xac_dinh";
   floodHistory2024: boolean;
 }

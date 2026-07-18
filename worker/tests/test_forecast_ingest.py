@@ -15,6 +15,9 @@ OPEN_METEO_RESPONSE = {
     "hourly": {
         "time": ["2026-07-18T00:00", "2026-07-18T01:00", "2026-07-19T00:00"],
         "precipitation": [1.2, 4.5, 2.0],
+        "visibility": [800, 1200, 5000],
+        "temperature_2m": [18.0, 19.0, 21.0],
+        "dew_point_2m": [17.0, 17.4, 16.0],
     },
 }
 
@@ -35,16 +38,31 @@ def mock_client(handler) -> httpx.AsyncClient:
 def test_build_days_maps_rainfall_and_peak_intensity() -> None:
     days = build_days(OPEN_METEO_RESPONSE)
     assert days == [
-        {"date": "2026-07-18", "rainfall_mm": 13.3, "peak_intensity_mm_h": 4.5},
-        {"date": "2026-07-19", "rainfall_mm": 27.8, "peak_intensity_mm_h": 2.0},
+        {
+            "date": "2026-07-18",
+            "rainfall_mm": 13.3,
+            "peak_intensity_mm_h": 4.5,
+            "min_visibility_m": 800.0,
+            "temperature_2m_c": 18.5,
+            "dew_point_2m_c": 17.2,
+        },
+        {
+            "date": "2026-07-19",
+            "rainfall_mm": 27.8,
+            "peak_intensity_mm_h": 2.0,
+            "min_visibility_m": 5000.0,
+            "temperature_2m_c": 21.0,
+            "dew_point_2m_c": 16.0,
+        },
         {"date": "2026-07-20", "rainfall_mm": 0.0, "peak_intensity_mm_h": 0.0},
     ]
 
 
 async def test_ingest_persists_snapshot(session_factory) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
-        assert request.url.params["daily"] == "precipitation_sum"
-        assert request.url.params["forecast_days"] == "7"
+        assert "precipitation" in request.url.params["hourly"]
+        assert "visibility" in request.url.params["hourly"]
+        assert request.url.params["forecast_days"] == "8"
         return httpx.Response(200, json=OPEN_METEO_RESPONSE)
 
     async with session_factory() as session, mock_client(handler) as client:

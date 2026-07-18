@@ -7,6 +7,7 @@ from api.v1.endpoints import (
     auth,
     evacuations,
     forecasts,
+    geocode,
     hazard_archive,
     hazards,
     health,
@@ -36,6 +37,7 @@ router.include_router(ai_jobs.router, prefix="/ai/jobs", tags=["ai-jobs"])
 router.include_router(forecasts.router, prefix="/forecasts", tags=["forecasts"])
 router.include_router(open_meteo.router, prefix="/open-meteo", tags=["open-meteo"])
 router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
+router.include_router(geocode.router, prefix="/geocode", tags=["geocode"])
 router.include_router(translations.router, prefix="/translations", tags=["translations"])
 router.include_router(speech.router, prefix="/speech", tags=["speech"])
 router.include_router(admin.router, prefix="/admin", tags=["admin"])

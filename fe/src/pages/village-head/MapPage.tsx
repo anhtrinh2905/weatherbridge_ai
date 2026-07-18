@@ -1,8 +1,8 @@
-import { AlertTriangle, CheckCircle2, MapPinned, ShieldAlert } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { AlertTriangle, CheckCircle2, MapPinned, ShieldAlert, Users } from "lucide-react";
+import { HeatmapView } from "../../features/heatmap/HeatmapView";
 import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { useAuth } from "../../features/auth/hooks";
-import { SimpleRasterMap } from "../../shared/ui/SimpleRasterMap";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { DataFreshnessBadge } from "../../shared/ui/DataFreshnessBadge";
 import { getDominantLevel, getResidentsByVillage, getVillage, HAZARD_RUN_MOCK } from "../../shared/domain/mockData";
@@ -11,12 +11,10 @@ import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
 
 export function VillageHeadMapPage() {
-  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { t } = useTranslation();
   const labels = useLocalizedLabels();
   const villageId = user?.villageId ?? "muong-pon-1";
-  const selectedResidentId = searchParams.get("resident");
   const village = getVillage(villageId);
   const dominant = getDominantLevel(villageId, 0);
   const residents = getResidentsByVillage(villageId);
@@ -35,12 +33,7 @@ export function VillageHeadMapPage() {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <section className="space-y-4">
-          <SimpleRasterMap
-            villageId={villageId}
-            day={0}
-            selectedResidentId={selectedResidentId}
-            className="min-h-[520px] rounded-lg"
-          />
+          <HeatmapView compact variant="village" hideChrome />
           <SafetyDisclaimer />
         </section>
 
@@ -91,30 +84,19 @@ export function VillageHeadMapPage() {
           </Card>
 
           <Card className="rounded-lg">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("villageHead.map.legendTitle")}</p>
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center gap-3">
-                <span className="h-3 w-3 rounded-full bg-positive" />
-                <span className="text-muted">{t("villageHead.map.legendSafe")}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="h-3 w-3 rounded-full bg-[#FFF3A0]" />
-                <span className="text-muted">{t("villageHead.map.legendPrepare")}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="h-3 w-3 rounded-full bg-[#E03131]" />
-                <span className="text-muted">{t("villageHead.map.legendGoNow")}</span>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="rounded-lg">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("villageHead.map.actionsTitle")}</p>
             <p className="mt-2 text-sm text-muted">
               {needHelpCount > 0
                 ? t("villageHead.map.needHelpNotice", { count: needHelpCount })
                 : t("villageHead.map.pendingVisitsNotice", { count: pendingVisits })}
             </p>
+            <Link
+              to="/village-head/residents"
+              className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-strong bg-surface-2 px-5 text-sm font-semibold text-fg transition hover:bg-surface-3"
+            >
+              <Users size={16} />
+              {t("villageHead.nav.residents")}
+            </Link>
           </Card>
         </aside>
       </div>

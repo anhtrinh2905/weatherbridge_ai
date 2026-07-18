@@ -15,9 +15,9 @@ export function VillageHeadLayout() {
   ).length;
 
   const items: SidebarItem[] = [
-    { to: "/village-head/overview", label: t("villageHead.nav.overview"), icon: LayoutDashboard, end: true },
+    { to: "/village-head/map", label: t("villageHead.nav.map"), icon: Map, end: true },
+    { to: "/village-head/overview", label: t("villageHead.nav.overview"), icon: LayoutDashboard },
     { to: "/village-head/residents", label: t("villageHead.nav.residents"), icon: Users, badge: pendingVisits || undefined },
-    { to: "/village-head/map", label: t("villageHead.nav.map"), icon: Map },
   ];
 
   return <DashboardLayout role="village_head" items={items} />;

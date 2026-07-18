@@ -1,6 +1,24 @@
 import { BOUNDARY_ASPECT, buildBoundaryMask } from "./boundary";
-import { clamp01, combineHazard, hazardDayContext, LEVEL_META, levelFromScore } from "./data";
-import type { HazardLevel, HazardType } from "./types";
+import {
+  clamp01,
+  combineHazard,
+  FOG_PATCHES,
+  fogSampleForDay,
+  wmoVisibilityDeficit01,
+  hazardDayContext,
+  LEVEL_META,
+  levelFromScore,
+} from "./data";
+import type { FogSample, HazardLevel, HazardType } from "./types";
+
+/** Keep in sync with BOUNDARY_GEO_BOUNDS in shared/hazard-raster/villages.ts */
+const FOG_GEO_BOUNDS = {
+  minLat: 21.474045782967035,
+  maxLat: 21.700161717032966,
+  minLon: 102.90104066923077,
+  maxLon: 103.16895913076922,
+};
+const LAT_SPAN_KM = (FOG_GEO_BOUNDS.maxLat - FOG_GEO_BOUNDS.minLat) * 111;
 
 /**
  * High-resolution simulated terrain raster for the demo heatmap.
@@ -222,7 +240,13 @@ export function dominantHazard(flood: RasterSample, landslide: RasterSample): Ha
  * terrain renders as muted grayscale hillshade for geographic context, like
  * the reference topo map.
  */
-export function renderHazardRaster(out: Uint8ClampedArray, type: RasterLayer, dayOffset: number): void {
+export function renderHazardRaster(
+  out: Uint8ClampedArray,
+  type: RasterLayer,
+  dayOffset: number,
+  options: { showFog?: boolean } = {},
+): void {
+  void options;
   const t = getTerrain();
   const size = RASTER_W * RASTER_H;
 
@@ -242,14 +266,62 @@ export function renderHazardRaster(out: Uint8ClampedArray, type: RasterLayer, da
       out[o + 2] = Math.min(255, b * m);
       out[o + 3] = 255;
     } else {
-      // context terrain outside the commune: dim neutral hillshade
-      const v = 38 + 44 * shade;
+      // context terrain outside the commune: mid-tone hillshade (avoid black letterbox)
+      const v = 118 + 52 * shade;
       out[o] = v;
-      out[o + 1] = v + 3;
-      out[o + 2] = v + 8;
+      out[o + 1] = v + 4;
+      out[o + 2] = v + 6;
       out[o + 3] = 255;
     }
   }
+
+  // Fog is rendered as cloud markers in RasterHazardMap (not a pixel veil).
+}
+
+interface FogPatchPixel {
+  x: number;
+  y: number;
+  radiusPx: number;
+  weight: number;
+}
+
+function fogPatchesInPixels(): FogPatchPixel[] {
+  const latSpan = FOG_GEO_BOUNDS.maxLat - FOG_GEO_BOUNDS.minLat;
+  const lonSpan = FOG_GEO_BOUNDS.maxLon - FOG_GEO_BOUNDS.minLon;
+  return FOG_PATCHES.map((patch) => ({
+    x: ((patch.lon - FOG_GEO_BOUNDS.minLon) / lonSpan) * (RASTER_W - 1),
+    y: ((FOG_GEO_BOUNDS.maxLat - patch.lat) / latSpan) * (RASTER_H - 1),
+    radiusPx: Math.max(12, (patch.radiusKm / LAT_SPAN_KM) * RASTER_H),
+    weight: patch.weight,
+  }));
+}
+
+function fogPatchIntensityAt(x: number, y: number, elev01: number): number {
+  let peak = 0;
+  for (const patch of fogPatchesInPixels()) {
+    const dist = Math.hypot(x - patch.x, y - patch.y);
+    if (dist >= patch.radiusPx) continue;
+    const falloff = 1 - dist / patch.radiusPx;
+    // Radiation fog pools in valleys (cold-air drainage); ridges stay weaker.
+    const valley = 1 - elev01;
+    peak = Math.max(peak, patch.weight * falloff * falloff * (0.35 + 0.65 * valley));
+  }
+  return clamp01(peak);
+}
+
+/** Fog inspection at a pixel (WMO label + local valley-patch intensity). */
+export function sampleFogAt(x: number, y: number, dayOffset: number): FogSample & { localIntensity: number } {
+  const base = fogSampleForDay(dayOffset);
+  const t = getTerrain();
+  const xi = Math.max(0, Math.min(RASTER_W - 1, Math.round(x)));
+  const yi = Math.max(0, Math.min(RASTER_H - 1, Math.round(y)));
+  const i = yi * RASTER_W + xi;
+  const severity = wmoVisibilityDeficit01(base.visibilityM);
+  const patch = fogPatchIntensityAt(xi, yi, t.elev[i]);
+  return {
+    ...base,
+    localIntensity: base.isFog ? severity * patch : 0,
+  };
 }
 
 /** whether a raster pixel lies inside the commune boundary */

@@ -56,7 +56,7 @@ export function App() {
             <Route path="calibration" element={<AdminCalibrationPage />} />
             <Route path="heatmap" element={<AdminHeatmapPage />} />
             <Route path="users" element={<AdminUsersPage />} />
-            <Route index element={<Navigate to="overview" replace />} />
+            <Route index element={<Navigate to="heatmap" replace />} />
           </Route>
         </Route>
 
@@ -75,7 +75,7 @@ export function App() {
             <Route path="overview" element={<VillageHeadOverviewPage />} />
             <Route path="residents" element={<VillageHeadResidentsPage />} />
             <Route path="map" element={<VillageHeadMapPage />} />
-            <Route index element={<Navigate to="overview" replace />} />
+            <Route index element={<Navigate to="map" replace />} />
           </Route>
         </Route>
 

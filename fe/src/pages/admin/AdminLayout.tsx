@@ -12,7 +12,8 @@ export function AdminLayout() {
     {
       title: t("admin.nav.operations"),
       items: [
-        { to: "/admin/overview", label: t("admin.nav.overview"), icon: LayoutDashboard, end: true },
+        { to: "/admin/heatmap", label: t("admin.nav.heatmap"), icon: Map, end: true },
+        { to: "/admin/overview", label: t("admin.nav.overview"), icon: LayoutDashboard },
         {
           to: "/admin/pipeline",
           label: t("admin.nav.pipeline"),
@@ -26,7 +27,6 @@ export function AdminLayout() {
       items: [
         { to: "/admin/thresholds", label: t("admin.nav.thresholds"), icon: SlidersHorizontal },
         { to: "/admin/calibration", label: t("admin.nav.calibration"), icon: FlaskConical },
-        { to: "/admin/heatmap", label: t("admin.nav.heatmap"), icon: Map },
       ],
     },
     {

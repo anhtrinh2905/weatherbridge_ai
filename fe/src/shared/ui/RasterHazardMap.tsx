@@ -1,16 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { SetStateAction } from "react";
 import { RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { BOUNDARY } from "../../features/demo/boundary";
+import { FOG_PATCHES, fogSampleForDay, wmoVisibilityDeficit01 } from "../../features/demo/data";
 import { EVENT_MARKER } from "../../features/demo/terrain";
 import { cn } from "../lib/cn";
-import { isInsideBoundary, RASTER_H, RASTER_W, renderHazardRaster } from "../hazard-raster";
-import { RASTER_VILLAGES, nearestRasterVillage } from "../hazard-raster/villages";
+import { FogCloudIcon } from "./FogCloudIcon";
+import { getBackendRisk, getForecastDays, isInsideBoundary, RASTER_H, RASTER_W, renderHazardRaster } from "../hazard-raster";
+import { BOUNDARY_GEO_BOUNDS, RASTER_VILLAGES, nearestRasterVillage } from "../hazard-raster/villages";
 import type { RasterLayer, RasterPoint } from "../hazard-raster";
 
-const MIN_ZOOM = 1;
-const MAX_ZOOM = 4;
-const ZOOM_STEP = 1.5;
+/** Zoom step: ±10 percentage points on the toolbar readout. */
+const ZOOM_STEP_PCT = 10;
+const MIN_ZOOM_PCT = 50;
+const MAX_ZOOM_PCT = 400;
+const MIN_ZOOM = MIN_ZOOM_PCT / 100;
+const MAX_ZOOM_CAP = MAX_ZOOM_PCT / 100;
 
 interface Viewport {
   zoom: number;
@@ -28,6 +33,13 @@ interface ViewportState {
   viewport: Viewport;
 }
 
+interface BoundaryBox {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
 export interface RasterMapMarker {
   id: string;
   point: RasterPoint;
@@ -38,17 +50,82 @@ function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-function defaultViewport(): Viewport {
-  return { zoom: MIN_ZOOM, panX: 0, panY: 0 };
+function zoomToPct(zoom: number): number {
+  return Math.round(zoom * 100);
 }
 
+function pctToZoom(pct: number): number {
+  return clamp(pct, MIN_ZOOM_PCT, MAX_ZOOM_PCT) / 100;
+}
+
+function stepZoom(currentZoom: number, direction: 1 | -1): number {
+  const nextPct = zoomToPct(currentZoom) + direction * ZOOM_STEP_PCT;
+  return pctToZoom(nextPct);
+}
+
+function boundaryBox(): BoundaryBox {
+  let minX = 1;
+  let maxX = 0;
+  let minY = 1;
+  let maxY = 0;
+  for (const [x, y] of BOUNDARY) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  return { minX, maxX, minY, maxY };
+}
+
+const BOUNDARY_BOX = boundaryBox();
+
 function clampViewport(viewport: Viewport, width: number, height: number): Viewport {
-  const minX = width - width * viewport.zoom;
-  const minY = height - height * viewport.zoom;
+  const zoom = clamp(viewport.zoom, MIN_ZOOM, MAX_ZOOM_CAP);
+  if (zoom <= 1) {
+    // Letterbox / center when zoomed out past 100%
+    return {
+      zoom,
+      panX: (width - width * zoom) / 2,
+      panY: (height - height * zoom) / 2,
+    };
+  }
   return {
-    ...viewport,
-    panX: clamp(viewport.panX, minX, 0),
-    panY: clamp(viewport.panY, minY, 0),
+    zoom,
+    panX: clamp(viewport.panX, width - width * zoom, 0),
+    panY: clamp(viewport.panY, height - height * zoom, 0),
+  };
+}
+
+/** Cover-fit the commune AABB into the container, with a slight extra zoom to crop padding. */
+export function fitBoundaryViewport(width: number, height: number): Viewport {
+  const { minX, maxX, minY, maxY } = BOUNDARY_BOX;
+  const bboxW = Math.max(0.01, maxX - minX);
+  const bboxH = Math.max(0.01, maxY - minY);
+  const cover = Math.max(1 / bboxW, 1 / bboxH) * 1.08;
+  const zoom = clamp(cover, MIN_ZOOM, MAX_ZOOM_CAP);
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  return clampViewport(
+    {
+      zoom,
+      panX: width / 2 - centerX * width * zoom,
+      panY: height / 2 - centerY * height * zoom,
+    },
+    width,
+    height,
+  );
+}
+
+function defaultViewport(width = 560, height = 508): Viewport {
+  return fitBoundaryViewport(width, height);
+}
+
+function fogPatchPoint(patch: (typeof FOG_PATCHES)[number]): RasterPoint {
+  const lonSpan = BOUNDARY_GEO_BOUNDS.maxLon - BOUNDARY_GEO_BOUNDS.minLon;
+  const latSpan = BOUNDARY_GEO_BOUNDS.maxLat - BOUNDARY_GEO_BOUNDS.minLat;
+  return {
+    x: ((patch.lon - BOUNDARY_GEO_BOUNDS.minLon) / lonSpan) * (RASTER_W - 1),
+    y: ((BOUNDARY_GEO_BOUNDS.maxLat - patch.lat) / latSpan) * (RASTER_H - 1),
   };
 }
 
@@ -59,9 +136,12 @@ export function RasterHazardMap({
   selectedVillageId,
   onSelect,
   showVillageMarkers = true,
+  showFog = true,
   focusPoint,
   focusRequest = 0,
   markers = [],
+  /** fill = stretch into parent height; natural = keep raster aspect (no distortion). */
+  aspectMode = "fill",
   className,
 }: {
   layer: RasterLayer;
@@ -70,9 +150,11 @@ export function RasterHazardMap({
   selectedVillageId: string | null;
   onSelect: (point: RasterPoint, villageId: string | null) => void;
   showVillageMarkers?: boolean;
+  showFog?: boolean;
   focusPoint?: RasterPoint | null;
   focusRequest?: number;
   markers?: RasterMapMarker[];
+  aspectMode?: "fill" | "natural";
   className?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -81,21 +163,38 @@ export function RasterHazardMap({
   const dragRef = useRef<{ start: PointerPosition; viewport: Viewport; moved: boolean } | null>(null);
   const pinchRef = useRef<{ distance: number; midpoint: PointerPosition; viewport: Viewport } | null>(null);
   const suppressClickRef = useRef(false);
+  const fittedRef = useRef<Viewport | null>(null);
+  const [minZoom] = useState(MIN_ZOOM);
   const viewportKey = `${layer}:${day}`;
   const [viewportState, setViewportState] = useState<ViewportState>({
     key: viewportKey,
     viewport: defaultViewport(),
   });
-  const viewport = viewportState.key === viewportKey ? viewportState.viewport : defaultViewport();
+  const fallbackViewport = fittedRef.current ?? defaultViewport();
+  const viewport = viewportState.key === viewportKey ? viewportState.viewport : fallbackViewport;
   const [isPanning, setIsPanning] = useState(false);
+  const zoomPct = zoomToPct(viewport.zoom);
 
   const setViewport = (next: SetStateAction<Viewport>) => {
     setViewportState((current) => {
-      const currentViewport = current.key === viewportKey ? current.viewport : defaultViewport();
-      const viewport = typeof next === "function" ? next(currentViewport) : next;
-      return { key: viewportKey, viewport };
+      const currentViewport = current.key === viewportKey ? current.viewport : (fittedRef.current ?? defaultViewport());
+      const nextViewport = typeof next === "function" ? next(currentViewport) : next;
+      return { key: viewportKey, viewport: nextViewport };
     });
   };
+
+  const applyFit = () => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    const width = rect && rect.width > 0 ? rect.width : 560;
+    const height = rect && rect.height > 0 ? rect.height : 508;
+    const fitted = fitBoundaryViewport(width, height);
+    fittedRef.current = fitted;
+    setViewport(fitted);
+  };
+
+  // reference changes when live forecast / backend risk arrive, forcing a repaint
+  const forecastDays = getForecastDays();
+  const backendRisk = getBackendRisk();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -116,23 +215,34 @@ export function RasterHazardMap({
     ctx.strokeStyle = "rgba(180, 60, 90, 0.9)";
     ctx.lineWidth = 1;
     ctx.stroke();
+  }, [day, layer, forecastDays, backendRisk]);
+
+  useEffect(() => {
+    applyFit();
+    const element = containerRef.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => applyFit());
+    observer.observe(element);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    applyFit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [day, layer]);
 
   useEffect(() => {
     if (!focusPoint || focusRequest === 0) return;
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const zoom = 2;
+    const fitZoom = fittedRef.current?.zoom ?? minZoom;
+    const zoom = clamp(fitZoom + 1, minZoom, MAX_ZOOM_CAP);
     const pointX = (focusPoint.x / RASTER_W) * rect.width;
     const pointY = (focusPoint.y / RASTER_H) * rect.height;
-    setViewport(
-      clampViewport(
-        { zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom },
-        rect.width,
-        rect.height,
-      ),
-    );
-  }, [focusPoint, focusRequest]);
+    setViewport(clampViewport({ zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom }, rect.width, rect.height));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusPoint, focusRequest, minZoom]);
 
   const containerRect = () => containerRef.current?.getBoundingClientRect() ?? null;
 
@@ -140,8 +250,8 @@ export function RasterHazardMap({
     const rect = containerRect();
     if (!rect) return;
     setViewport((current) => {
-      const zoom = clamp(nextZoom, MIN_ZOOM, MAX_ZOOM);
-      if (zoom === current.zoom) return current;
+      const zoom = clamp(nextZoom, minZoom, MAX_ZOOM_CAP);
+      if (Math.abs(zoom - current.zoom) < 0.0001) return current;
       const x = clientX - rect.left;
       const y = clientY - rect.top;
       const contentX = (x - current.panX) / current.zoom;
@@ -153,7 +263,7 @@ export function RasterHazardMap({
   const zoomFromCenter = (direction: 1 | -1) => {
     const rect = containerRect();
     if (!rect) return;
-    zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, viewport.zoom * (direction === 1 ? ZOOM_STEP : 1 / ZOOM_STEP));
+    zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, stepZoom(viewport.zoom, direction));
   };
 
   const selectPoint = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -178,7 +288,7 @@ export function RasterHazardMap({
     const distance = Math.hypot(first.x - second.x, first.y - second.y);
     const rect = containerRect();
     if (!rect) return;
-    const zoom = clamp((distance / pinchRef.current.distance) * pinchRef.current.viewport.zoom, MIN_ZOOM, MAX_ZOOM);
+    const zoom = clamp((distance / pinchRef.current.distance) * pinchRef.current.viewport.zoom, minZoom, MAX_ZOOM_CAP);
     const start = pinchRef.current;
     const contentX = (start.midpoint.x - start.viewport.panX) / start.viewport.zoom;
     const contentY = (start.midpoint.y - start.viewport.panY) / start.viewport.zoom;
@@ -200,7 +310,7 @@ export function RasterHazardMap({
       setIsPanning(true);
       return;
     }
-    if (viewport.zoom > MIN_ZOOM) {
+    if (viewport.zoom > 1) {
       dragRef.current = { start: position, viewport, moved: false };
       setIsPanning(true);
     }
@@ -234,25 +344,81 @@ export function RasterHazardMap({
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
+  const fitted = fittedRef.current;
+  const isAtFit =
+    fitted !== null &&
+    Math.abs(viewport.zoom - fitted.zoom) < 0.001 &&
+    Math.abs(viewport.panX - fitted.panX) < 0.5 &&
+    Math.abs(viewport.panY - fitted.panY) < 0.5;
+
+  const dayFog = useMemo(() => fogSampleForDay(day), [day]);
+  const fogSeverity = wmoVisibilityDeficit01(dayFog.visibilityM);
+  const showFogMarkers = showFog && dayFog.isFog;
+
   return (
-    <div ref={containerRef} className={cn("relative aspect-[560/508] overflow-hidden rounded-2xl border border-border-soft bg-canvas-deep touch-none", className)} role="group" aria-label="Bản đồ raster nguy cơ">
+    <div
+      ref={containerRef}
+      className={cn(
+        "relative overflow-hidden rounded-2xl border border-border-soft bg-[#8a9088] touch-none",
+        aspectMode === "natural"
+          ? "mx-auto aspect-[560/508] w-full"
+          : "aspect-[560/508] min-h-[24rem] lg:aspect-auto lg:h-full lg:min-h-[32rem]",
+        className,
+      )}
+      role="group"
+      aria-label="Bản đồ raster nguy cơ"
+    >
       <div className="absolute inset-0 origin-top-left" style={{ transform: `translate(${viewport.panX}px, ${viewport.panY}px) scale(${viewport.zoom})` }}>
         <canvas
           ref={canvasRef}
           width={RASTER_W}
           height={RASTER_H}
           onClick={selectPoint}
-          onDoubleClick={(event) => zoomAt(event.clientX, event.clientY, viewport.zoom * ZOOM_STEP)}
-          onWheel={(event) => { event.preventDefault(); zoomAt(event.clientX, event.clientY, viewport.zoom * (event.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP)); }}
+          onDoubleClick={(event) => zoomAt(event.clientX, event.clientY, stepZoom(viewport.zoom, 1))}
+          onWheel={(event) => {
+            // Page scroll by default; zoom only with Ctrl/Cmd+wheel (avoids hijacking scroll).
+            if (!event.ctrlKey && !event.metaKey) return;
+            event.preventDefault();
+            zoomAt(event.clientX, event.clientY, stepZoom(viewport.zoom, event.deltaY < 0 ? 1 : -1));
+          }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={finishPointer}
           onPointerCancel={finishPointer}
-          className={cn("block size-full", isPanning ? "cursor-grabbing" : viewport.zoom > MIN_ZOOM ? "cursor-grab" : "cursor-crosshair")}
+          className={cn("block size-full", isPanning ? "cursor-grabbing" : viewport.zoom > 1 ? "cursor-grab" : "cursor-crosshair")}
           aria-label="Bản đồ raster nguy cơ 5 cấp"
         />
-        {showVillageMarkers && RASTER_VILLAGES.map(({ village, point, located }) => (
-          <button key={village.id} type="button" disabled={!located} onClick={() => onSelect(point, village.id)} title={located ? village.name : `${village.name}: chưa định vị trong ranh giới raster`} className={cn("absolute -translate-x-1/2 -translate-y-1/2 text-left text-[0.62rem] font-semibold text-white [text-shadow:0_1px_2px_rgb(0_0_0_/_90%)]", located ? "cursor-pointer" : "cursor-not-allowed opacity-40")} style={{ left: `${(point.x / RASTER_W) * 100}%`, top: `${(point.y / RASTER_H) * 100}%` }}><span className={cn("mx-auto block size-2.5 rounded-full border border-white", selectedVillageId === village.id ? "bg-accent ring-2 ring-white" : "bg-black/70")} /><span className="mt-0.5 block whitespace-nowrap">{village.name}</span></button>
+        {showFogMarkers &&
+          FOG_PATCHES.map((patch) => {
+            const point = fogPatchPoint(patch);
+            const size = Math.round(40 + 26 * fogSeverity * patch.weight);
+            return (
+              <span
+                key={patch.id}
+                className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  left: `${(point.x / RASTER_W) * 100}%`,
+                  top: `${(point.y / RASTER_H) * 100}%`,
+                }}
+                title={`Sương mù · tầm nhìn ${Math.round(dayFog.visibilityM ?? 0)} m`}
+                aria-hidden="true"
+              >
+                <FogCloudIcon size={size} severity={fogSeverity * patch.weight} />
+              </span>
+            );
+          })}
+        {showVillageMarkers && RASTER_VILLAGES.map(({ village, point }) => (
+          <button
+            key={village.id}
+            type="button"
+            onClick={() => onSelect(point, village.id)}
+            title={village.name}
+            className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer text-left text-[0.68rem] font-semibold leading-tight text-white [text-shadow:0_1px_2px_rgb(0_0_0_/_90%)]"
+            style={{ left: `${(point.x / RASTER_W) * 100}%`, top: `${(point.y / RASTER_H) * 100}%` }}
+          >
+            <span className={cn("mx-auto block size-3 rounded-full border-2 border-white shadow", selectedVillageId === village.id ? "bg-accent ring-2 ring-white" : "bg-black/75")} />
+            <span className="mt-0.5 block max-w-[7.5rem] truncate whitespace-nowrap">{village.name}</span>
+          </button>
         ))}
         {markers.map((marker) => (
           <span
@@ -272,10 +438,10 @@ export function RasterHazardMap({
         <span className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-lg leading-none text-black [text-shadow:0_0_3px_rgba(255,255,255,0.9)]" style={{ left: `${EVENT_MARKER.x * 100}%`, top: `${EVENT_MARKER.y * 100}%` }} aria-hidden="true">▼</span>
       </div>
       <div className="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-white/15 bg-black/65 p-1 shadow" role="toolbar" aria-label="Điều khiển bản đồ">
-        <button type="button" onClick={() => zoomFromCenter(-1)} disabled={viewport.zoom <= MIN_ZOOM} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Thu nhỏ bản đồ" title="Thu nhỏ"><ZoomOut size={17} /></button>
-        <span className="min-w-10 text-center font-mono text-xs text-white" aria-label={`Mức zoom ${Math.round(viewport.zoom * 100)}%`}>{Math.round(viewport.zoom * 100)}%</span>
-        <button type="button" onClick={() => zoomFromCenter(1)} disabled={viewport.zoom >= MAX_ZOOM} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Phóng to bản đồ" title="Phóng to"><ZoomIn size={17} /></button>
-        <button type="button" onClick={() => setViewport({ zoom: MIN_ZOOM, panX: 0, panY: 0 })} disabled={viewport.zoom === MIN_ZOOM && viewport.panX === 0 && viewport.panY === 0} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Đặt lại góc nhìn" title="Đặt lại góc nhìn"><RotateCcw size={16} /></button>
+        <button type="button" onClick={() => zoomFromCenter(-1)} disabled={zoomPct <= MIN_ZOOM_PCT} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Thu nhỏ bản đồ" title="Thu nhỏ 10%"><ZoomOut size={17} /></button>
+        <span className="min-w-12 text-center font-mono text-xs text-white" aria-label={`Mức zoom ${zoomPct}%`} title="Zoom: nút ± hoặc Ctrl+lăn chuột">{zoomPct}%</span>
+        <button type="button" onClick={() => zoomFromCenter(1)} disabled={zoomPct >= MAX_ZOOM_PCT} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Phóng to bản đồ" title="Phóng to 10%"><ZoomIn size={17} /></button>
+        <button type="button" onClick={applyFit} disabled={isAtFit} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Đặt lại góc nhìn" title="Đặt lại góc nhìn"><RotateCcw size={16} /></button>
       </div>
       <span className="absolute bottom-2 left-2 rounded bg-black/55 px-1.5 py-0.5 text-[0.6rem] text-white/80">Ranh giới: © OpenStreetMap contributors</span>
     </div>

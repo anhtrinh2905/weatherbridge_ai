@@ -36,6 +36,18 @@ class LabelPoint(BaseModel):
     col: int = Field(ge=0)
 
 
+class GeoLabelPoint(BaseModel):
+    """One inventoried landslide, in geographic (lat, lon) coordinates.
+
+    The natural form for an open inventory (COOLR points, digitised scarps,
+    geocoded sites). Converted to pixel ``LabelPoint`` against the DEM's own
+    georeferencing at prepare time — no hand-computed pixel indices.
+    """
+
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+
+
 class DatasetManifest(BaseModel):
     """Provenance + parameters for one susceptibility dataset."""
 
@@ -45,6 +57,7 @@ class DatasetManifest(BaseModel):
     dem_path: str
     dem_cellsize_m: float = Field(gt=0)
     labels: list[LabelPoint] = Field(default_factory=list)
+    labels_lonlat: list[GeoLabelPoint] = Field(default_factory=list)
     negative_ratio: float = Field(default=2.0, gt=0)
     exclusion_radius_px: int = Field(default=2, ge=0)
     seed: int = 42
@@ -79,6 +92,50 @@ def load_dem(path: Path) -> np.ndarray:
         ) from exc
     with rasterio.open(path) as dataset:
         return dataset.read(1).astype(float)
+
+
+def load_dem_bounds(path: Path) -> tuple[float, float, float, float]:
+    """Read a raster's geographic bounds as ``(west, south, east, north)``."""
+    import rasterio  # lazy: only the geographic-label path needs it
+
+    with rasterio.open(path) as dataset:
+        b = dataset.bounds
+        return (b.left, b.bottom, b.right, b.top)
+
+
+def lonlat_to_rowcol(
+    bounds: tuple[float, float, float, float],
+    shape: tuple[int, int],
+    lon: float,
+    lat: float,
+) -> tuple[int, int]:
+    """Map a geographic point to a north-up raster pixel ``(row, col)``.
+
+    Pure arithmetic (no rasterio) so it is unit-testable offline. Assumes the
+    DEM is north-up in the same CRS as the point (Copernicus GLO-30 is
+    EPSG:4326). Raises ``ValueError`` if the point falls outside ``bounds``.
+    """
+    west, south, east, north = bounds
+    height, width = shape
+    if not (west <= lon <= east and south <= lat <= north):
+        raise ValueError(f"point ({lat}, {lon}) is outside the DEM extent {bounds}")
+    col = int((lon - west) / (east - west) * width)
+    row = int((north - lat) / (north - south) * height)
+    # Clamp the far edge (lon==east / lat==south) back into range.
+    return min(row, height - 1), min(col, width - 1)
+
+
+def geographic_labels_to_pixels(
+    geo_labels: list[GeoLabelPoint],
+    bounds: tuple[float, float, float, float],
+    shape: tuple[int, int],
+) -> list[LabelPoint]:
+    """Convert geographic inventory points to pixel labels against a DEM."""
+    pixels = []
+    for point in geo_labels:
+        row, col = lonlat_to_rowcol(bounds, shape, point.lon, point.lat)
+        pixels.append(LabelPoint(row=row, col=col))
+    return pixels
 
 
 def sample_dataset(
@@ -153,11 +210,16 @@ def split(items: list[str], ratio: float = 0.8) -> tuple[list[str], list[str]]:
 
 
 def build_from_manifest(manifest: DatasetManifest) -> dict[str, np.ndarray]:
-    dem = load_dem((ROOT / manifest.dem_path).resolve())
+    dem_path = (ROOT / manifest.dem_path).resolve()
+    dem = load_dem(dem_path)
+    labels = list(manifest.labels)
+    if manifest.labels_lonlat:
+        bounds = load_dem_bounds(dem_path)
+        labels += geographic_labels_to_pixels(manifest.labels_lonlat, bounds, dem.shape)
     return sample_dataset(
         dem,
         manifest.dem_cellsize_m,
-        manifest.labels,
+        labels,
         negative_ratio=manifest.negative_ratio,
         exclusion_radius_px=manifest.exclusion_radius_px,
         seed=manifest.seed,
@@ -180,7 +242,14 @@ def prepare() -> dict[str, str | int]:
             "status": "awaiting_data",
             "manifest": manifest.name,
             "missing": manifest.dem_path,
-            "next": "download the Copernicus GLO-30 tile referenced by the manifest",
+            "next": "download the Copernicus GLO-30 tile (see ai/scripts/fetch_dem.py)",
+        }
+    if not manifest.labels and not manifest.labels_lonlat:
+        return {
+            "status": "awaiting_labels",
+            "manifest": manifest.name,
+            "next": "add a digitised landslide inventory to the manifest "
+            "(labels_lonlat: lat/lon points); open sources do not cover this AOI",
         }
     dataset = build_from_manifest(manifest)
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)

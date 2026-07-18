@@ -1,0 +1,44 @@
+# Real dataset manifest — landslide susceptibility, Mường Pồn (Điện Biên).
+#
+# Status (2026-07-18): DEM ready, INVENTORY PENDING. `prepare` returns
+# `awaiting_labels` until real positive points are added below. Open sources
+# (OSM Nominatim/Overpass, NASA COOLR) do not cover the affected hamlets of the
+# 25/07/2024 event, so labels must come from a digitised scarp inventory
+# (district report, satellite imagery, or the VIGMR/SFLP inventory via data
+# request). Record any new source in docs/compliance/oss-register.yaml first.
+
+name: muong_pon_landslide
+
+# --- Provenance ---
+source: >-
+  DEM: Copernicus GLO-30 (ESA), AWS Open Data mirror copernicus-dem-30m,
+  tiles N21/E102 + N21/E103, windowed to the Mường Pồn AOI by
+  ai/scripts/fetch_dem.py. Labels: PENDING digitised inventory.
+license: >-
+  DEM: Copernicus (free, attribution). Labels: to be recorded when the
+  inventory source is chosen.
+
+# --- DEM ---
+# Fetch with: PYTHONPATH=ai/src uv run --project ai python ai/scripts/fetch_dem.py
+# (900x900 px window, EPSG:4326, ~30 m). Raw raster is git-ignored.
+dem_path: data/raw/muong_pon_glo30.tif
+dem_cellsize_m: 30.0
+
+# --- Labels (geographic; converted to DEM pixels at prepare time) ---
+# Fill with real landslide points, e.g.:
+#   labels_lonlat:
+#     - { lat: 21.5901, lon: 103.0312 }
+#     - { lat: 21.5834, lon: 103.0489 }
+# Pixel-space labels are also accepted via `labels: [{ row: .., col: .. }]`.
+labels_lonlat: []
+
+# --- Sampling ---
+negative_ratio: 2.0        # stable pseudo-negatives per positive
+exclusion_radius_px: 2     # keep negatives away from the failure surroundings
+seed: 42
+
+notes: >-
+  M2-terrain. DEM + geographic-label pipeline are in place and tested; the
+  training run is gated on a real inventory. Affected hamlets of the 25/07/2024
+  event: Mường Pồn 1, Mường Pồn 2, Lĩnh, Tin Tốc. See ai/README.md
+  "Landslide-susceptibility PoC".
