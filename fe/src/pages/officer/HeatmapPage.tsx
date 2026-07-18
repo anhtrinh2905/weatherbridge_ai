@@ -18,7 +18,7 @@ export function OfficerHeatmapPage() {
       <PageHeader
         eyebrow="Cán bộ PCTT xã"
         title="Bản đồ nguy hiểm toàn xã"
-        description="5 cấp theo địa hình, 3–7 ngày tới. Click 1 bản để xem đóng góp đặc trưng trước khi ra quyết định cảnh báo."
+        description="5 cấp theo địa hình, 5 ngày tới. Chọn một điểm hoặc bản để xem nguy cơ và phần đóng góp trước khi ra quyết định cảnh báo."
       />
       <HeatmapPanel
         type={type}

@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import Keycloak, { type KeycloakInstance } from "keycloak-js";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { DEMO_PASSWORD } from "./demoAccounts";
+import { clearDemoSession, readDemoSession, saveDemoSession } from "./demoSession";
 
 export interface AuthUser {
   id: string;
@@ -37,17 +38,15 @@ export const keycloak = new Keycloak({
 let initialization: Promise<boolean> | undefined;
 
 function initializeKeycloak() {
+  const restoredSession = readDemoSession();
   initialization ??= keycloak
     .init({
+      ...(restoredSession ? { token: restoredSession.accessToken, refreshToken: restoredSession.refreshToken, idToken: restoredSession.idToken } : {}),
       pkceMethod: "S256",
       checkLoginIframe: false,
     })
     .catch(() => false);
   return initialization;
-}
-
-function hasAuthCallback() {
-  return /(?:^|[&#])(code|error|state)=/.test(window.location.hash);
 }
 
 /** Minimal base64url JWT payload decode — avoids adding a jwt-decode dependency for this one path. */
@@ -115,21 +114,20 @@ function mapUser(): AuthUser | null {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const location = useLocation();
   const navigate = useNavigate();
   const [initialized, setInitialized] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    if (location.pathname !== "/workspace" && !hasAuthCallback()) return;
-
     let mounted = true;
     keycloak.onTokenExpired = async () => {
       try {
         await keycloak.updateToken(30);
+        saveDemoSession({ accessToken: keycloak.token ?? "", refreshToken: keycloak.refreshToken ?? "", idToken: keycloak.idToken ?? "" });
         if (mounted) setUser(mapUser());
       } catch {
+        clearDemoSession();
         if (mounted) {
           setAuthenticated(false);
           setUser(null);
@@ -139,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void initializeKeycloak()
       .then((isAuthenticated) => {
         if (!mounted) return;
+        if (!isAuthenticated) clearDemoSession();
         setAuthenticated(isAuthenticated);
         setUser(isAuthenticated ? mapUser() : null);
         setInitialized(true);
@@ -149,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       mounted = false;
     };
-  }, [location.pathname]);
+  }, []);
 
   const value: AuthContextValue = {
     keycloak,
@@ -162,6 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     loginAsDemo: async (username: string) => {
       const tokens = await fetchDemoTokens(username);
+      saveDemoSession({ accessToken: tokens.access_token, refreshToken: tokens.refresh_token, idToken: tokens.id_token });
 
       if (keycloak.didInitialize) {
         keycloak.token = tokens.access_token;
@@ -174,11 +174,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .init({
             token: tokens.access_token,
             refreshToken: tokens.refresh_token,
-            idToken: tokens.id_token,
+          idToken: tokens.id_token,
             pkceMethod: "S256",
             checkLoginIframe: false,
-          })
-          .catch(() => false);
+        })
+          .catch(() => {
+            clearDemoSession();
+            return false;
+          });
         await initialization;
       }
 
@@ -195,6 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await keycloak.login({ action: "UPDATE_PASSWORD", redirectUri: window.location.href });
     },
     logout: async () => {
+      clearDemoSession();
       await initializeKeycloak();
       await keycloak.logout({ redirectUri: window.location.origin });
     },
