@@ -44,7 +44,7 @@ class ForecastService:
             latitude=snapshot.latitude,
             longitude=snapshot.longitude,
             source=snapshot.source,
-            days=[ForecastDay(**day) for day in snapshot.days],
+            days=[ForecastDay.model_validate(day) for day in snapshot.days],
             fetched_at=snapshot.fetched_at,
         )
 

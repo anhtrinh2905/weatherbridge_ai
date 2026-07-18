@@ -28,6 +28,12 @@ interface ViewportState {
   viewport: Viewport;
 }
 
+export interface RasterMapMarker {
+  id: string;
+  point: RasterPoint;
+  label: string;
+}
+
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
 }
@@ -55,6 +61,7 @@ export function RasterHazardMap({
   showVillageMarkers = true,
   focusPoint,
   focusRequest = 0,
+  markers = [],
   className,
 }: {
   layer: RasterLayer;
@@ -65,6 +72,7 @@ export function RasterHazardMap({
   showVillageMarkers?: boolean;
   focusPoint?: RasterPoint | null;
   focusRequest?: number;
+  markers?: RasterMapMarker[];
   className?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -117,7 +125,13 @@ export function RasterHazardMap({
     const zoom = 2;
     const pointX = (focusPoint.x / RASTER_W) * rect.width;
     const pointY = (focusPoint.y / RASTER_H) * rect.height;
-    setViewport(clampViewport({ zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom }, rect.width, rect.height));
+    setViewport(
+      clampViewport(
+        { zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom },
+        rect.width,
+        rect.height,
+      ),
+    );
   }, [focusPoint, focusRequest]);
 
   const containerRect = () => containerRef.current?.getBoundingClientRect() ?? null;
@@ -239,6 +253,20 @@ export function RasterHazardMap({
         />
         {showVillageMarkers && RASTER_VILLAGES.map(({ village, point, located }) => (
           <button key={village.id} type="button" disabled={!located} onClick={() => onSelect(point, village.id)} title={located ? village.name : `${village.name}: chưa định vị trong ranh giới raster`} className={cn("absolute -translate-x-1/2 -translate-y-1/2 text-left text-[0.62rem] font-semibold text-white [text-shadow:0_1px_2px_rgb(0_0_0_/_90%)]", located ? "cursor-pointer" : "cursor-not-allowed opacity-40")} style={{ left: `${(point.x / RASTER_W) * 100}%`, top: `${(point.y / RASTER_H) * 100}%` }}><span className={cn("mx-auto block size-2.5 rounded-full border border-white", selectedVillageId === village.id ? "bg-accent ring-2 ring-white" : "bg-black/70")} /><span className="mt-0.5 block whitespace-nowrap">{village.name}</span></button>
+        ))}
+        {markers.map((marker) => (
+          <span
+            key={marker.id}
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+            style={{ left: `${(marker.point.x / RASTER_W) * 100}%`, top: `${(marker.point.y / RASTER_H) * 100}%` }}
+            title={marker.label}
+            aria-label={marker.label}
+          >
+            <span className="block size-5 rounded-full border-2 border-white bg-danger shadow-[0_0_0_3px_rgba(0,0,0,0.55),0_0_18px_rgba(242,107,107,0.9)]" />
+            <span className="absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded bg-black/75 px-2 py-0.5 text-[0.62rem] font-semibold text-white">
+              {marker.label}
+            </span>
+          </span>
         ))}
         {selected && <span className="pointer-events-none absolute size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(0,0,0,0.65)]" style={{ left: `${(selected.x / RASTER_W) * 100}%`, top: `${(selected.y / RASTER_H) * 100}%` }} />}
         <span className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-lg leading-none text-black [text-shadow:0_0_3px_rgba(255,255,255,0.9)]" style={{ left: `${EVENT_MARKER.x * 100}%`, top: `${EVENT_MARKER.y * 100}%` }} aria-hidden="true">▼</span>

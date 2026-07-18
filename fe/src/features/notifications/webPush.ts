@@ -4,14 +4,13 @@ type PushConfig = {
   public_key: string;
 };
 
-type TestPushResponse = {
-  attempted: number;
-  sent: number;
+type PushSubscriptionResponse = {
+  id: string;
+  is_active: boolean;
+  last_seen_at: string;
 };
 
-type PushSubscriptionResponse = {
-  subscription_count: number;
-};
+const CONTACT_ID_STORAGE_KEY = "wba:web-push-contact-id";
 
 export type WebPushEnvironment = {
   isIos: boolean;
@@ -27,9 +26,7 @@ function base64UrlToArrayBuffer(value: string): ArrayBuffer {
   const base64 = `${value}${padding}`.replace(/-/g, "+").replace(/_/g, "/");
   const raw = window.atob(base64);
   const output = new Uint8Array(raw.length);
-  for (let index = 0; index < raw.length; index += 1) {
-    output[index] = raw.charCodeAt(index);
-  }
+  for (let index = 0; index < raw.length; index += 1) output[index] = raw.charCodeAt(index);
   return output.buffer;
 }
 
@@ -57,7 +54,7 @@ export function getWebPushEnvironment(): WebPushEnvironment {
   if (!window.isSecureContext) {
     guidance = "Thông báo cần HTTPS. Trên điện thoại hãy mở bằng link HTTPS, không dùng IP LAN hoặc http.";
   } else if (ios && !standalone) {
-    guidance = "iPhone/iPad: mở bằng Safari, bấm Chia sẻ > Thêm vào Màn hình chính, rồi mở icon Weather Bridge AI để bật thông báo.";
+    guidance = "iPhone/iPad: mở bằng Safari, bấm Chia sẻ > Thêm vào Màn hình chính, rồi mở Weather Bridge AI từ icon đó.";
   } else if (!hasApis) {
     guidance = android
       ? "Trình duyệt Android này chưa hỗ trợ Web Push. Hãy thử Chrome bản mới hoặc mở link bằng Chrome đầy đủ."
@@ -68,74 +65,40 @@ export function getWebPushEnvironment(): WebPushEnvironment {
     guidance = "iPhone/iPad PWA: có thể bật thông báo sau khi mở từ icon trên màn hình chính.";
   }
 
-  return {
-    isIos: ios,
-    isAndroid: android,
-    isStandalone: standalone,
-    isSecureContext: window.isSecureContext,
-    canAttempt,
-    guidance,
-  };
+  return { isIos: ios, isAndroid: android, isStandalone: standalone, isSecureContext: window.isSecureContext, canAttempt, guidance };
 }
 
 function assertWebPushSupport() {
   const environment = getWebPushEnvironment();
-  if (!environment.isSecureContext) throw new Error("Thông báo cần HTTPS. Hãy mở bằng link HTTPS, không dùng IP LAN hoặc http.");
-  if (environment.isIos && !environment.isStandalone) {
-    throw new Error("iPhone/iPad chỉ nhận Web Push khi mở app từ màn hình chính. Trong Safari bấm Chia sẻ > Thêm vào Màn hình chính, rồi mở icon Weather Bridge AI.");
-  }
-  if (!("serviceWorker" in navigator)) throw new Error("Trình duyệt chưa hỗ trợ service worker.");
-  if (!("PushManager" in window)) throw new Error("Trình duyệt chưa hỗ trợ Web Push.");
-  if (!("Notification" in window)) throw new Error("Trình duyệt chưa hỗ trợ thông báo.");
+  if (!environment.canAttempt) throw new Error(environment.guidance);
 }
 
-export async function enableWebPush() {
+export async function enableWebPush(): Promise<PushSubscriptionResponse> {
   assertWebPushSupport();
-
+  const { public_key: publicKey } = await apiClient.get<PushConfig>("/notifications/web-push/config");
   const permission = await Notification.requestPermission();
   if (permission !== "granted") throw new Error("Bạn chưa cấp quyền nhận thông báo.");
 
-  const { public_key: publicKey } = await apiClient.get<PushConfig>("/notifications/web-push/config");
-  const registrations = await navigator.serviceWorker.getRegistrations();
-  await Promise.all(
-    registrations
-      .filter((item) => item.active?.scriptURL.endsWith("/web-push-sw.js"))
-      .map((item) => item.unregister()),
-  );
-
-  let registration: ServiceWorkerRegistration;
-  try {
-    registration = await navigator.serviceWorker.register("/web-push-sw.js", {
-      updateViaCache: "none",
+  const registration = await navigator.serviceWorker.register("/web-push-sw.js", { updateViaCache: "none" });
+  await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.getSubscription()
+    ?? await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64UrlToArrayBuffer(publicKey),
     });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (message.toLowerCase().includes("storage error")) {
-      throw new Error("Chrome đang lỗi storage service worker. Hãy xóa dữ liệu site này rồi bật thông báo lại.", {
-        cause: error,
-      });
-    }
-    throw error;
-  }
-
-  const existing = await registration.pushManager.getSubscription();
-  if (existing) await existing.unsubscribe();
-
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: base64UrlToArrayBuffer(publicKey),
-  });
-
-  return apiClient.post<PushSubscriptionResponse>(
+  const result = await apiClient.post<PushSubscriptionResponse>(
     "/notifications/web-push/subscriptions",
     subscription.toJSON(),
   );
+  localStorage.setItem(CONTACT_ID_STORAGE_KEY, result.id);
+  return result;
 }
 
-export async function sendTestWebPush(): Promise<TestPushResponse> {
-  return apiClient.post<TestPushResponse>("/notifications/web-push/test", {
-    title: "Weather Bridge AI",
-    body: "Đây là thông báo thử từ hệ thống cảnh báo.",
-    url: "/resident",
-  });
+export async function disableWebPush() {
+  const registration = await navigator.serviceWorker.getRegistration("/");
+  const subscription = await registration?.pushManager.getSubscription();
+  if (subscription) await subscription.unsubscribe();
+  const contactId = localStorage.getItem(CONTACT_ID_STORAGE_KEY);
+  if (contactId) await apiClient.delete<void>(`/notifications/web-push/subscriptions/${contactId}`);
+  localStorage.removeItem(CONTACT_ID_STORAGE_KEY);
 }

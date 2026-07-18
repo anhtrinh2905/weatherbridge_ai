@@ -26,6 +26,13 @@ spec:
                 name: app-config
             - secretRef:
                 name: app-secret
+          env:
+            - name: WEB_PUSH_VAPID_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: web-push-secret
+                  key: WEB_PUSH_VAPID_PRIVATE_KEY
+                  optional: true
           resources:
             requests:
               cpu: 100m

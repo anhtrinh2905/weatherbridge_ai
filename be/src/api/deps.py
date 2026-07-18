@@ -6,6 +6,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ai.forecast import OpenMeteoService
+from ai.speech.mms_service import MmsTtsService
 from ai.translation.gemini_service import GeminiTranslateService
 from auth.keycloak import CurrentUser, KeycloakVerifier
 from auth.keycloak_admin import KeycloakAdminClient
@@ -99,14 +100,19 @@ async def get_hazard_archive_service(
 
 async def get_admin_user_service(
     client: KeycloakAdminClient = Depends(get_keycloak_admin_client),
+    session: AsyncSession = Depends(get_db),
 ) -> AsyncIterator[AdminUserService]:
-    yield AdminUserService(client)
+    yield AdminUserService(client, session)
 
 
 def get_gemini_translate_service(
     settings: Settings = Depends(get_settings),
 ) -> GeminiTranslateService:
     return GeminiTranslateService(settings)
+
+
+def get_mms_tts_service(settings: Settings = Depends(get_settings)) -> MmsTtsService:
+    return MmsTtsService(settings)
 
 
 async def get_translation_cache_service(

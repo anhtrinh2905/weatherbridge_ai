@@ -161,7 +161,7 @@ export function VillageHeadResidentsPage() {
               key={resident.id}
               resident={resident}
               status={getStatus(resident.id)}
-              onOpenMap={() => navigate("/village-head/map")}
+              onOpenMap={() => navigate(`/village-head/map?resident=${encodeURIComponent(resident.id)}`)}
               onMarkVisited={() => markVisited(resident.id)}
             />
           ))}

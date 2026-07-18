@@ -1,5 +1,17 @@
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AlertTriangle, CheckCircle2, Clock3, HelpCircle, MapPinned, UsersRound, type LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock3,
+  HelpCircle,
+  MapPinned,
+  Radio,
+  Square,
+  UsersRound,
+  Volume2,
+  type LucideIcon,
+} from "lucide-react";
 import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { useAuth } from "../../features/auth/hooks";
 import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
@@ -18,7 +30,7 @@ import {
 import { useTranslation } from "../../shared/i18n/I18nProvider";
 import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
-import type { ResidentSim } from "../../shared/domain/types";
+import type { Alert, ResidentSim } from "../../shared/domain/types";
 
 function StatCard({
   icon: Icon,
@@ -71,6 +83,97 @@ function ResidentRow({ resident, visited }: { resident: ResidentSim; visited: bo
         {visited ? t("villageHead.overview.visited") : t("villageHead.overview.needsVisit")}
       </span>
     </li>
+  );
+}
+
+function VillageBroadcastPanel({ alert }: { alert: Alert | undefined }) {
+  const { t } = useTranslation();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const isGoNow = alert?.tier === "go_now";
+  const audioSrc = alert ? `/audio/alerts/${isGoNow ? "go-now-vi-hmn.mp3" : "prepare-vi-hmn.mp3"}` : null;
+
+  useEffect(() => {
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, []);
+
+  const play = async () => {
+    if (!audioSrc) return;
+    setError(null);
+    audioRef.current?.pause();
+    const audio = new Audio(audioSrc);
+    audioRef.current = audio;
+    audio.onended = () => setIsPlaying(false);
+    audio.onerror = () => {
+      setIsPlaying(false);
+      setError(t("villageHead.broadcast.missingAudio"));
+    };
+    try {
+      setIsPlaying(true);
+      await audio.play();
+    } catch {
+      setIsPlaying(false);
+      setError(t("villageHead.broadcast.playFailed"));
+    }
+  };
+
+  const stop = () => {
+    audioRef.current?.pause();
+    if (audioRef.current) audioRef.current.currentTime = 0;
+    setIsPlaying(false);
+  };
+
+  if (!alert) {
+    return (
+      <Card className="rounded-lg">
+        <div className="flex items-center gap-3">
+          <Radio className="text-muted" size={22} aria-hidden />
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("villageHead.broadcast.title")}</p>
+            <p className="mt-1 text-sm text-muted">{t("villageHead.broadcast.inactive")}</p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={cn("rounded-lg border-2", isGoNow ? "border-danger bg-danger/10" : "border-accent bg-accent/10")}>
+      <div className="flex items-start gap-3">
+        <Radio className={isGoNow ? "text-danger" : "text-accent"} size={24} aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("villageHead.broadcast.title")}</p>
+          <h2 className="mt-1 text-lg font-semibold text-fg-strong">
+            {isGoNow ? t("villageHead.broadcast.goNowTitle") : t("villageHead.broadcast.prepareTitle")}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            {isGoNow ? t("villageHead.broadcast.goNowDescription") : t("villageHead.broadcast.prepareDescription")}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button
+              variant={isGoNow ? "danger" : "primary"}
+              className="min-h-10 rounded-lg px-4"
+              onClick={play}
+              disabled={isPlaying}
+            >
+              <Volume2 size={16} /> {isGoNow ? t("villageHead.broadcast.playGoNow") : t("villageHead.broadcast.playPrepare")}
+            </Button>
+            {isPlaying && (
+              <Button variant="secondary" className="min-h-10 rounded-lg px-4" onClick={stop}>
+                <Square size={14} /> {t("villageHead.broadcast.stop")}
+              </Button>
+            )}
+          </div>
+          <p className="mt-3 text-xs text-muted-2">
+            {t("villageHead.broadcast.assetHint", { file: audioSrc ?? "" })}
+          </p>
+          {error && <p className="mt-2 text-xs font-semibold text-danger">{error}</p>}
+        </div>
+      </div>
+    </Card>
   );
 }
 
@@ -155,6 +258,8 @@ export function VillageHeadOverviewPage() {
         </div>
 
         <aside className="space-y-4">
+          <VillageBroadcastPanel alert={alert} />
+
           <Card className="rounded-lg">
             <div className="flex items-start justify-between gap-3">
               <div>

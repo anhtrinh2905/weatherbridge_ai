@@ -13,7 +13,7 @@ class AiJobResponse(BaseModel):
     id: UUID
     task: str
     status: str
-    result: dict | None = None
+    result: dict[str, object] | None = None
     error: str | None = None
     created_at: datetime
     updated_at: datetime
