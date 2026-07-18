@@ -13,8 +13,8 @@ function ScenarioVisual({ tab }: { tab: ScenarioTab }) {
   return (
     <div className="signal-panel signal-panel--compact">
       <div className="flex items-center justify-between gap-4">
-        <span className="signal-label">{tab.label}</span>
-        <span className="signal-live">{tab.elevation}</span>
+        <span className="signal-label min-w-0 truncate">{tab.label}</span>
+        <span className="signal-live shrink-0">{tab.elevation}</span>
       </div>
       <div className="mt-8">
         <p className="signal-label">{tab.hazard}</p>

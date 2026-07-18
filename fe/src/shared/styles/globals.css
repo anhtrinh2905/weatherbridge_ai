@@ -654,7 +654,7 @@ button {
 .section-kicker {
   align-items: center;
   display: inline-flex;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.18em;

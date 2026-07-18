@@ -1,12 +1,25 @@
-import { ArrowRight, KeyRound, ShieldCheck } from "lucide-react";
+import { ArrowRight, Radar, ShieldCheck, UserRound, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/hooks";
 import { DEMO_ACCOUNTS } from "../../features/auth/demoAccounts";
-import { ROLE_LABELS } from "../../shared/domain/labels";
-import { AuthLayout } from "../../shared/ui/AuthLayout";
 import { Button } from "../../shared/ui/Button";
+import { Logo } from "../../shared/ui/Logo";
+import type { Role } from "../../shared/domain/types";
 
+const ROLE_ICON: Record<Role, typeof ShieldCheck> = {
+  admin: ShieldCheck,
+  commune_officer: Radar,
+  village_head: Users,
+  resident: UserRound,
+};
+
+/**
+ * Deliberately its own centered layout, not <AuthLayout /> — that component's left marketing
+ * rail (landing-style hero copy + SignalPanel) is meant to sell real accounts on /register; on
+ * /login the point is picking a demo role fast, so a second copy of the landing pitch was dead
+ * weight, not a focal point. Real Keycloak login/registration still exist below the role picker.
+ */
 export function LoginPage() {
   const navigate = useNavigate();
   const { authenticated, login, loginAsDemo } = useAuth();
@@ -29,39 +42,62 @@ export function LoginPage() {
   };
 
   return (
-    <AuthLayout eyebrow="Đăng nhập" title="Vào trung tâm cảnh báo" description="Thông tin đăng nhập được Keycloak bảo vệ. Weather Bridge AI chỉ nhận danh tính đã xác thực để cấp đúng quyền truy cập.">
-      <div className="space-y-5">
-        <div className="rounded-2xl border border-accent/30 bg-accent/5 p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-accent">Bản demo — chọn nhanh 1 trong 4 vai</p>
-          <p className="mt-1 text-xs leading-5 text-muted">Bấm 1 thẻ để vào ngay UI của vai đó, không cần nhập gì thêm.</p>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {DEMO_ACCOUNTS.map((account) => (
+    <main className="grid min-h-screen place-items-center bg-canvas px-4 py-10 text-fg">
+      <div className="w-full max-w-lg">
+        <div className="flex items-center justify-between">
+          <Logo />
+          <Link to="/" className="text-sm text-muted transition hover:text-fg">
+            Về trang chủ
+          </Link>
+        </div>
+
+        <div className="mt-10 text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-fg-strong">Đăng nhập</h1>
+          <p className="mt-2 text-lg font-semibold text-fg">Chọn vai để vào trung tâm cảnh báo</p>
+          <p className="mt-2 text-sm leading-6 text-muted">Bấm 1 vai demo bên dưới để vào ngay — không cần nhập mật khẩu.</p>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {DEMO_ACCOUNTS.map((account) => {
+            const Icon = ROLE_ICON[account.role];
+            const isPending = pending === account.username;
+            return (
               <button
                 key={account.username}
                 type="button"
                 disabled={pending !== null}
                 onClick={() => void handleDemoClick(account.username)}
-                className="flex min-h-16 flex-col items-start justify-center gap-0.5 rounded-xl border border-border-strong bg-surface-2 px-3 py-2 text-left transition hover:border-accent hover:bg-accent/10 disabled:opacity-50"
+                className="flex min-h-[4.5rem] w-full min-w-0 items-center gap-3 rounded-2xl border border-border-strong bg-surface-2 px-4 py-3 text-left transition hover:border-accent hover:bg-accent/10 disabled:opacity-50"
               >
-                <span className="text-sm font-semibold text-fg-strong">
-                  {pending === account.username ? "Đang vào..." : ROLE_LABELS[account.role]}
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent">
+                  <Icon size={18} />
                 </span>
-                <span className="truncate text-[11px] text-muted-2">{account.username}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-fg-strong">
+                    {isPending ? "Đang vào..." : account.label}
+                  </span>
+                  <span className="block truncate text-xs text-muted-2">{account.username}</span>
+                </span>
               </button>
-            ))}
-          </div>
-          {error && <p className="mt-2 text-xs text-danger">Không đăng nhập được — thử lại.</p>}
+            );
+          })}
+        </div>
+        {error && <p className="mt-3 text-center text-xs text-danger">Không đăng nhập được — thử lại.</p>}
+
+        <div className="mt-8 flex items-center gap-3 text-xs text-muted-2" aria-hidden="true">
+          <div className="h-px flex-1 bg-border-soft" />
+          hoặc
+          <div className="h-px flex-1 bg-border-soft" />
         </div>
 
-        <div className="rounded-2xl border border-border bg-surface-2 p-5">
-          <div className="flex items-start gap-4"><div className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent"><KeyRound size={19} /></div><div><p className="font-semibold text-fg-strong">Chuyển giao định danh an toàn</p><p className="mt-1 text-sm leading-6 text-muted">Tiếp tục tới màn hình đăng nhập Weather Bridge AI. Mật khẩu, xác minh email và khôi phục tài khoản đều do Keycloak quản lý.</p></div></div>
-        </div>
-        <Button variant="secondary" className="w-full" onClick={() => void login()}>
+        <Button variant="secondary" className="mt-6 w-full" onClick={() => void login()}>
           Đăng nhập tài khoản khác <ArrowRight size={16} />
         </Button>
-        <p className="flex items-center justify-center gap-2 font-mono text-xs text-muted-2"><ShieldCheck size={14} className="text-positive" /> OIDC Authorization Code + PKCE</p>
-        <p className="text-center text-sm text-muted">Tiếp tục bằng tài khoản được cấp trong hệ thống.</p>
+        <p className="mt-4 text-center text-xs leading-5 text-muted-2">
+          Tài khoản demo dùng chung mật khẩu. "Đăng nhập tài khoản khác" đi qua OIDC Authorization
+          Code + PKCE thật của Keycloak.
+        </p>
       </div>
-    </AuthLayout>
+    </main>
   );
 }

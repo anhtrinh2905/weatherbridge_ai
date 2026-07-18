@@ -53,7 +53,7 @@ export function DashboardLayout({
   const groups: SidebarSection[] = sections ?? (items ? [{ items }] : []);
 
   return (
-    <div className="flex min-h-screen bg-canvas text-fg">
+    <div className="flex h-screen overflow-hidden bg-canvas text-fg">
       <aside className="flex w-64 shrink-0 flex-col border-r border-border-soft bg-surface">
         <div className="px-5 py-6">
           <Logo />
