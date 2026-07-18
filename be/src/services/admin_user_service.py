@@ -1,12 +1,13 @@
 from typing import Any, Protocol
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from core.errors import AppError
 from core.time import utc_now
 from database.domain_models import UserAreaAssignment, UserProfile
 from database.models import GeoLocation
 from modules.admin.schemas import DOMAIN_ROLES, AdminUserResponse
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # Priority order when a user (wrongly) holds more than one domain role — the
 # broadest scope wins, mirroring the frontend ROLE_PRIORITY.

@@ -1,20 +1,20 @@
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, Response, status
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.deps import get_current_user
 from auth.keycloak import CurrentUser
 from core.config import Settings, get_settings
 from database.session import get_db
-from fastapi import APIRouter, Depends, Response, status
 from modules.residents.schemas import (
     ConsentResponse,
     SubscriptionCreateRequest,
     SubscriptionResponse,
     SubscriptionUpdateRequest,
 )
-from pydantic import BaseModel, Field
 from services.resident_service import ResidentService
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.deps import get_current_user
 
 router = APIRouter()
 

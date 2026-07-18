@@ -1,6 +1,9 @@
 from datetime import date
 from uuid import UUID
 
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from auth.keycloak import CurrentUser
 from core.config import Settings
 from core.errors import AppError
@@ -40,9 +43,6 @@ from modules.residents.schemas import (
     SubscriptionUpdateRequest,
     SupportNeedRequest,
 )
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.profile_service import AccessContext, ProfileService
 
 

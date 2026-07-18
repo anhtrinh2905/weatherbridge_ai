@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 
 import httpx
-from core.config import Settings
 
 from ai.translation.exceptions import (
     TranslationConfigError,
@@ -11,6 +10,7 @@ from ai.translation.exceptions import (
     TranslationTransportError,
 )
 from ai.translation.models import TranslationRequest, TranslationResponse
+from core.config import Settings
 
 _CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions"
 

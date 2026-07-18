@@ -4,6 +4,7 @@ import json
 
 import httpx
 import pytest
+
 from ai.translation.exceptions import (
     TranslationConfigError,
     TranslationHTTPError,

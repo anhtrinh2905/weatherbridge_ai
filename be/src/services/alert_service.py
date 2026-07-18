@@ -3,6 +3,9 @@ from datetime import UTC, datetime, time
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from auth.keycloak import CurrentUser
 from core.errors import AppError
 from core.time import utc_now
@@ -29,9 +32,6 @@ from modules.alerts.schemas import (
     DeliverySummaryItem,
     PublishAlertResponse,
 )
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.profile_service import AccessContext, ProfileService
 
 

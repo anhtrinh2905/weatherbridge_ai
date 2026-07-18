@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from auth.keycloak import CurrentUser
 from core.errors import AppError
 from core.time import utc_now
 from database.domain_models import Resident, UserAreaAssignment, UserProfile
 from database.models import GeoLocation
 from modules.profiles.schemas import ProfileResponse
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 ROLE_PRIORITY = ("admin", "commune_officer", "village_head", "resident", "expert")
 

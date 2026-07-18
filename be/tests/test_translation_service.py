@@ -5,12 +5,13 @@ from pathlib import Path
 
 import httpx
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+
 from ai.translation.exceptions import TranslationConfigError, TranslationHTTPError
 from ai.translation.models import TranslationRequest
 from ai.translation.service import GoogleTranslateService
 from core.config import Settings
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
 
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 

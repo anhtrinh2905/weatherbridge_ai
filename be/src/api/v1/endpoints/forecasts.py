@@ -1,9 +1,9 @@
-from auth.keycloak import CurrentUser
 from fastapi import APIRouter, Depends, status
-from modules.forecasts.schemas import ForecastRefreshResponse, ForecastSnapshotResponse
-from services.forecast_service import ForecastService
 
 from api.deps import get_current_user, get_forecast_service
+from auth.keycloak import CurrentUser
+from modules.forecasts.schemas import ForecastRefreshResponse, ForecastSnapshotResponse
+from services.forecast_service import ForecastService
 
 router = APIRouter()
 

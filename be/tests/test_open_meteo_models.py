@@ -1,6 +1,8 @@
 from datetime import date, timedelta
 
 import pytest
+from pydantic import ValidationError
+
 from ai.forecast.models import (
     ElevationRequest,
     EnsembleRequest,
@@ -8,7 +10,6 @@ from ai.forecast.models import (
     ForecastRequest,
     HistoricalWeatherRequest,
 )
-from pydantic import ValidationError
 
 
 def test_ensemble_requires_models_and_hourly_variables() -> None:

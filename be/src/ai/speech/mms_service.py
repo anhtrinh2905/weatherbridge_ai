@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
-from core.config import Settings
-
 from ai.speech.models import SpeechSynthesisRequest, SpeechSynthesisResult
+from core.config import Settings
 
 
 class SpeechConfigError(RuntimeError):

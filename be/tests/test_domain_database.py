@@ -5,6 +5,10 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import pytest
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.deps import get_current_user
 from auth.keycloak import CurrentUser
 from core.config import Settings, get_settings
@@ -21,11 +25,8 @@ from database.domain_models import (
 )
 from database.models import GeoLocation
 from database.session import get_db
-from httpx import ASGITransport, AsyncClient
 from main import create_app
 from services.hazard_service import HazardService
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 def _area(code: str, name: str, parent_id=None) -> GeoLocation:

@@ -5,9 +5,10 @@ from typing import Any, cast
 
 import httpx
 import jwt
+from jwt.algorithms import RSAAlgorithm
+
 from core.config import Settings
 from core.errors import AppError
-from jwt.algorithms import RSAAlgorithm
 
 
 @dataclass(frozen=True)

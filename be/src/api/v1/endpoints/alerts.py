@@ -1,8 +1,11 @@
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.deps import get_current_user
 from auth.keycloak import CurrentUser
 from database.session import get_db
-from fastapi import APIRouter, Depends, status
 from modules.alerts.schemas import (
     AcknowledgeAlertRequest,
     AlertCreateRequest,
@@ -12,9 +15,6 @@ from modules.alerts.schemas import (
     PublishAlertResponse,
 )
 from services.alert_service import AlertService
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.deps import get_current_user
 
 router = APIRouter()
 

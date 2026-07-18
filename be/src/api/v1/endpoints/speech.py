@@ -1,11 +1,11 @@
-from ai.speech.mms_service import MmsTtsService, SpeechConfigError
-from ai.speech.models import SpeechSynthesisRequest
-from auth.keycloak import CurrentUser
-from core.errors import AppError
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
+from ai.speech.mms_service import MmsTtsService, SpeechConfigError
+from ai.speech.models import SpeechSynthesisRequest
 from api.deps import get_current_user, get_mms_tts_service
+from auth.keycloak import CurrentUser
+from core.errors import AppError
 
 router = APIRouter()
 

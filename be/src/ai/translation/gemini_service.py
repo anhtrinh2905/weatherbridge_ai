@@ -9,7 +9,6 @@ from typing import Any
 
 import httpx
 import jwt
-from core.config import Settings
 
 from ai.translation.exceptions import (
     TranslationConfigError,
@@ -17,6 +16,7 @@ from ai.translation.exceptions import (
     TranslationTransportError,
 )
 from ai.translation.models import TranslationRequest, TranslationResponse
+from core.config import Settings
 
 _SCOPE = "https://www.googleapis.com/auth/cloud-platform"
 _TOKEN_TTL_SECONDS = 3600

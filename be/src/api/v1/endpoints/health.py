@@ -1,10 +1,10 @@
-from database.session import get_db
 from fastapi import APIRouter, Depends, HTTPException, status
 from redis.asyncio import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.deps import get_redis
+from database.session import get_db
 
 router = APIRouter()
 

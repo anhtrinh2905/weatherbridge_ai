@@ -1,15 +1,15 @@
+from fastapi import APIRouter, Depends
+
 from ai.translation.exceptions import (
     TranslationConfigError,
     TranslationHTTPError,
     TranslationTransportError,
 )
 from ai.translation.models import TranslationRequest, TranslationResponse
+from api.deps import get_current_user, get_translation_cache_service
 from auth.keycloak import CurrentUser
 from core.errors import AppError
-from fastapi import APIRouter, Depends
 from services.translation_service import TranslationCacheService
-
-from api.deps import get_current_user, get_translation_cache_service
 
 router = APIRouter()
 

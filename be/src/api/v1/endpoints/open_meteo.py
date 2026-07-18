@@ -1,6 +1,8 @@
 from collections.abc import Awaitable
 from typing import Any
 
+from fastapi import APIRouter, Depends
+
 from ai.forecast import OpenMeteoService
 from ai.forecast.exceptions import (
     OpenMeteoHTTPError,
@@ -17,11 +19,9 @@ from ai.forecast.models import (
     HistoricalWeatherRequest,
     PreviousRunRequest,
 )
+from api.deps import get_current_user, get_open_meteo_service
 from auth.keycloak import CurrentUser
 from core.errors import AppError
-from fastapi import APIRouter, Depends
-
-from api.deps import get_current_user, get_open_meteo_service
 
 router = APIRouter()
 

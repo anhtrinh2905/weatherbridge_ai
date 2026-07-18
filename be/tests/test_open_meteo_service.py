@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import httpx
 import pytest
+
 from ai.forecast.exceptions import (
     OpenMeteoHTTPError,
     OpenMeteoPayloadError,

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import hashlib
 
+from redis.asyncio import Redis
+
 from ai.translation.gemini_service import GeminiTranslateService
 from ai.translation.models import TranslationRequest, TranslationResponse
-from redis.asyncio import Redis
 
 _CACHE_TTL_SECONDS = 60 * 60 * 24 * 30  # 30 days — content-hash keyed, never goes stale
 _CACHE_PREFIX = "translate"

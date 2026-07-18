@@ -1,5 +1,7 @@
-from auth.keycloak import CurrentUser
 from fastapi import APIRouter, Depends, Query, status
+
+from api.deps import get_ai_job_service, get_current_user, get_hazard_archive_service, require_admin
+from auth.keycloak import CurrentUser
 from modules.ai_jobs.schemas import AiJobResponse
 from modules.hazard_archive.schemas import (
     ArchiveCoverageResponse,
@@ -9,8 +11,6 @@ from modules.hazard_archive.schemas import (
 )
 from services.ai_job_service import AiJobService
 from services.hazard_archive_service import HazardArchiveService
-
-from api.deps import get_ai_job_service, get_current_user, get_hazard_archive_service, require_admin
 
 router = APIRouter(dependencies=[Depends(require_admin)])
 

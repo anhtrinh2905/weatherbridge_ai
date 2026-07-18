@@ -1,8 +1,9 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from database.models import ForecastSnapshot
 from httpx import AsyncClient
+
+from database.models import ForecastSnapshot
 
 
 async def test_latest_returns_404_before_first_ingest(client: AsyncClient) -> None:
