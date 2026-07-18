@@ -1,8 +1,10 @@
+import { getOccupationRecommendation } from "./recommendations";
 import type {
   Alert,
   HazardDayLevel,
   HazardRunSummary,
   HazardType,
+  Occupation,
   ResidentSim,
   ThresholdConfig,
   Tier,
@@ -54,7 +56,8 @@ interface RawResident {
 // Sampled from the real generated data/samples/households_muong_pon_sample.json (45 of 200
 // households, ~5 per village, kept in the resident's original village + coordinates).
 const RAW_RESIDENTS: RawResident[] = [
-  { id: "HH-MUONGPON1-010", fullName: "Quàng Thị Liên", age: 45, occupation: "nong_dan", priority: "vulnerable", vulnerabilityReason: ["mu_chu"], villageName: "Mường Pồn 1", lat: 21.596479, lon: 103.025285 },
+  // Demo resident login (dan@… → village_id muong-pon-1) maps to this UJ-1 farmer persona.
+  { id: "HH-MUONGPON1-010", fullName: "Vàng A Quàng", age: 52, occupation: "nong_dan", priority: "vulnerable", vulnerabilityReason: ["mu_chu"], villageName: "Mường Pồn 1", lat: 21.596479, lon: 103.025285 },
   { id: "HH-MUONGPON1-028", fullName: "Thào Thị Chá", age: 62, occupation: "nong_dan", priority: "vulnerable", vulnerabilityReason: ["mu_chu", "sat_vung_nguy_co"], villageName: "Mường Pồn 1", lat: 21.585509, lon: 103.021049 },
   { id: "HH-MUONGPON1-003", fullName: "Nguyễn Văn Cường", age: 51, occupation: "chan_nuoi", priority: "normal", vulnerabilityReason: [], villageName: "Mường Pồn 1", lat: 21.587251, lon: 103.019041 },
   { id: "HH-MUONGPON1-013", fullName: "Sùng Thị Máy", age: 38, occupation: "tai_xe", priority: "normal", vulnerabilityReason: [], villageName: "Mường Pồn 1", lat: 21.58635, lon: 103.031488 },
@@ -227,6 +230,38 @@ export function generateAlerts(): Alert[] {
 
 export const ALERTS = generateAlerts();
 
+/** Deterministic mock rainfall (mm/day) for progressive-disclosure evidence — not a live forecast. */
+export interface RainfallDayMock {
+  villageId: string;
+  forecastDay: number;
+  rainfallMm: number;
+  peakIntensityMmH: number;
+}
+
+export function generateRainfallForecast(): RainfallDayMock[] {
+  const rows: RainfallDayMock[] = [];
+  for (const village of VILLAGES) {
+    for (const day of FORECAST_DAYS) {
+      const r = seedHash(`${village.id}:rain:${day}`);
+      const rainfallMm = Math.round((village.floodHistory2024 ? 35 : 12) + r * 55 - day * 4);
+      const peakIntensityMmH = Math.round((8 + r * 22 - day * 1.5) * 10) / 10;
+      rows.push({
+        villageId: village.id,
+        forecastDay: day,
+        rainfallMm: Math.max(0, rainfallMm),
+        peakIntensityMmH: Math.max(0, peakIntensityMmH),
+      });
+    }
+  }
+  return rows;
+}
+
+export const RAINFALL_FORECAST = generateRainfallForecast();
+
+export function getRainfallForDay(villageId: string, day: number) {
+  return RAINFALL_FORECAST.find((r) => r.villageId === villageId && r.forecastDay === day);
+}
+
 export function getVillage(id: string) {
   return VILLAGES.find((v) => v.id === id);
 }
@@ -237,12 +272,12 @@ export function getResidentsByVillage(villageId: string) {
 
 /**
  * There is no real link yet between a Keycloak `resident` account and a `resident_sim` row
- * (that mapping would live in a real backend). For the demo login, treat the first resident
- * seeded for their village as "this household" so the safety-status flow has something concrete
- * to point at.
+ * (that mapping would live in a real backend). Prefer a nông dân household in the village so
+ * the demo login (UJ-1 farmer) always lands on occupation-personalized copy.
  */
 export function getSelfResident(villageId: string) {
-  return getResidentsByVillage(villageId)[0];
+  const inVillage = getResidentsByVillage(villageId);
+  return inVillage.find((r) => r.occupation === "nong_dan") ?? inVillage[0];
 }
 
 export function getAlertsByVillage(villageId: string) {
@@ -253,6 +288,46 @@ export function getHighestTierAlert(villageId: string): Alert | undefined {
   const village = getAlertsByVillage(villageId);
   const goNow = village.find((a) => a.tier === "go_now");
   return goNow ?? village[0];
+}
+
+/** Build (or omit) an alert for a forecast day from mock hazard levels. */
+export function getAlertForVillageDay(villageId: string, day: number): Alert | undefined {
+  const candidates: Alert[] = [];
+  const now = new Date();
+  for (const hazardType of ["flash_flood", "landslide"] as HazardType[]) {
+    const levelRow = getHazardLevel(villageId, hazardType, day);
+    if (!levelRow) continue;
+    const tier = tierFor(hazardType, villageId, levelRow.level);
+    if (!tier) continue;
+    const hoursAhead = tier === "go_now" ? 4 : 18;
+    const deadline = new Date(now.getTime() + hoursAhead * 3600 * 1000);
+    const copy = ALERT_COPY[hazardType];
+    candidates.push({
+      id: `AL-${villageId}-${hazardType}-d${day}`,
+      villageId,
+      hazardType,
+      level: levelRow.level,
+      tier,
+      what: copy.what,
+      howDangerous: copy.dangerByLevel(levelRow.level),
+      whatToDo: copy.actionByTier[tier],
+      deadlineUtc: deadline.toISOString(),
+      isCurrent: day === 0,
+    });
+  }
+  const goNow = candidates.find((a) => a.tier === "go_now");
+  return goNow ?? candidates[0];
+}
+
+/** Overlay occupation-specific action wording (FR11) onto a village alert. */
+export function personalizeAlert(alert: Alert, occupation: Occupation): Alert {
+  const rec = getOccupationRecommendation(occupation, alert.hazardType, alert.tier);
+  const deadline = new Date(Date.now() + rec.deadlineHours * 3600 * 1000);
+  return {
+    ...alert,
+    whatToDo: rec.whatToDo,
+    deadlineUtc: deadline.toISOString(),
+  };
 }
 
 /** exposure x priority triage score, per FR18 */

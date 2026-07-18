@@ -1,0 +1,30 @@
+{
+  "attributes": [
+    {
+      "name": "username",
+      "displayName": "${username}",
+      "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+    },
+    {
+      "name": "email",
+      "displayName": "${email}",
+      "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+    },
+    {
+      "name": "firstName",
+      "displayName": "${firstName}",
+      "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+    },
+    {
+      "name": "lastName",
+      "displayName": "${lastName}",
+      "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+    },
+    {
+      "name": "village_id",
+      "displayName": "Village ID",
+      "permissions": { "view": ["admin", "user"], "edit": ["admin"] }
+    }
+  ],
+  "unmanagedAttributePolicy": "ENABLED"
+}

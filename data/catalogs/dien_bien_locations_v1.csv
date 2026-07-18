@@ -1,0 +1,24 @@
+canonical_name,code,coordinate_confidence,coordinate_source,current_admin_name,historical_admin_name,is_sampling_location,latitude,location_type,longitude,parent_code,source_url,uncertainty_m
+Xã Mường Pồn,commune-muong-pon,C,OpenStreetMap Nominatim relation 19571212,"Xã Mường Pồn, tỉnh Điện Biên","Xã Mường Pồn, huyện Điện Biên, tỉnh Điện Biên",True,21.5869655,commune,103.0296833,,https://www.openstreetmap.org/relation/19571212,15000
+Xã Xa Dung,commune-xa-dung,C,OpenStreetMap Nominatim relation 19571184,"Xã Xa Dung, tỉnh Điện Biên","Xã Xa Dung, huyện Điện Biên Đông, tỉnh Điện Biên",True,21.3182894,commune,103.2995758,,https://www.openstreetmap.org/relation/19571184,13000
+Xã Tìa Dình,commune-tia-dinh,C,OpenStreetMap Nominatim relation 19571188,"Xã Tìa Dình, tỉnh Điện Biên","Xã Tìa Dình, huyện Điện Biên Đông, tỉnh Điện Biên",True,21.1414586,commune,103.3380428,,https://www.openstreetmap.org/relation/19571188,12000
+Xã Na Son,commune-na-son,C,OpenStreetMap Nominatim relation 19571206,"Xã Na Son, tỉnh Điện Biên","Xã Na Son, huyện Điện Biên Đông, tỉnh Điện Biên",True,21.2972456,commune,103.2143726,,https://www.openstreetmap.org/relation/19571206,17000
+Xã Mường Luân,commune-muong-luan,C,OpenStreetMap Nominatim relation 19571216,"Xã Mường Luân, tỉnh Điện Biên","Xã Mường Luân, huyện Điện Biên Đông, tỉnh Điện Biên",True,21.2469241,commune,103.3801762,,https://www.openstreetmap.org/relation/19571216,14000
+Xã Pú Nhi,commune-pu-nhi,C,OpenStreetMap Nominatim relation 19571200,"Xã Pú Nhi, tỉnh Điện Biên","Xã Pú Nhi, huyện Điện Biên Đông, tỉnh Điện Biên",True,21.3456912,commune,103.1344866,,https://www.openstreetmap.org/relation/19571200,14000
+Xã Nậm Nèn,commune-nam-nen,C,OpenStreetMap Nominatim relation 19571204,"Xã Nậm Nèn, tỉnh Điện Biên","Xã Nậm Nèn, huyện Mường Chà, tỉnh Điện Biên",True,21.804404,commune,103.2258203,,https://www.openstreetmap.org/relation/19571204,15000
+Bản Mường Pồn 1,village-muong-pon-1,unresolved,,,,False,,village,,commune-muong-pon,,
+Bản Mường Pồn 2,village-muong-pon-2,unresolved,,,,False,,village,,commune-muong-pon,,
+Bản Lĩnh,village-linh,unresolved,,,,False,,village,,commune-muong-pon,,
+Bản Tin Tốc,village-tin-toc,unresolved,,,,False,,village,,commune-muong-pon,,
+Bản Cồ Dề,village-co-de,unresolved,,,,False,,village,,commune-xa-dung,,
+Bản Háng Pú Xi,village-hang-pu-xi,unresolved,,,,False,,village,,commune-xa-dung,,
+Bản Chống Sư A,village-chong-su-a,unresolved,,,,False,,village,,commune-xa-dung,,
+Bản Từ Xa B,village-tu-xa-b,unresolved,,,,False,,village,,commune-xa-dung,,
+Bản Tìa Dình 1,village-tia-dinh-1,unresolved,,,,False,,village,,commune-tia-dinh,,
+Bản Tìa Dình 2,village-tia-dinh-2,unresolved,,,,False,,village,,commune-tia-dinh,,
+Bản Tìa Mùng,village-tia-mung,unresolved,,,,False,,village,,commune-tia-dinh,,
+Bản Suối Lư 1,village-suoi-lu-1,unresolved,,,,False,,village,,commune-na-son,,
+Bản Suối Lư 2,village-suoi-lu-2,unresolved,,,,False,,village,,commune-na-son,,
+Bản Na Phát,village-na-phat,unresolved,,,,False,,village,,commune-na-son,,
+Bản Na Cảnh,village-na-canh,unresolved,,,,False,,village,,commune-na-son,,
+"Km436+200 QL6, bản Phiêng Đất B",site-phieng-dat-b-ql6,unresolved,,,,False,,landslide_site,,commune-nam-nen,,

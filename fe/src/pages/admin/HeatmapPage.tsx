@@ -1,5 +1,5 @@
-import { PageHeader } from "../../shared/ui/PageHeader";
 import { HeatmapView } from "../../features/heatmap/HeatmapView";
+import { PageHeader } from "../../shared/ui/PageHeader";
 
 export function AdminHeatmapPage() {
   return (

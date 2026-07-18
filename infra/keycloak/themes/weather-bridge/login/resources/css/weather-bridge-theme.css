@@ -151,6 +151,34 @@ html {
   color: var(--wba-fg-strong) !important;
 }
 
+/* ---- Back-to-app link (injected by auth-swap.js) ---- */
+.wba-back-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  align-self: flex-start !important;
+  gap: 0.35rem !important;
+  margin: 0 0 0.75rem !important;
+  padding: 0.3rem 0 !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--wba-muted) !important;
+  font-family: var(--wba-font-sans) !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.wba-back-link:hover {
+  color: var(--wba-accent) !important;
+  text-decoration: none !important;
+}
+
+.wba-back-link svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex: none !important;
+}
+
 /* ---- Headings ---- */
 .pf-v5-c-login__main-header .pf-v5-c-title,
 .pf-v5-c-login__main-body .pf-v5-c-title,

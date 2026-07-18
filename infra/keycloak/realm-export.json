@@ -2,6 +2,7 @@
   "realm": "weather-bridge",
   "enabled": true,
   "displayName": "Weather Bridge AI",
+  "attributes": { "weatherBridgeMigrationVersion": "1" },
   "sslRequired": "none",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
@@ -46,8 +47,33 @@
             "userinfo.token.claim": "true",
             "multivalued": "false"
           }
+        },
+        {
+          "name": "weather-bridge-fe-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "weather-bridge-fe",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
         }
       ]
+    },
+    {
+      "clientId": "weather-bridge-be",
+      "name": "Weather Bridge AI backend (service account)",
+      "description": "Confidential client the backend uses for Keycloak Admin API access (user + role administration). The secret below is DEV-ONLY — override KEYCLOAK_ADMIN_CLIENT_SECRET via env and rotate for real deployments.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "dev-weather-bridge-be-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
     }
   ],
   "components": {
@@ -113,6 +139,14 @@
       "credentials": [{ "type": "password", "value": "Demo@12345", "temporary": false }],
       "realmRoles": ["user", "resident"],
       "attributes": { "village_id": ["muong-pon-1"] }
+    },
+    {
+      "username": "service-account-weather-bridge-be",
+      "enabled": true,
+      "serviceAccountClientId": "weather-bridge-be",
+      "clientRoles": {
+        "realm-management": ["view-users", "query-users", "manage-users", "view-realm"]
+      }
     }
   ],
   "smtpServer": {

@@ -45,8 +45,11 @@ data/raw/*
 data/interim/*
 data/processed/*
 data/artifacts/*
+data/backups/*
 ai/datasets/*
 ai/artifacts/*
+ai/data/processed/*
+ai/runs/*
 !**/.gitkeep
 terraform.tfstate
 terraform.tfstate.*

@@ -99,3 +99,17 @@ components:
     use: open landslide inventory (positive labels, VN subset)
     modified: true
     notice: THIRD_PARTY_NOTICES.md
+  - name: open-meteo-historical-weather-products
+    source: https://open-meteo.com/en/docs/historical-forecast-api
+    commit: accessed-2026-07-18
+    license: CC-BY-4.0-with-provider-terms
+    use: historical forecast, previous model runs, and ERA5/ERA5-Land reference data
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md
+  - name: openstreetmap-dien-bien-admin-centroids
+    source: https://www.openstreetmap.org
+    commit: relations-recorded-in-data-catalog-accessed-2026-07-18
+    license: ODbL-1.0
+    use: commune sampling centroids and administrative provenance
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md
