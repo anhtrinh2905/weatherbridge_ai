@@ -1,14 +1,13 @@
 from uuid import UUID
 
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from core.errors import AppError
 from core.time import utc_now
 from database.models import AiJob, JobStatus
 from modules.admin.schemas import AdminAiJobResponse, JobStatsResponse
 from modules.ai_jobs.schemas import AiJobResponse, CreateAiJobRequest
 from queues.redis_queue import JobQueue
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AiJobService:

@@ -1,14 +1,13 @@
 from datetime import UTC, date, datetime
 from uuid import uuid4
 
-from httpx import AsyncClient
-
 from database.models import (
     DisasterEvent,
     DisasterEventLocation,
     DisasterEventSource,
     GeoLocation,
 )
+from httpx import AsyncClient
 
 
 async def test_hazard_archive_requires_admin(client: AsyncClient) -> None:

@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Any
 
 import httpx
+from core.config import Settings
 from pydantic import BaseModel
 
 from ai.forecast.exceptions import (
@@ -20,7 +21,6 @@ from ai.forecast.models import (
     HistoricalWeatherRequest,
     PreviousRunRequest,
 )
-from core.config import Settings
 
 
 class OpenMeteoFamily(Enum):

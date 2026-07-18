@@ -1,6 +1,3 @@
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from core.errors import AppError
 from core.time import utc_now
 from database.models import AiJob, ForecastSnapshot, JobStatus
@@ -12,6 +9,8 @@ from modules.forecasts.schemas import (
     ForecastSnapshotResponse,
 )
 from queues.redis_queue import JobQueue
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 FORECAST_INGEST_TASK = "forecast_ingest"
 

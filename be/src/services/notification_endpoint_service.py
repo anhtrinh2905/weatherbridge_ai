@@ -1,9 +1,6 @@
 import json
 from uuid import UUID
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from auth.keycloak import CurrentUser
 from core.config import Settings
 from core.errors import AppError
@@ -11,6 +8,9 @@ from core.pii import PiiProtector
 from core.time import utc_now
 from database.domain_models import AuditLog, Resident, ResidentContact
 from modules.notifications.schemas import WebPushSubscriptionRequest, WebPushSubscriptionResponse
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from services.profile_service import ProfileService
 
 

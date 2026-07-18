@@ -1,11 +1,8 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.deps import get_current_user
 from auth.keycloak import CurrentUser
 from database.session import get_db
+from fastapi import APIRouter, Depends, status
 from modules.evacuations.schemas import (
     EvacuationAssignmentRequest,
     EvacuationAssignmentResponse,
@@ -17,6 +14,9 @@ from modules.evacuations.schemas import (
     ShelterResponse,
 )
 from services.evacuation_service import EvacuationService
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.deps import get_current_user
 
 router = APIRouter()
 

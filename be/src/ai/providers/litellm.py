@@ -1,9 +1,9 @@
 from typing import Any
 
 import httpx
+from core.config import Settings
 
 from ai.contracts import InferenceRequest, InferenceResponse
-from core.config import Settings
 
 
 class LiteLLMClient:

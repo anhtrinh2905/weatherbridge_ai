@@ -11,15 +11,14 @@ os.environ.setdefault("KEYCLOAK_CLIENT_ID", "weather-bridge-fe")
 os.environ.setdefault("CORS_ORIGINS", "http://testserver")
 
 import pytest
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
 from api.deps import get_current_user, get_job_queue
 from auth.keycloak import CurrentUser
 from core.config import Settings, get_settings
 from database import Base
 from database.session import get_db
+from httpx import ASGITransport, AsyncClient
 from main import create_app
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 TEST_DB = Path(__file__).parent / "test_weather_bridge.db"
 test_engine = create_async_engine(

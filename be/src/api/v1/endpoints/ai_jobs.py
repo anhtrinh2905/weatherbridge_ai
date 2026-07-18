@@ -1,11 +1,11 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
-
-from api.deps import get_ai_job_service, get_current_user
 from auth.keycloak import CurrentUser
+from fastapi import APIRouter, Depends, status
 from modules.ai_jobs.schemas import AiJobResponse, CreateAiJobRequest
 from services.ai_job_service import AiJobService
+
+from api.deps import get_ai_job_service, get_current_user
 
 router = APIRouter()
 

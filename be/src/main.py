@@ -1,14 +1,13 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-
 from api.v1.router import router as v1_router
 from core.config import Settings, get_settings
 from core.errors import AppError
 from core.lifespan import lifespan
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:

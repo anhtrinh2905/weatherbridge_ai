@@ -1,10 +1,9 @@
 from typing import Any
 
 import pytest
-from httpx import AsyncClient
-
 from ai.forecast.exceptions import OpenMeteoTransportError
 from ai.forecast.service import OpenMeteoService
+from httpx import AsyncClient
 
 CASES = [
     ("forecast", "forecast", {"latitude": 21, "longitude": 105}),

@@ -2,11 +2,10 @@ from collections.abc import AsyncIterator
 from typing import Any
 
 import pytest
-from httpx import ASGITransport, AsyncClient
-
 from api.deps import get_admin_user_service, get_current_user, get_keycloak_admin_client
 from auth.keycloak import CurrentUser
 from core.config import get_settings
+from httpx import ASGITransport, AsyncClient
 from main import create_app
 from services.admin_user_service import AdminUserService
 

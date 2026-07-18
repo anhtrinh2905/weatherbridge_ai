@@ -1,8 +1,5 @@
 from typing import Any
 
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from database.models import (
     DisasterEvent,
     DisasterEventLocation,
@@ -11,6 +8,8 @@ from database.models import (
     GeoLocation,
     WeatherObservationHourly,
 )
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class HazardArchiveRepository:

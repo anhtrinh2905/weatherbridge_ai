@@ -1,13 +1,6 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
-
-from api.deps import (
-    get_admin_user_service,
-    get_ai_job_service,
-    get_forecast_service,
-    require_admin,
-)
 from modules.admin.schemas import (
     AdminAiJobResponse,
     AdminUserResponse,
@@ -19,6 +12,13 @@ from modules.admin.schemas import (
 from services.admin_user_service import AdminUserService
 from services.ai_job_service import AiJobService
 from services.forecast_service import ForecastService
+
+from api.deps import (
+    get_admin_user_service,
+    get_ai_job_service,
+    get_forecast_service,
+    require_admin,
+)
 
 router = APIRouter(dependencies=[Depends(require_admin)])
 

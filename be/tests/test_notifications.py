@@ -1,17 +1,16 @@
 import pytest
-from httpx import AsyncClient
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from auth.keycloak import CurrentUser
 from core.config import Settings
 from core.pii import PiiProtector
 from core.time import utc_now
 from database.domain_models import Resident, ResidentContact
 from database.models import GeoLocation
+from httpx import AsyncClient
 from modules.notifications.schemas import WebPushSubscriptionRequest
 from services.notification_endpoint_service import NotificationEndpointService
 from services.profile_service import ProfileService
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio

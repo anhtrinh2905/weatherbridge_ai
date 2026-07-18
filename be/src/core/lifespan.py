@@ -1,11 +1,11 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+from database.session import engine
 from fastapi import FastAPI
 
 from core.config import Settings
 from core.logging import configure_logging
-from database.session import engine
 
 
 @asynccontextmanager

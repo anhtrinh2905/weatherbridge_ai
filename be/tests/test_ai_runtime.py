@@ -1,5 +1,4 @@
 import pytest
-
 from ai.contracts import InferenceRequest
 from core.config import Settings
 from services.ai_inference_service import AiInferenceService

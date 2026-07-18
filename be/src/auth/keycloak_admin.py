@@ -3,7 +3,6 @@ import time
 from typing import Any
 
 import httpx
-
 from core.config import Settings
 from core.errors import AppError
 

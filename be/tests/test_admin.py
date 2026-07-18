@@ -1,9 +1,8 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from httpx import AsyncClient
-
 from database.models import AiJob, ForecastSnapshot, JobStatus
+from httpx import AsyncClient
 
 
 def _job(user_id: str, status: JobStatus, task: str = "analyze") -> AiJob:
