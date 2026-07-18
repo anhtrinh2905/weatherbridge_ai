@@ -1,6 +1,7 @@
 import hashlib
-from datetime import UTC
+from datetime import UTC, datetime, time
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,6 +20,7 @@ from database.domain_models import (
     NotificationOutbox,
     Resident,
     ResidentContact,
+    ResidentLivelihood,
     UserProfile,
 )
 from database.models import GeoLocation
@@ -159,12 +161,18 @@ class AlertService:
                 )
             )
         ).all()
-        canonical_content = await self.session.scalar(
-            select(AlertContent).where(
-                AlertContent.alert_id == alert.id,
-                AlertContent.locale == "vi",
-                AlertContent.livelihood_type.is_(None),
+        contents = list(
+            await self.session.scalars(
+                select(AlertContent).where(AlertContent.alert_id == alert.id)
             )
+        )
+        canonical_content = next(
+            (
+                item
+                for item in contents
+                if item.locale == "vi" and item.livelihood_type is None
+            ),
+            None,
         )
         if canonical_content is None:
             raise AppError(409, "Alert has no canonical content", "alert_content_missing")
@@ -185,10 +193,23 @@ class AlertService:
                 if resident.user_profile_id
                 else None
             )
+            livelihoods = set(
+                await self.session.scalars(
+                    select(ResidentLivelihood.livelihood_type).where(
+                        ResidentLivelihood.resident_id == resident.id
+                    )
+                )
+            )
+            content = self._select_content(
+                contents,
+                canonical_content,
+                profile.preferred_locale if profile else "vi",
+                livelihoods,
+            )
             recipient = AlertRecipient(
                 alert_id=alert.id,
                 resident_id=resident.id,
-                content_id=canonical_content.id,
+                content_id=content.id,
                 preferred_locale=(profile.preferred_locale if profile else "vi"),
                 acknowledgement_status="unacknowledged",
                 created_at=now,
@@ -226,7 +247,11 @@ class AlertService:
                     )
                 )
             ).all()
-            subscription_channels = {item.channel for item in subscriptions}
+            subscription_channels = {
+                item.channel
+                for item in subscriptions
+                if not self._is_quiet_hour(item.quiet_hours_start, item.quiet_hours_end, now)
+            }
             for contact in contacts:
                 if alert.source != "evacuation" and contact.channel not in subscription_channels:
                     continue
@@ -428,3 +453,32 @@ class AlertService:
                 created_at=utc_now(),
             )
         )
+
+    @staticmethod
+    def _select_content(
+        contents: list[AlertContent],
+        canonical_content: AlertContent,
+        preferred_locale: str,
+        livelihoods: set[str],
+    ) -> AlertContent:
+        for locale in (preferred_locale, "vi"):
+            for content in contents:
+                if content.locale == locale and content.livelihood_type in livelihoods:
+                    return content
+            for content in contents:
+                if content.locale == locale and content.livelihood_type is None:
+                    return content
+        return canonical_content
+
+    @staticmethod
+    def _is_quiet_hour(
+        start: time | None,
+        end: time | None,
+        now: datetime,
+    ) -> bool:
+        if start is None or end is None or start == end:
+            return False
+        local_time = now.astimezone(ZoneInfo("Asia/Ho_Chi_Minh")).time().replace(tzinfo=None)
+        if start < end:
+            return start <= local_time < end
+        return local_time >= start or local_time < end

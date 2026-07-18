@@ -1,12 +1,16 @@
+import asyncio
+import json
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Protocol
 from uuid import UUID
 
 from core.pii import PiiProtector
+from pywebpush import WebPushException, webpush  # type: ignore[import-untyped]
 from sqlalchemy import (
     JSON,
     BigInteger,
+    Boolean,
     Column,
     DateTime,
     Integer,
@@ -58,6 +62,8 @@ resident_contacts = Table(
     metadata,
     Column("id", Uuid(as_uuid=True), primary_key=True),
     Column("value_ciphertext", LargeBinary, nullable=False),
+    Column("is_active", Boolean, nullable=False, default=True),
+    Column("revoked_at", DateTime(timezone=True)),
 )
 alert_recipients = Table(
     "alert_recipients",
@@ -111,6 +117,54 @@ class SimulatedNotificationProvider:
         return DeliveryResult(status="simulated", metadata={"channel": channel})
 
 
+class WebPushNotificationProvider:
+    name = "web_push"
+
+    def __init__(self, settings: Settings) -> None:
+        self.subject = settings.web_push_subject
+        self.private_key = settings.web_push_vapid_private_key
+
+    async def send(
+        self,
+        *,
+        channel: str,
+        destination: str,
+        content: dict[str, str],
+        idempotency_key: str,
+    ) -> DeliveryResult:
+        if channel != "web_push" or not self.private_key:
+            raise ValueError("Web Push provider received an invalid delivery request")
+        try:
+            subscription = json.loads(destination)
+            payload = json.dumps(
+                {
+                    "title": "Canh bao Weather Bridge AI",
+                    "body": f"{content['what_happened']} {content['action_instruction']}".strip(),
+                    "url": "/resident/alerts",
+                    "tag": f"weather-bridge-{idempotency_key[:24]}",
+                },
+                ensure_ascii=False,
+            )
+            await asyncio.to_thread(
+                webpush,
+                subscription_info=subscription,
+                data=payload,
+                vapid_private_key=self.private_key,
+                vapid_claims={"sub": self.subject},
+                ttl=3600,
+            )
+            return DeliveryResult(status="sent", metadata={"channel": "web_push"})
+        except WebPushException as exc:
+            status_code = getattr(getattr(exc, "response", None), "status_code", None)
+            if status_code in {404, 410}:
+                return DeliveryResult(
+                    status="expired",
+                    response_status_code=status_code,
+                    metadata={"reason": "subscription_gone"},
+                )
+            raise
+
+
 async def process_outbox_batch(
     session: AsyncSession,
     settings: Settings,
@@ -121,11 +175,13 @@ async def process_outbox_batch(
     if settings.notification_delivery_mode == "disabled":
         return 0
     resolved_providers = providers or {}
-    if settings.notification_delivery_mode == "simulate":
+    if providers is None and settings.notification_delivery_mode == "simulate":
         simulated = SimulatedNotificationProvider()
         resolved_providers = {
             channel: simulated for channel in ("sms", "zalo", "email", "web_push", "webhook")
         }
+    elif providers is None and settings.notification_delivery_mode == "web_push":
+        resolved_providers = {"web_push": WebPushNotificationProvider(settings)}
     now = datetime.now(UTC)
     rows = (
         await session.execute(
@@ -149,6 +205,7 @@ async def process_outbox_batch(
             .where(
                 notification_outbox.c.status.in_(("pending", "retry")),
                 notification_outbox.c.next_attempt_at <= now,
+                resident_contacts.c.is_active.is_(True),
             )
             .order_by(notification_outbox.c.next_attempt_at)
             .limit(limit)
@@ -200,6 +257,12 @@ async def process_outbox_batch(
                     attempted_at=now,
                 )
             )
+            if result.status == "expired":
+                await session.execute(
+                    update(resident_contacts)
+                    .where(resident_contacts.c.id == row["resident_contact_id"])
+                    .values(is_active=False, revoked_at=now)
+                )
         except Exception as exc:
             delay_minutes = min(2**attempt_count, 60)
             await session.execute(

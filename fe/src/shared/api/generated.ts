@@ -589,6 +589,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications/web-push/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Web Push Config */
+        get: operations["web_push_config_api_v1_notifications_web_push_config_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/web-push/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subscribe Web Push */
+        post: operations["subscribe_web_push_api_v1_notifications_web_push_subscriptions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/web-push/subscriptions/{contact_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Unsubscribe Web Push */
+        delete: operations["unsubscribe_web_push_api_v1_notifications_web_push_subscriptions__contact_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/translations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Translate
+         * @description Live translation for dynamic content (alert bulletins, etc.), Redis-cached by content
+         *     hash. Static UI chrome does NOT go through this endpoint — see scripts/generate_hmong_locale.py
+         *     and fe/src/shared/i18n/ for that offline path.
+         */
+        post: operations["translate_api_v1_translations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/jobs": {
         parameters: {
             query?: never;
@@ -2082,6 +2155,32 @@ export interface components {
             /** Is Active */
             is_active: boolean;
         };
+        /** TranslationRequest */
+        TranslationRequest: {
+            /** Texts */
+            texts: string[];
+            /** Target Language */
+            target_language: string;
+            /**
+             * Source Language
+             * @default vi
+             */
+            source_language: string;
+        };
+        /** TranslationResponse */
+        TranslationResponse: {
+            /** Translations */
+            translations: string[];
+            /** Target Language */
+            target_language: string;
+            /** Source Language */
+            source_language: string;
+            /**
+             * Model Name
+             * @default google-translate-nmt-v2
+             */
+            model_name: string;
+        };
         /** UpdateProfileRequest */
         UpdateProfileRequest: {
             /** Preferred Locale */
@@ -2099,6 +2198,46 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** WebPushConfigResponse */
+        WebPushConfigResponse: {
+            /** Public Key */
+            public_key: string;
+        };
+        /** WebPushKeys */
+        WebPushKeys: {
+            /** P256Dh */
+            p256dh: string;
+            /** Auth */
+            auth: string;
+        };
+        /** WebPushSubscriptionRequest */
+        WebPushSubscriptionRequest: {
+            /**
+             * Endpoint
+             * Format: uri
+             */
+            endpoint: string;
+            /** Expirationtime */
+            expirationTime?: number | null;
+            keys: components["schemas"]["WebPushKeys"];
+            /** Device Label */
+            device_label?: string | null;
+        };
+        /** WebPushSubscriptionResponse */
+        WebPushSubscriptionResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Active */
+            is_active: boolean;
+            /**
+             * Last Seen At
+             * Format: date-time
+             */
+            last_seen_at: string;
         };
     };
     responses: never;
@@ -3309,6 +3448,121 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    web_push_config_api_v1_notifications_web_push_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebPushConfigResponse"];
+                };
+            };
+        };
+    };
+    subscribe_web_push_api_v1_notifications_web_push_subscriptions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebPushSubscriptionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebPushSubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unsubscribe_web_push_api_v1_notifications_web_push_subscriptions__contact_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contact_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    translate_api_v1_translations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationResponse"];
                 };
             };
             /** @description Validation Error */

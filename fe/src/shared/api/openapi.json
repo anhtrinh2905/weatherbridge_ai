@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Weather Bridge AI",
+    "title": "VAI Code",
     "description": "Weather Bridge AI production-oriented API",
     "version": "0.1.0"
   },
@@ -1589,6 +1589,146 @@
                   "additionalProperties": true,
                   "type": "object",
                   "title": "Response Flood Api V1 Open Meteo Flood Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/web-push/config": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Web Push Config",
+        "operationId": "web_push_config_api_v1_notifications_web_push_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebPushConfigResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/web-push/subscriptions": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Subscribe Web Push",
+        "operationId": "subscribe_web_push_api_v1_notifications_web_push_subscriptions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebPushSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebPushSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/web-push/subscriptions/{contact_id}": {
+      "delete": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Unsubscribe Web Push",
+        "operationId": "unsubscribe_web_push_api_v1_notifications_web_push_subscriptions__contact_id__delete",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Contact Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/translations": {
+      "post": {
+        "tags": [
+          "translations"
+        ],
+        "summary": "Translate",
+        "description": "Live translation for dynamic content (alert bulletins, etc.), Redis-cached by content\nhash. Static UI chrome does NOT go through this endpoint \u2014 see scripts/generate_hmong_locale.py\nand fe/src/shared/i18n/ for that offline path.",
+        "operationId": "translate_api_v1_translations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationResponse"
                 }
               }
             }
@@ -5619,6 +5759,64 @@
         ],
         "title": "SubscriptionResponse"
       },
+      "TranslationRequest": {
+        "properties": {
+          "texts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Texts"
+          },
+          "target_language": {
+            "type": "string",
+            "title": "Target Language"
+          },
+          "source_language": {
+            "type": "string",
+            "title": "Source Language",
+            "default": "vi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "texts",
+          "target_language"
+        ],
+        "title": "TranslationRequest"
+      },
+      "TranslationResponse": {
+        "properties": {
+          "translations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Translations"
+          },
+          "target_language": {
+            "type": "string",
+            "title": "Target Language"
+          },
+          "source_language": {
+            "type": "string",
+            "title": "Source Language"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name",
+            "default": "google-translate-nmt-v2"
+          }
+        },
+        "type": "object",
+        "required": [
+          "translations",
+          "target_language",
+          "source_language"
+        ],
+        "title": "TranslationResponse"
+      },
       "UpdateProfileRequest": {
         "properties": {
           "preferred_locale": {
@@ -5673,6 +5871,109 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WebPushConfigResponse": {
+        "properties": {
+          "public_key": {
+            "type": "string",
+            "title": "Public Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "public_key"
+        ],
+        "title": "WebPushConfigResponse"
+      },
+      "WebPushKeys": {
+        "properties": {
+          "p256dh": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "P256Dh"
+          },
+          "auth": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Auth"
+          }
+        },
+        "type": "object",
+        "required": [
+          "p256dh",
+          "auth"
+        ],
+        "title": "WebPushKeys"
+      },
+      "WebPushSubscriptionRequest": {
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "maxLength": 2083,
+            "minLength": 1,
+            "format": "uri",
+            "title": "Endpoint"
+          },
+          "expirationTime": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expirationtime"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/WebPushKeys"
+          },
+          "device_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "endpoint",
+          "keys"
+        ],
+        "title": "WebPushSubscriptionRequest"
+      },
+      "WebPushSubscriptionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "last_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Seen At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "is_active",
+          "last_seen_at"
+        ],
+        "title": "WebPushSubscriptionResponse"
       }
     }
   }

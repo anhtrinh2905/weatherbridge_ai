@@ -22,3 +22,4 @@ data:
   PII_KEY_VERSION: "v1"
   OBJECT_STORAGE_URL_TTL_SECONDS: "300"
   NOTIFICATION_DELIVERY_MODE: "disabled"
+  WEB_PUSH_SUBJECT: "mailto:dev@weatherbridge.local"

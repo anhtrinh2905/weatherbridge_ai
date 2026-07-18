@@ -139,7 +139,9 @@ packages, put a token with only `read:packages` in
 does not receive K3s, SSH, database, or Keycloak secrets.
 
 Application secrets remain native Kubernetes Secrets (`app-secret`,
-`db-secret`, `keycloak-secret`) in each namespace. The pull agent refuses a
+`db-secret`, `keycloak-secret`) in each namespace. Enable Web Push only after
+creating `web-push-secret` with `WEB_PUSH_VAPID_PRIVATE_KEY`; it is mounted only
+by the worker. The pull agent refuses a
 deployment when any required Secret is missing.
 
 ## Deploy flow

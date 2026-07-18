@@ -1,9 +1,9 @@
-import { BellRing, Send } from "lucide-react";
+import { BellOff, BellRing } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "../../shared/ui/Button";
-import { enableWebPush, getWebPushEnvironment, sendTestWebPush } from "./webPush";
+import { disableWebPush, enableWebPush, getWebPushEnvironment } from "./webPush";
 
-type PanelStatus = "idle" | "ready" | "sending" | "sent" | "error";
+type PanelStatus = "idle" | "working" | "active" | "error";
 
 export function WebPushPanel() {
   const environment = useMemo(() => getWebPushEnvironment(), []);
@@ -11,32 +11,28 @@ export function WebPushPanel() {
   const [message, setMessage] = useState(environment.guidance);
 
   const enable = async () => {
-    setStatus("ready");
-    setMessage("Đang xin quyền và lưu subscription...");
+    setStatus("working");
+    setMessage("Đang xin quyền và lưu thiết bị này...");
     try {
-      const result = await enableWebPush();
-      setStatus("ready");
-      setMessage(`Đã bật Web Push trên trình duyệt này. Backend đang lưu ${result.subscription_count} subscription.`);
+      await enableWebPush();
+      setStatus("active");
+      setMessage("Đã bật Web Push trên trình duyệt này. Cảnh báo phù hợp sẽ được gửi qua luồng thông báo chính thức.");
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Không bật được Web Push.");
     }
   };
 
-  const sendTest = async () => {
-    setStatus("sending");
-    setMessage("Đang gửi thông báo thử...");
+  const disable = async () => {
+    setStatus("working");
+    setMessage("Đang tắt thông báo trên thiết bị này...");
     try {
-      const result = await sendTestWebPush();
-      setStatus("sent");
-      setMessage(
-        result.sent > 0
-          ? `Đã gửi ${result.sent}/${result.attempted} thông báo thử.`
-          : "Chưa có subscription nào trên backend. Bấm bật thông báo trước.",
-      );
+      await disableWebPush();
+      setStatus("idle");
+      setMessage(environment.guidance);
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "Không gửi được thông báo thử.");
+      setMessage(error instanceof Error ? error.message : "Không tắt được Web Push.");
     }
   };
 
@@ -52,11 +48,11 @@ export function WebPushPanel() {
         </div>
       </div>
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
-        <Button variant={status === "ready" || status === "sent" ? "secondary" : "primary"} onClick={enable}>
+        <Button variant={status === "active" ? "secondary" : "primary"} onClick={enable} isLoading={status === "working"}>
           <BellRing size={16} /> Bật thông báo
         </Button>
-        <Button variant="secondary" onClick={sendTest} isLoading={status === "sending"}>
-          <Send size={16} /> Gửi thử
+        <Button variant="secondary" onClick={disable} isLoading={status === "working"}>
+          <BellOff size={16} /> Tắt trên thiết bị này
         </Button>
       </div>
     </section>

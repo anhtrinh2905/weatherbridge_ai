@@ -1,74 +1,57 @@
-from functools import lru_cache
-from typing import Any
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, Response, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.config import get_settings
-from services.web_push_service import WebPushService
+from api.deps import get_current_user
+from auth.keycloak import CurrentUser
+from core.config import Settings, get_settings
+from core.errors import AppError
+from database.session import get_db
+from modules.notifications.schemas import (
+    WebPushConfigResponse,
+    WebPushSubscriptionRequest,
+    WebPushSubscriptionResponse,
+)
+from services.notification_endpoint_service import NotificationEndpointService
 
 router = APIRouter()
 
 
-class PushConfigResponse(BaseModel):
-    public_key: str
-
-
-class PushSubscriptionRequest(BaseModel):
-    endpoint: str
-    expirationTime: int | None = None
-    keys: dict[str, str]
-
-
-class PushSubscriptionResponse(BaseModel):
-    subscription_count: int
-
-
-class TestNotificationRequest(BaseModel):
-    title: str = "Weather Bridge AI"
-    body: str = "Thông báo thử từ Web Push đã gửi thành công."
-    url: str = "/resident"
-
-
-class TestNotificationResponse(BaseModel):
-    attempted: int
-    sent: int
-
-
-@lru_cache
-def get_web_push_service() -> WebPushService:
-    return WebPushService(get_settings())
-
-
-@router.get("/web-push/config", response_model=PushConfigResponse)
+@router.get("/web-push/config", response_model=WebPushConfigResponse)
 async def web_push_config(
-    service: WebPushService = Depends(get_web_push_service),
-) -> PushConfigResponse:
-    return PushConfigResponse(public_key=service.public_key)
+    _: CurrentUser = Depends(get_current_user),
+    settings: Settings = Depends(get_settings),
+) -> WebPushConfigResponse:
+    if not settings.web_push_vapid_public_key:
+        raise AppError(503, "Web Push is not configured", "web_push_unavailable")
+    return WebPushConfigResponse(public_key=settings.web_push_vapid_public_key)
 
 
-@router.post("/web-push/subscriptions", response_model=PushSubscriptionResponse)
+@router.post(
+    "/web-push/subscriptions",
+    response_model=WebPushSubscriptionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def subscribe_web_push(
-    subscription: PushSubscriptionRequest,
-    service: WebPushService = Depends(get_web_push_service),
-) -> PushSubscriptionResponse:
-    count = service.save_subscription(subscription.model_dump())
-    return PushSubscriptionResponse(subscription_count=count)
-
-
-@router.post("/web-push/test", response_model=TestNotificationResponse)
-async def send_test_web_push(
-    request: TestNotificationRequest,
-    service: WebPushService = Depends(get_web_push_service),
-) -> TestNotificationResponse:
-    payload: dict[str, Any] = {
-        "title": request.title,
-        "body": request.body,
-        "url": request.url,
-        "tag": "weather-bridge-test",
-    }
-    results = await service.send_to_all(payload)
-    return TestNotificationResponse(
-        attempted=len(results),
-        sent=sum(1 for result in results if result.ok),
+    subscription: WebPushSubscriptionRequest,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> WebPushSubscriptionResponse:
+    return await NotificationEndpointService(session, settings).upsert_web_push_subscription(
+        subscription, user
     )
+
+
+@router.delete("/web-push/subscriptions/{contact_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def unsubscribe_web_push(
+    contact_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> Response:
+    await NotificationEndpointService(session, settings).revoke_web_push_subscription(
+        contact_id, user
+    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
