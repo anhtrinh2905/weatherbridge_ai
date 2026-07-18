@@ -5,6 +5,7 @@ from fastapi import Depends, Request
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ai.forecast import OpenMeteoService
 from auth.keycloak import CurrentUser, KeycloakVerifier
 from core.config import Settings, get_settings
 from core.errors import AppError
@@ -19,8 +20,13 @@ def get_keycloak_verifier() -> KeycloakVerifier:
     return KeycloakVerifier(get_settings())
 
 
+def get_open_meteo_service(settings: Settings = Depends(get_settings)) -> OpenMeteoService:
+    return OpenMeteoService(settings)
+
+
 async def get_current_user(
-    request: Request, verifier: KeycloakVerifier = Depends(get_keycloak_verifier)
+    request: Request,
+    verifier: KeycloakVerifier = Depends(get_keycloak_verifier),
 ) -> CurrentUser:
     authorization = request.headers.get("Authorization")
     if not authorization or not authorization.lower().startswith("bearer "):
