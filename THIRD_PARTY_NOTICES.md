@@ -32,6 +32,12 @@ and attribution obligations.
 - Langfuse Python SDK/service: MIT; enabled only when tracing credentials and
   endpoint are configured.
 
+## Backend
+
+- pywebpush: MPL-2.0; used to send W3C Web Push notifications from the API.
+- py-vapid: MPL-2.0; used by pywebpush for VAPID authentication.
+- http-ece: MIT; used by pywebpush for encrypted content encoding.
+
 Transitive dependencies must be checked by CI before release.
 
 ## Vendored source
@@ -51,3 +57,11 @@ modification summary, and notice recorded in `third_party/` and
   OpenStreetMap relation `19571212` via Nominatim on 2026-07-18; © OpenStreetMap
   contributors, ODbL 1.0. Simplified (Douglas–Peucker) and normalized; see
   `docs/compliance/data-provenance.md` for the transformation record.
+- Điện Biên commune sampling centroids in
+  `data/catalogs/dien_bien_disaster_inventory_v1.json`: derived from the
+  OpenStreetMap relations listed per row; © OpenStreetMap contributors, ODbL
+  1.0.
+- Open-Meteo historical forecast, previous-runs, and historical-weather data:
+  CC BY 4.0 attribution to Open-Meteo; originating model-provider and
+  Open-Meteo usage terms also apply. Generated data remains outside Git under
+  `data/processed/training/`.

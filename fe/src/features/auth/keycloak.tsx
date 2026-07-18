@@ -1,8 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import Keycloak, { type KeycloakInstance } from "keycloak-js";
-import { useLocation, useNavigate } from "react-router-dom";
-import { DEMO_PASSWORD } from "./demoAccounts";
+import { useNavigate } from "react-router-dom";
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "./demoAccounts";
+import { clearDemoSession, readDemoSession, saveDemoSession } from "./demoSession";
+import { ROLE_LABELS } from "../../shared/domain/labels";
 
 export interface AuthUser {
   id: string;
@@ -37,8 +39,16 @@ export const keycloak = new Keycloak({
 let initialization: Promise<boolean> | undefined;
 
 function initializeKeycloak() {
+  const restoredSession = readDemoSession();
   initialization ??= keycloak
     .init({
+      ...(restoredSession
+        ? {
+            token: restoredSession.accessToken,
+            refreshToken: restoredSession.refreshToken,
+            idToken: restoredSession.idToken,
+          }
+        : {}),
       pkceMethod: "S256",
       checkLoginIframe: false,
     })
@@ -46,11 +56,7 @@ function initializeKeycloak() {
   return initialization;
 }
 
-function hasAuthCallback() {
-  return /(?:^|[&#])(code|error|state)=/.test(window.location.hash);
-}
-
-/** Minimal base64url JWT payload decode — avoids adding a jwt-decode dependency for this one path. */
+/** Minimal base64url JWT payload decode - avoids adding a jwt-decode dependency for this one path. */
 function decodeJwtPayload(token: string): Record<string, unknown> {
   const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
   const json = decodeURIComponent(
@@ -72,7 +78,7 @@ interface TokenResponse {
  * Demo-only: Resource Owner Password Credentials grant against Keycloak's token endpoint,
  * called directly from the browser (no redirect, no password prompt). This requires
  * `directAccessGrantsEnabled: true` on the public client (see infra/keycloak/realm-export.json)
- * — a deliberate relaxation of the "Authorization Code + PKCE only" posture documented in
+ * - a deliberate relaxation of the "Authorization Code + PKCE only" posture documented in
  * ARCHITECTURE-SPINE.md, scoped to a convenience shortcut for the 4 seeded demo accounts whose
  * password is already shown in the UI. Do not reuse this path for real user credentials.
  */
@@ -112,24 +118,41 @@ function mapUser(): AuthUser | null {
   };
 }
 
+function mapDemoUser(username: string): AuthUser {
+  const account = DEMO_ACCOUNTS.find((item) => item.username === username);
+  const role = account?.role ?? "resident";
+  return {
+    id: `demo-${role}`,
+    email: username,
+    displayName: (account && ROLE_LABELS[account.role]) ?? username,
+    username,
+    emailVerified: true,
+    roles: [role],
+    villageId: role === "resident" || role === "village_head" ? "muong-pon-1" : undefined,
+  };
+}
+
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const location = useLocation();
   const navigate = useNavigate();
   const [initialized, setInitialized] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    if (location.pathname !== "/workspace" && !hasAuthCallback()) return;
-
     let mounted = true;
     keycloak.onTokenExpired = async () => {
       try {
         await keycloak.updateToken(30);
+        saveDemoSession({
+          accessToken: keycloak.token ?? "",
+          refreshToken: keycloak.refreshToken ?? "",
+          idToken: keycloak.idToken ?? "",
+        });
         if (mounted) setUser(mapUser());
       } catch {
+        clearDemoSession();
         if (mounted) {
           setAuthenticated(false);
           setUser(null);
@@ -139,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void initializeKeycloak()
       .then((isAuthenticated) => {
         if (!mounted) return;
+        if (!isAuthenticated) clearDemoSession();
         setAuthenticated(isAuthenticated);
         setUser(isAuthenticated ? mapUser() : null);
         setInitialized(true);
@@ -149,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       mounted = false;
     };
-  }, [location.pathname]);
+  }, []);
 
   const value: AuthContextValue = {
     keycloak,
@@ -161,7 +185,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await keycloak.login({ redirectUri: `${window.location.origin}/workspace`, loginHint });
     },
     loginAsDemo: async (username: string) => {
-      const tokens = await fetchDemoTokens(username);
+      let tokens: TokenResponse;
+      try {
+        tokens = await fetchDemoTokens(username);
+      } catch {
+        const demoUser = mapDemoUser(username);
+        clearDemoSession();
+        setAuthenticated(true);
+        setUser(demoUser);
+        setInitialized(true);
+        navigate("/workspace");
+        return;
+      }
+
+      saveDemoSession({
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        idToken: tokens.id_token,
+      });
 
       if (keycloak.didInitialize) {
         keycloak.token = tokens.access_token;
@@ -178,7 +219,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             pkceMethod: "S256",
             checkLoginIframe: false,
           })
-          .catch(() => false);
+          .catch(() => {
+            clearDemoSession();
+            return false;
+          });
         await initialization;
       }
 
@@ -195,6 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await keycloak.login({ action: "UPDATE_PASSWORD", redirectUri: window.location.href });
     },
     logout: async () => {
+      clearDemoSession();
       await initializeKeycloak();
       await keycloak.logout({ redirectUri: window.location.origin });
     },

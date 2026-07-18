@@ -76,6 +76,35 @@ Nguồn tham khảo sự kiện mỏ neo (lũ quét Mường Pồn 25/7/2024): C
 - Lưu trữ: bảng `forecast_snapshots` (PostgreSQL), append-only kèm `fetched_at` + `source`; ingest lỗi giữ nguyên snapshot cũ (không blank bản đồ). Không commit dữ liệu ingest vào Git.
 - Mục đích/giới hạn: đầu vào trigger mưa cho tính điểm nguy cơ (FR3); là dự báo mô hình toàn cầu chưa hiệu chỉnh địa phương — không thay thế cảnh báo KTTV/PCTT chính thức.
 
+## Kho dữ liệu kiểm định thiên tai và dự báo lịch sử (ghi nhận 2026-07-18)
+
+- Inventory chuẩn: `data/catalogs/dien_bien_disaster_inventory_v1.json`; các CSV
+  cùng thư mục là view được sinh từ JSON, không phải nguồn độc lập.
+- Phạm vi: lũ quét và sạt lở Điện Biên từ 2021; seed hiện có sự kiện Mường Pồn
+  25/7/2024, đợt Điện Biên Đông 1/8/2025 và một sự kiện ứng viên Phiêng Đất B
+  tháng 6/2022 cần bổ sung báo cáo gốc.
+- Tọa độ tâm xã lấy từ các relation OpenStreetMap ghi cụ thể trong catalog,
+  license ODbL 1.0. Đây là điểm lấy mẫu khí tượng cấp C, không phải điểm thiên
+  tai. Các bản chưa có tọa độ kiểm chứng được lưu `unresolved`, không dùng tọa độ
+  synthetic thay thế.
+- Historical Forecast: `historical-forecast-api.open-meteo.com`; chuỗi giờ ghép
+  từ những giờ đầu của model run, không đại diện dự báo lead 1-7 ngày.
+- Previous Runs: `previous-runs-api.open-meteo.com`; lead 0-7 ngày, phần lớn có từ
+  tháng 01/2024. `issue_time_utc` được suy từ `valid_time - lead_hours` và đánh
+  dấu `issue_time_estimated=true`.
+- Historical Weather: `archive-api.open-meteo.com`, mặc định `best_match` để kết
+  hợp mưa ERA5 và ẩm đất ERA5-Land; đây là reanalysis dùng làm tham chiếu, không
+  phải dự báo đã phát hành. Không ép `models=era5_land` vì kiểm thử ngày
+  24-25/7/2024 cho thấy trường mưa trả NULL.
+- Dữ liệu lưu cả tọa độ yêu cầu và tọa độ grid Open-Meteo trả về. Biến không hỗ
+  trợ giữ NULL và ghi trong `quality_flags`.
+- Raw weather data và CSV xuất cho training nằm ngoài Git tại
+  `data/processed/training/`; DB lưu SHA-256 của mỗi response trong
+  `ingestion_runs`. Không chứa PII.
+- Điều kiện sử dụng: ghi attribution Open-Meteo và kiểm tra gói/Terms trước khi
+  dùng thương mại; dữ liệu Open-Meteo được công bố theo CC BY 4.0, dữ liệu mô
+  hình nguồn có thể có điều kiện bổ sung.
+
 ## `fe/src/features/demo/boundary.ts` — ranh giới xã Mường Pồn (ghi nhận 2026-07-18)
 
 - Nguồn: **OpenStreetMap**, relation `19571212` (boundary administrative "Xã Mường Pồn, Tỉnh Điện Biên"), lấy qua Nominatim API (`polygon_geojson=1`) ngày 2026-07-18.

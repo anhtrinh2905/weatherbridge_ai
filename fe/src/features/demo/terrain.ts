@@ -209,16 +209,21 @@ const LEVEL_RGB: Record<HazardLevel, [number, number, number]> = {
   5: hexToRgb(LEVEL_META[5].color),
 };
 
+/** A raster can show a single hazard or the higher-risk hazard at each pixel. */
+export type RasterLayer = HazardType | "dominant";
+
+export function dominantHazard(flood: RasterSample, landslide: RasterSample): HazardType {
+  return flood.score01 >= landslide.score01 ? "flood" : "landslide";
+}
+
 /**
  * Paint the hazard raster (level color × hillshade) into RGBA pixels. Pixels
  * inside the Mường Pồn boundary get the classified colors; surrounding
  * terrain renders as muted grayscale hillshade for geographic context, like
  * the reference topo map.
  */
-export function renderHazardRaster(out: Uint8ClampedArray, type: HazardType, dayOffset: number): void {
+export function renderHazardRaster(out: Uint8ClampedArray, type: RasterLayer, dayOffset: number): void {
   const t = getTerrain();
-  const { trigger } = hazardDayContext(type, dayOffset);
-  const susc = t.susceptibility[type];
   const size = RASTER_W * RASTER_H;
 
   for (let i = 0; i < size; i += 1) {
@@ -226,8 +231,10 @@ export function renderHazardRaster(out: Uint8ClampedArray, type: HazardType, day
     const shade = t.shade[i];
 
     if (t.mask[i]) {
-      const score = clamp01(combineHazard(susc[i], trigger) + t.jitter[i]);
-      const [r, g, b] = LEVEL_RGB[levelFromScore(score)];
+      const flood = sampleAtIndex(t, i, "flood", dayOffset);
+      const landslide = sampleAtIndex(t, i, "landslide", dayOffset);
+      const sample = type === "dominant" ? (dominantHazard(flood, landslide) === "flood" ? flood : landslide) : type === "flood" ? flood : landslide;
+      const [r, g, b] = LEVEL_RGB[sample.level];
       // multiply by hillshade so relief stays readable under the class colors
       const m = 0.58 + 0.5 * shade;
       out[o] = Math.min(255, r * m);
@@ -264,13 +271,14 @@ export interface RasterSample {
   slopeDeg: number;
 }
 
-/** Inspect a single raster pixel with the same scoring function as the map. */
-export function sampleHazardAt(x: number, y: number, type: HazardType, dayOffset: number): RasterSample {
-  const t = getTerrain();
-  const xi = Math.max(0, Math.min(RASTER_W - 1, Math.round(x)));
-  const yi = Math.max(0, Math.min(RASTER_H - 1, Math.round(y)));
-  const i = yi * RASTER_W + xi;
+export interface RasterInspection {
+  layer: RasterLayer;
+  primary: RasterSample;
+  dominantSource: HazardType;
+  hazards: Record<HazardType, RasterSample>;
+}
 
+function sampleAtIndex(t: TerrainFields, i: number, type: HazardType, dayOffset: number): RasterSample {
   const { trigger, confidence } = hazardDayContext(type, dayOffset);
   const terrain = t.susceptibility[type][i];
   const score01 = clamp01(combineHazard(terrain, trigger) + t.jitter[i]);
@@ -282,5 +290,30 @@ export function sampleHazardAt(x: number, y: number, type: HazardType, dayOffset
     contributions: { terrain, trigger },
     elevationM: Math.round(320 + t.elev[i] * 1250),
     slopeDeg: Math.round(t.slope[i] * 42),
+  };
+}
+
+/** Inspect a single raster pixel with the same scoring function as the map. */
+export function sampleHazardAt(x: number, y: number, type: HazardType, dayOffset: number): RasterSample {
+  const t = getTerrain();
+  const xi = Math.max(0, Math.min(RASTER_W - 1, Math.round(x)));
+  const yi = Math.max(0, Math.min(RASTER_H - 1, Math.round(y)));
+  const i = yi * RASTER_W + xi;
+
+  return sampleAtIndex(t, i, type, dayOffset);
+}
+
+/** Inspect every hazard at a point, preserving the inputs used by the renderer. */
+export function sampleRasterAt(x: number, y: number, layer: RasterLayer, dayOffset: number): RasterInspection {
+  const flood = sampleHazardAt(x, y, "flood", dayOffset);
+  const landslide = sampleHazardAt(x, y, "landslide", dayOffset);
+  const dominantSource = dominantHazard(flood, landslide);
+  const primary = layer === "dominant" ? (dominantSource === "flood" ? flood : landslide) : layer === "flood" ? flood : landslide;
+
+  return {
+    layer,
+    primary,
+    dominantSource,
+    hazards: { flood, landslide },
   };
 }

@@ -1,6 +1,16 @@
 from fastapi import APIRouter
 
-from api.v1.endpoints import admin, ai_jobs, auth, forecasts, health, open_meteo, translations
+from api.v1.endpoints import (
+    admin,
+    ai_jobs,
+    auth,
+    forecasts,
+    hazard_archive,
+    health,
+    notifications,
+    open_meteo,
+    translations,
+)
 
 router = APIRouter()
 router.include_router(health.router, prefix="/health", tags=["health"])
@@ -10,3 +20,7 @@ router.include_router(forecasts.router, prefix="/forecasts", tags=["forecasts"])
 router.include_router(open_meteo.router, prefix="/open-meteo", tags=["open-meteo"])
 router.include_router(admin.router, prefix="/admin", tags=["admin"])
 router.include_router(translations.router, prefix="/translations", tags=["translations"])
+router.include_router(
+    hazard_archive.router, prefix="/admin/hazard-archive", tags=["admin-hazard-archive"]
+)
+router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])

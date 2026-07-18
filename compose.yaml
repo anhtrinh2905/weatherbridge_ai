@@ -169,6 +169,10 @@ services:
     environment:
       <<: *backend-environment
     init: true
+    volumes:
+      # Keep the catalog shipped in the image visible. Only generated outputs
+      # are mounted so a host bind cannot mask /app/data/catalogs.
+      - ./data/processed:/app/data/processed
     depends_on:
       migrate:
         condition: service_completed_successfully

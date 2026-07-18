@@ -187,6 +187,15 @@ ISSUER="$(curl --retry 6 --retry-all-errors --retry-delay 5 -fsS --max-time 30 \
   | jq -r .issuer)"
 test "$ISSUER" = "$AUTH_URL/realms/weather-bridge"
 
+# Code deployment and research-data synchronization are separate operations.
+# The PostgreSQL PVC is authoritative; this idempotent step preserves it while
+# applying the catalog seed and failing the rollout if real training data is
+# unexpectedly absent. Full Open-Meteo collection is explicit, never automatic.
+RESEARCH_DB_SYNC_TARGET=k8s \
+RESEARCH_DB_SYNC_NAMESPACE="$NAMESPACE" \
+RESEARCH_DB_REQUIRE_DATA="${RESEARCH_DB_REQUIRE_DATA:-true}" \
+  "$REPO_DIR/scripts/sync-research-database.sh" --target k8s --namespace "$NAMESPACE"
+
 printf '%s\n' "$TARGET_SHA" > "$STATE_FILE.tmp"
 mv "$STATE_FILE.tmp" "$STATE_FILE"
 trap - ERR

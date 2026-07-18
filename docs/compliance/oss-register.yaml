@@ -34,6 +34,27 @@ components:
     use: optional LLM observability adapter
     modified: false
     notice: THIRD_PARTY_NOTICES.md
+  - name: pywebpush
+    source: https://github.com/web-push-libs/pywebpush
+    commit: "2.3.0"
+    license: MPL-2.0
+    use: W3C Web Push sender for backend notification delivery
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: py-vapid
+    source: https://github.com/mozilla-services/vapid
+    commit: "1.9.4"
+    license: MPL-2.0
+    use: VAPID key handling for Web Push authentication
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: http-ece
+    source: https://github.com/martinthomson/encrypted-content-encoding
+    commit: "1.2.1"
+    license: MIT
+    use: encrypted content encoding for Web Push payloads
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
   - name: ui-ux-pro-max-skill
     source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
     commit: f8ac5e1266dba8354ea96e19994d9f4345e7ec31
@@ -76,5 +97,19 @@ components:
     commit: GLC-2019-update
     license: CC-BY-4.0
     use: open landslide inventory (positive labels, VN subset)
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md
+  - name: open-meteo-historical-weather-products
+    source: https://open-meteo.com/en/docs/historical-forecast-api
+    commit: accessed-2026-07-18
+    license: CC-BY-4.0-with-provider-terms
+    use: historical forecast, previous model runs, and ERA5/ERA5-Land reference data
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md
+  - name: openstreetmap-dien-bien-admin-centroids
+    source: https://www.openstreetmap.org
+    commit: relations-recorded-in-data-catalog-accessed-2026-07-18
+    license: ODbL-1.0
+    use: commune sampling centroids and administrative provenance
     modified: true
     notice: THIRD_PARTY_NOTICES.md
