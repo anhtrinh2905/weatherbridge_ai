@@ -25,6 +25,14 @@ and attribution obligations.
   no Keycloak source is vendored. Custom theme files in `infra/keycloak/themes`
   are original project code.
 
+## Backend and data infrastructure
+
+- GeoAlchemy2 0.20.0: MIT; used for SQLAlchemy PostGIS geometry/geography types.
+- cryptography 46.0.7: Apache-2.0 or BSD-3-Clause; used for application-level
+  AES-GCM encryption of resident fields.
+- PostGIS 3.5 on PostgreSQL 16: GPL-2.0-or-later; consumed through the official
+  `postgis/postgis:16-3.5-alpine` runtime image.
+
 ## AI infrastructure
 
 - LiteLLM gateway: MIT; consumed as a pinned container image and configured via

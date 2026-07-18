@@ -5,10 +5,12 @@ description = "Weather Bridge AI background worker"
 requires-python = ">=3.12,<3.15"
 dependencies = [
   "asyncpg>=0.30.0,<1",
+  "cryptography>=44.0.0,<47",
   "httpx>=0.28.0,<1",
   "langfuse>=3.0.0,<4",
   "pydantic>=2.10.0,<3",
   "pydantic-settings>=2.7.0,<3",
+  "pywebpush>=2.3.0",
   "redis>=6.0.0,<7",
   "sqlalchemy[asyncio]>=2.0.36,<3",
   "structlog>=25.4.0,<26"

@@ -136,14 +136,16 @@ class OpenMeteoService:
                 return min(float(retry_after), 5.0)
             except ValueError:
                 pass
-        return 0.2 * (2**attempt)
+        return float(0.2 * (2**attempt))
 
     @staticmethod
     def _extract_error(response: httpx.Response) -> str:
         try:
             body = response.json()
-            if isinstance(body, dict) and isinstance(body.get("reason"), str):
-                return body["reason"]
+            if isinstance(body, dict):
+                reason = body.get("reason")
+                if isinstance(reason, str):
+                    return reason
         except ValueError:
             pass
         return response.text[:512]

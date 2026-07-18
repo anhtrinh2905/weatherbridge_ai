@@ -12,6 +12,16 @@ services:
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
       KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE:-}
       CORS_ORIGINS: ${CORS_ORIGINS}
+      PII_MODE: ${PII_MODE:-simulated}
+      PII_ENCRYPTION_KEY: ${PII_ENCRYPTION_KEY:-}
+      PII_HASH_KEY: ${PII_HASH_KEY:-}
+      PII_KEY_VERSION: ${PII_KEY_VERSION:-v1}
+      NOTIFICATION_DELIVERY_MODE: ${NOTIFICATION_DELIVERY_MODE:-disabled}
+      WEB_PUSH_SUBJECT: ${WEB_PUSH_SUBJECT:-mailto:dev@weatherbridge.local}
+      WEB_PUSH_VAPID_PUBLIC_KEY: ${WEB_PUSH_VAPID_PUBLIC_KEY:-}
+      OBJECT_STORAGE_BASE_URL: ${OBJECT_STORAGE_BASE_URL:-}
+      OBJECT_STORAGE_SIGNING_KEY: ${OBJECT_STORAGE_SIGNING_KEY:-}
+      OBJECT_STORAGE_URL_TTL_SECONDS: ${OBJECT_STORAGE_URL_TTL_SECONDS:-300}
     restart: unless-stopped
     command: uv run --project /app/be --no-dev uvicorn --app-dir /app/be/src main:app --host 0.0.0.0 --port 8000
 
@@ -22,6 +32,14 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
+      PII_MODE: ${PII_MODE:-simulated}
+      PII_ENCRYPTION_KEY: ${PII_ENCRYPTION_KEY:-}
+      PII_HASH_KEY: ${PII_HASH_KEY:-}
+      PII_KEY_VERSION: ${PII_KEY_VERSION:-v1}
+      NOTIFICATION_DELIVERY_MODE: ${NOTIFICATION_DELIVERY_MODE:-disabled}
+      WEB_PUSH_SUBJECT: ${WEB_PUSH_SUBJECT:-mailto:dev@weatherbridge.local}
+      WEB_PUSH_VAPID_PRIVATE_KEY: ${WEB_PUSH_VAPID_PRIVATE_KEY:-}
+      WEB_PUSH_VAPID_PUBLIC_KEY: ${WEB_PUSH_VAPID_PUBLIC_KEY:-}
     restart: unless-stopped
     command: uv run --project /app/worker --no-dev python /app/worker/src/main.py
 

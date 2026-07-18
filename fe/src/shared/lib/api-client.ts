@@ -50,4 +50,5 @@ export const apiClient = {
   post: <T>(path: string, body?: unknown) => request<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
   put: <T>(path: string, body?: unknown) => request<T>(path, { method: "PUT", body: body === undefined ? undefined : JSON.stringify(body) }),
   postBlob: (path: string, body?: unknown) => requestBlob(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
+  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };

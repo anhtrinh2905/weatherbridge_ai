@@ -4,10 +4,11 @@ from typing import Any
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from api.deps import get_current_user, get_keycloak_admin_client
+from api.deps import get_admin_user_service, get_current_user, get_keycloak_admin_client
 from auth.keycloak import CurrentUser
 from core.config import get_settings
 from main import create_app
+from services.admin_user_service import AdminUserService
 
 
 class FakeKeycloakAdminClient:
@@ -77,6 +78,7 @@ async def _client(role: str, fake: FakeKeycloakAdminClient) -> AsyncIterator[Asy
     app = create_app(get_settings())
     app.dependency_overrides[get_current_user] = lambda: _user(role)
     app.dependency_overrides[get_keycloak_admin_client] = lambda: fake
+    app.dependency_overrides[get_admin_user_service] = lambda: AdminUserService(fake)
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://testserver"
     ) as http_client:

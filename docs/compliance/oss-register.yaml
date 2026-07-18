@@ -55,6 +55,27 @@ components:
     use: encrypted content encoding for Web Push payloads
     modified: false
     notice: THIRD_PARTY_NOTICES.md
+  - name: geoalchemy2
+    source: https://github.com/geoalchemy/geoalchemy2
+    commit: "0.20.0"
+    license: MIT
+    use: SQLAlchemy geometry and geography types for PostGIS
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: cryptography
+    source: https://github.com/pyca/cryptography
+    commit: "46.0.7"
+    license: Apache-2.0-OR-BSD-3-Clause
+    use: AES-GCM encryption for protected resident fields
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: postgis
+    source: https://github.com/postgis/postgis
+    commit: "3.5.x-via-postgis/postgis:16-3.5-alpine"
+    license: GPL-2.0-or-later
+    use: spatial extension in the PostgreSQL application database
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
   - name: ui-ux-pro-max-skill
     source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
     commit: f8ac5e1266dba8354ea96e19994d9f4345e7ec31

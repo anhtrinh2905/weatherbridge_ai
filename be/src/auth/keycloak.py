@@ -1,7 +1,7 @@
 import asyncio
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import httpx
 import jwt
@@ -100,7 +100,7 @@ class KeycloakVerifier:
             async with httpx.AsyncClient(timeout=5) as client:
                 response = await client.get(url)
                 response.raise_for_status()
-                return response.json()
+                return cast(dict[str, Any], response.json())
         except (httpx.HTTPError, ValueError) as exc:
             raise AppError(
                 503, "Identity provider is unavailable", "identity_provider_unavailable"

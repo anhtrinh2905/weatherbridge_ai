@@ -1,20 +1,25 @@
 import { Languages } from "lucide-react";
 import { useState } from "react";
-import { useTranslation, type Locale } from "../i18n/I18nProvider";
+import { machineTranslationsEnabled, useTranslation, type Locale } from "../i18n/I18nProvider";
 import { cn } from "../lib/cn";
 
 // Each language's name is shown in its own script (endonym), not translated per current
 // locale — same convention every language picker uses.
-const OPTIONS: { locale: Locale; label: string; hint?: string }[] = [
+const BASE_OPTIONS: { locale: Locale; label: string; hint?: string }[] = [
   { locale: "vi", label: "Tiếng Việt" },
-  { locale: "hmn", label: "Hmoob", hint: "Dịch máy — chưa qua người Hmông kiểm tra" },
-  { locale: "th", label: "ไทย / Tiếng Thái", hint: "Chưa có bản dịch — hiện tiếng Việt" },
 ];
+
+const MACHINE_HMONG_OPTION: { locale: Locale; label: string; hint: string } = {
+  locale: "hmn",
+  label: "Hmoob",
+  hint: "Dịch máy — chưa qua người Hmông kiểm tra",
+};
 
 export function LanguageSwitcher() {
   const { locale, setLocale } = useTranslation();
   const [open, setOpen] = useState(false);
-  const current = OPTIONS.find((o) => o.locale === locale) ?? OPTIONS[0];
+  const options = machineTranslationsEnabled() ? [...BASE_OPTIONS, MACHINE_HMONG_OPTION] : BASE_OPTIONS;
+  const current = options.find((o) => o.locale === locale) ?? options[0];
 
   return (
     <div className="relative">
@@ -37,7 +42,7 @@ export function LanguageSwitcher() {
             aria-label="Ngôn ngữ"
             className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-border-strong bg-surface-2 py-1 shadow-lg"
           >
-            {OPTIONS.map((option) => (
+            {options.map((option) => (
               <li key={option.locale}>
                 <button
                   type="button"

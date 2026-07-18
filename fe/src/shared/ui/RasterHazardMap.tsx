@@ -125,7 +125,13 @@ export function RasterHazardMap({
     const zoom = 2;
     const pointX = (focusPoint.x / RASTER_W) * rect.width;
     const pointY = (focusPoint.y / RASTER_H) * rect.height;
-    setViewport(clampViewport({ zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom }, rect.width, rect.height));
+    setViewport(
+      clampViewport(
+        { zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom },
+        rect.width,
+        rect.height,
+      ),
+    );
   }, [focusPoint, focusRequest]);
 
   const containerRect = () => containerRef.current?.getBoundingClientRect() ?? null;

@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.deps import get_current_user
 from auth.keycloak import CurrentUser
 from core.config import Settings, get_settings
+from database.session import get_db
+from services.profile_service import ProfileService
 
 router = APIRouter()
 
@@ -35,7 +38,11 @@ async def identity_config(settings: Settings = Depends(get_settings)) -> Identit
 
 
 @router.get("/me", response_model=CurrentUserResponse)
-async def me(user: CurrentUser = Depends(get_current_user)) -> CurrentUserResponse:
+async def me(
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> CurrentUserResponse:
+    await ProfileService(session).sync_user(user)
     return CurrentUserResponse(
         id=user.id,
         email=user.email,

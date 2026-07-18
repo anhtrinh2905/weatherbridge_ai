@@ -6,6 +6,7 @@ import viLocale from "./locales/vi.json";
 export type Locale = "vi" | "hmn" | "th";
 
 const STORAGE_KEY = "wba:locale";
+const MACHINE_TRANSLATIONS_ENABLED = import.meta.env.VITE_ENABLE_MACHINE_TRANSLATIONS === "true";
 
 /**
  * Thái Điện Biên (Tai Dam) has no viable text machine-translation (see docs/architecture
@@ -35,6 +36,7 @@ const I18nContext = createContext<I18nContextValue | undefined>(undefined);
 
 function readStoredLocale(): Locale {
   const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored === "hmn" && !MACHINE_TRANSLATIONS_ENABLED) return "vi";
   return stored === "vi" || stored === "hmn" || stored === "th" ? stored : "vi";
 }
 
@@ -49,8 +51,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(readStoredLocale);
 
   const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
-    localStorage.setItem(STORAGE_KEY, next);
+    const resolved = next === "hmn" && !MACHINE_TRANSLATIONS_ENABLED ? "vi" : next;
+    setLocaleState(resolved);
+    localStorage.setItem(STORAGE_KEY, resolved);
   }, []);
 
   const t = useCallback(
@@ -70,4 +73,8 @@ export function useTranslation(): I18nContextValue {
   const ctx = useContext(I18nContext);
   if (!ctx) throw new Error("useTranslation must be used within I18nProvider");
   return ctx;
+}
+
+export function machineTranslationsEnabled() {
+  return MACHINE_TRANSLATIONS_ENABLED;
 }
