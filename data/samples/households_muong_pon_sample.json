@@ -1,0 +1,3579 @@
+{
+  "_meta": {
+    "description": "Dữ liệu HƯ CẤU (synthetic) cho demo — không phải người dân thật. Xã Mường Pồn (sáp nhập với Mường Mươn, hiệu lực 1/7/2025), toạ độ nằm trong ranh giới xã thật, có thật về địa hình. Tên, tuổi, nghề nghiệp là giả định.",
+    "commune": "Xã Mường Pồn, tỉnh Điện Biên (sau sáp nhập 1/7/2025)",
+    "flood_disaster_reference": "Lũ quét rạng sáng 25/7/2024 tại các bản Mường Pồn 1, Mường Pồn 2, Lĩnh, Tin Tốc — 4 người chết, 3 mất tích, >100 nhà bị ảnh hưởng (nguồn báo chí công khai, xem docs/compliance/data-provenance.md)",
+    "elevation_source": "Open-Meteo Elevation API (DEM 90m), truy vấn 2026-07-17",
+    "verification_note": "Giả định đã được cán bộ xã xác thực trong kịch bản demo — is_exercise=true.",
+    "is_exercise": true,
+    "total_households": 200,
+    "villages": [
+      {
+        "name": "Mường Pồn 1",
+        "centroid_lat": 21.59,
+        "centroid_lon": 103.025,
+        "household_count": 35,
+        "flood_history_2024": true
+      },
+      {
+        "name": "Mường Pồn 2",
+        "centroid_lat": 21.595,
+        "centroid_lon": 103.04,
+        "household_count": 30,
+        "flood_history_2024": true
+      },
+      {
+        "name": "Lĩnh",
+        "centroid_lat": 21.58,
+        "centroid_lon": 103.015,
+        "household_count": 30,
+        "flood_history_2024": true
+      },
+      {
+        "name": "Tin Tốc",
+        "centroid_lat": 21.605,
+        "centroid_lon": 103.05,
+        "household_count": 25,
+        "flood_history_2024": true
+      },
+      {
+        "name": "Huổi Chan 1",
+        "centroid_lat": 21.615,
+        "centroid_lon": 103.01,
+        "household_count": 16,
+        "flood_history_2024": false
+      },
+      {
+        "name": "Huổi Chan 2",
+        "centroid_lat": 21.62,
+        "centroid_lon": 103.005,
+        "household_count": 16,
+        "flood_history_2024": false
+      },
+      {
+        "name": "Púng Giắt 1",
+        "centroid_lat": 21.57,
+        "centroid_lon": 103.06,
+        "household_count": 16,
+        "flood_history_2024": false
+      },
+      {
+        "name": "Púng Giắt 2",
+        "centroid_lat": 21.565,
+        "centroid_lon": 103.07,
+        "household_count": 16,
+        "flood_history_2024": false
+      },
+      {
+        "name": "Đỉnh Đèo",
+        "centroid_lat": 21.63,
+        "centroid_lon": 103.02,
+        "household_count": 16,
+        "flood_history_2024": false
+      }
+    ]
+  },
+  "households": [
+    {
+      "household_id": "HH-MƯỜNGPỒN1-001",
+      "full_name": "Sùng Thị Máy",
+      "age": 46,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.595692,
+        "lon": 103.02597,
+        "elevation_m": 531.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-002",
+      "full_name": "Trần Văn Sơn",
+      "age": 20,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.590633,
+        "lon": 103.029007,
+        "elevation_m": 543.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-003",
+      "full_name": "Nguyễn Văn Cường",
+      "age": 51,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.587251,
+        "lon": 103.019041,
+        "elevation_m": 651.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-004",
+      "full_name": "Cút Văn Đôi",
+      "age": 67,
+      "ethnic_group_demo": "khomu",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "khong_dien_thoai"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.595817,
+        "lon": 103.028803,
+        "elevation_m": 517.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-005",
+      "full_name": "Nguyễn Thị Lan",
+      "age": 64,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.5946,
+        "lon": 103.025937,
+        "elevation_m": 520.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-006",
+      "full_name": "Lò Văn Inh",
+      "age": 60,
+      "ethnic_group_demo": "thai",
+      "occupation": "giao_vien",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.586632,
+        "lon": 103.024878,
+        "elevation_m": 471.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-007",
+      "full_name": "Lầu A Tủa",
+      "age": 42,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.590371,
+        "lon": 103.026198,
+        "elevation_m": 488.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-008",
+      "full_name": "Quàng Thị Liên",
+      "age": 58,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.58442,
+        "lon": 103.023259,
+        "elevation_m": 484.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-009",
+      "full_name": "Sùng A Rùa",
+      "age": 59,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.587135,
+        "lon": 103.023064,
+        "elevation_m": 518.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-010",
+      "full_name": "Quàng Thị Liên",
+      "age": 45,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.596479,
+        "lon": 103.025285,
+        "elevation_m": 553.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-011",
+      "full_name": "Quàng Văn Chinh",
+      "age": 30,
+      "ethnic_group_demo": "thai",
+      "occupation": "giao_vien",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.587929,
+        "lon": 103.018408,
+        "elevation_m": 636.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-012",
+      "full_name": "Lê Thị Hà",
+      "age": 36,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.592353,
+        "lon": 103.028747,
+        "elevation_m": 603.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-013",
+      "full_name": "Sùng Thị Máy",
+      "age": 38,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.58635,
+        "lon": 103.031488,
+        "elevation_m": 584.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-014",
+      "full_name": "Trần Văn Sơn",
+      "age": 59,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.591802,
+        "lon": 103.026348,
+        "elevation_m": 510.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-015",
+      "full_name": "Mùa Thị Sông",
+      "age": 40,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.584725,
+        "lon": 103.020672,
+        "elevation_m": 560.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-016",
+      "full_name": "Trần Văn Nam",
+      "age": 28,
+      "ethnic_group_demo": "kinh",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.589178,
+        "lon": 103.018093,
+        "elevation_m": 690.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-017",
+      "full_name": "Vừ Thị Mỷ",
+      "age": 60,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.595203,
+        "lon": 103.024046,
+        "elevation_m": 568.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-018",
+      "full_name": "Vừ A Tếnh",
+      "age": 38,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.585801,
+        "lon": 103.023468,
+        "elevation_m": 478.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-019",
+      "full_name": "Lầu A Chua",
+      "age": 29,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.585174,
+        "lon": 103.020216,
+        "elevation_m": 593.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-020",
+      "full_name": "Lò Thị Nga",
+      "age": 32,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.584084,
+        "lon": 103.021639,
+        "elevation_m": 543.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-021",
+      "full_name": "Giàng A Páo",
+      "age": 25,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.595801,
+        "lon": 103.026847,
+        "elevation_m": 512.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-022",
+      "full_name": "Cút Thị Xuân",
+      "age": 83,
+      "ethnic_group_demo": "khomu",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.589157,
+        "lon": 103.028587,
+        "elevation_m": 533.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-023",
+      "full_name": "Moong Thị Piêng",
+      "age": 51,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.59022,
+        "lon": 103.027177,
+        "elevation_m": 515.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-024",
+      "full_name": "Thào Thị Dợ",
+      "age": 55,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.589599,
+        "lon": 103.027425,
+        "elevation_m": 517.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-025",
+      "full_name": "Cút Thị Mai",
+      "age": 22,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.586204,
+        "lon": 103.02964,
+        "elevation_m": 574.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-026",
+      "full_name": "Cút Thị Xuân",
+      "age": 29,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.591104,
+        "lon": 103.029564,
+        "elevation_m": 559.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-027",
+      "full_name": "Cút Văn Sáng",
+      "age": 82,
+      "ethnic_group_demo": "khomu",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "khong_dien_thoai",
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.593433,
+        "lon": 103.023448,
+        "elevation_m": 542.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-028",
+      "full_name": "Thào Thị Chá",
+      "age": 62,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu",
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.585509,
+        "lon": 103.021049,
+        "elevation_m": 542.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-029",
+      "full_name": "Lê Thị Hà",
+      "age": 39,
+      "ethnic_group_demo": "kinh",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.58961,
+        "lon": 103.021821,
+        "elevation_m": 592.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-030",
+      "full_name": "Thào Thị Chá",
+      "age": 45,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.587883,
+        "lon": 103.027153,
+        "elevation_m": 498.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-031",
+      "full_name": "Quàng Văn Chinh",
+      "age": 62,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "khong_dien_thoai"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.58543,
+        "lon": 103.019059,
+        "elevation_m": 622.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-032",
+      "full_name": "Thào A Súa",
+      "age": 49,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.587852,
+        "lon": 103.019697,
+        "elevation_m": 601.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-033",
+      "full_name": "Mùa A Tủa",
+      "age": 59,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.591076,
+        "lon": 103.017979,
+        "elevation_m": 598.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-034",
+      "full_name": "Lê Thị Thu",
+      "age": 34,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.593379,
+        "lon": 103.025743,
+        "elevation_m": 513.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN1-035",
+      "full_name": "Cút Thị Xuân",
+      "age": 64,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 1",
+      "location": {
+        "lat": 21.58955,
+        "lon": 103.029326,
+        "elevation_m": 555.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-001",
+      "full_name": "Sùng Thị Súa",
+      "age": 30,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.591307,
+        "lon": 103.040287,
+        "elevation_m": 770.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-002",
+      "full_name": "Thào Thị Dợ",
+      "age": 33,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.598894,
+        "lon": 103.033929,
+        "elevation_m": 507.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-003",
+      "full_name": "Vừ Thị Dua",
+      "age": 79,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.593058,
+        "lon": 103.041088,
+        "elevation_m": 675.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-004",
+      "full_name": "Thào Thị Chá",
+      "age": 53,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.59879,
+        "lon": 103.040091,
+        "elevation_m": 633.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-005",
+      "full_name": "Lê Thị Thu",
+      "age": 30,
+      "ethnic_group_demo": "kinh",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.590878,
+        "lon": 103.034835,
+        "elevation_m": 676.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-006",
+      "full_name": "Lê Thị Thu",
+      "age": 45,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.594797,
+        "lon": 103.036039,
+        "elevation_m": 636.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-007",
+      "full_name": "Thào Thị Dợ",
+      "age": 38,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.59019,
+        "lon": 103.042527,
+        "elevation_m": 828.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-008",
+      "full_name": "Sùng A Rùa",
+      "age": 51,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.595631,
+        "lon": 103.040347,
+        "elevation_m": 735.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-009",
+      "full_name": "Sùng Thị Súa",
+      "age": 64,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.600576,
+        "lon": 103.035865,
+        "elevation_m": 479.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-010",
+      "full_name": "Cút Văn Đôi",
+      "age": 36,
+      "ethnic_group_demo": "khomu",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.597698,
+        "lon": 103.035064,
+        "elevation_m": 514.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-011",
+      "full_name": "Trần Văn Sơn",
+      "age": 73,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don",
+        "khong_dien_thoai",
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.598286,
+        "lon": 103.044744,
+        "elevation_m": 699.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-012",
+      "full_name": "Moong Thị Hoa",
+      "age": 62,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.594079,
+        "lon": 103.042584,
+        "elevation_m": 727.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-013",
+      "full_name": "Giàng A Chinh",
+      "age": 32,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.596953,
+        "lon": 103.032957,
+        "elevation_m": 449.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-014",
+      "full_name": "Cút Văn Đôi",
+      "age": 73,
+      "ethnic_group_demo": "khomu",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.600383,
+        "lon": 103.035734,
+        "elevation_m": 496.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-015",
+      "full_name": "Nguyễn Thị Hương",
+      "age": 54,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.59501,
+        "lon": 103.043553,
+        "elevation_m": 786.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-016",
+      "full_name": "Lầu A Chua",
+      "age": 56,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.595435,
+        "lon": 103.037559,
+        "elevation_m": 662.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-017",
+      "full_name": "Trần Văn Sơn",
+      "age": 59,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.589362,
+        "lon": 103.044044,
+        "elevation_m": 857.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-018",
+      "full_name": "Quàng Văn Nam",
+      "age": 47,
+      "ethnic_group_demo": "thai",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.598205,
+        "lon": 103.045041,
+        "elevation_m": 717.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-019",
+      "full_name": "Giàng A Lử",
+      "age": 35,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.599583,
+        "lon": 103.034381,
+        "elevation_m": 502.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-020",
+      "full_name": "Mùa Thị Say",
+      "age": 39,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.597653,
+        "lon": 103.032893,
+        "elevation_m": 479.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-021",
+      "full_name": "Nguyễn Văn Hùng",
+      "age": 62,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.601685,
+        "lon": 103.041129,
+        "elevation_m": 517.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-022",
+      "full_name": "Thào Thị Dợ",
+      "age": 60,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.591946,
+        "lon": 103.045785,
+        "elevation_m": 731.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-023",
+      "full_name": "Lầu A Chua",
+      "age": 76,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.597241,
+        "lon": 103.032921,
+        "elevation_m": 449.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-024",
+      "full_name": "Cút Thị Xuân",
+      "age": 63,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.597496,
+        "lon": 103.033313,
+        "elevation_m": 458.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-025",
+      "full_name": "Moong Văn Sơn",
+      "age": 78,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.595866,
+        "lon": 103.036106,
+        "elevation_m": 643.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-026",
+      "full_name": "Lầu A Chua",
+      "age": 56,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.596645,
+        "lon": 103.038166,
+        "elevation_m": 670.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-027",
+      "full_name": "Thào A Súa",
+      "age": 28,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.596151,
+        "lon": 103.047075,
+        "elevation_m": 828.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-028",
+      "full_name": "Lò Văn Dũng",
+      "age": 20,
+      "ethnic_group_demo": "thai",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.588689,
+        "lon": 103.041729,
+        "elevation_m": 777.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-029",
+      "full_name": "Sùng Thị Súa",
+      "age": 49,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.596119,
+        "lon": 103.035891,
+        "elevation_m": 643.0
+      }
+    },
+    {
+      "household_id": "HH-MƯỜNGPỒN2-030",
+      "full_name": "Quàng Thị Thu",
+      "age": 32,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Mường Pồn 2",
+      "location": {
+        "lat": 21.5984,
+        "lon": 103.040548,
+        "elevation_m": 633.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-001",
+      "full_name": "Trần Văn Sơn",
+      "age": 27,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.585728,
+        "lon": 103.013343,
+        "elevation_m": 568.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-002",
+      "full_name": "Vừ A Rua",
+      "age": 49,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.57901,
+        "lon": 103.010236,
+        "elevation_m": 558.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-003",
+      "full_name": "Cút Thị Mai",
+      "age": 55,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.579276,
+        "lon": 103.01301,
+        "elevation_m": 424.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-004",
+      "full_name": "Sùng Thị Dua",
+      "age": 83,
+      "ethnic_group_demo": "mong",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.584577,
+        "lon": 103.018667,
+        "elevation_m": 586.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-005",
+      "full_name": "Cút Văn Đôi",
+      "age": 38,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.583733,
+        "lon": 103.009496,
+        "elevation_m": 452.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-006",
+      "full_name": "Lò Văn Inh",
+      "age": 43,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.584046,
+        "lon": 103.01914,
+        "elevation_m": 547.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-007",
+      "full_name": "Giàng A Chinh",
+      "age": 57,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.581456,
+        "lon": 103.007473,
+        "elevation_m": 516.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-008",
+      "full_name": "Moong Thị Piêng",
+      "age": 37,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.576176,
+        "lon": 103.016986,
+        "elevation_m": 472.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-009",
+      "full_name": "Quàng Thị Xuân",
+      "age": 30,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.575616,
+        "lon": 103.014823,
+        "elevation_m": 547.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-010",
+      "full_name": "Giàng A Vảng",
+      "age": 45,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.582466,
+        "lon": 103.01133,
+        "elevation_m": 451.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-011",
+      "full_name": "Lầu A Tủa",
+      "age": 50,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.585151,
+        "lon": 103.019326,
+        "elevation_m": 615.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-012",
+      "full_name": "Nguyễn Văn Cường",
+      "age": 65,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.575348,
+        "lon": 103.009283,
+        "elevation_m": 599.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-013",
+      "full_name": "Sùng Thị Chá",
+      "age": 31,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.578261,
+        "lon": 103.008197,
+        "elevation_m": 544.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-014",
+      "full_name": "Sùng A Páo",
+      "age": 64,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.579517,
+        "lon": 103.009912,
+        "elevation_m": 537.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-015",
+      "full_name": "Moong Văn Sơn",
+      "age": 42,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.579109,
+        "lon": 103.022555,
+        "elevation_m": 461.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-016",
+      "full_name": "Sùng Thị Súa",
+      "age": 73,
+      "ethnic_group_demo": "mong",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu",
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.573706,
+        "lon": 103.013345,
+        "elevation_m": 524.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-017",
+      "full_name": "Mùa A Tủa",
+      "age": 62,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.575394,
+        "lon": 103.017122,
+        "elevation_m": 462.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-018",
+      "full_name": "Thào Thị Dợ",
+      "age": 57,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.579289,
+        "lon": 103.021582,
+        "elevation_m": 434.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-019",
+      "full_name": "Lầu A Chua",
+      "age": 27,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.583231,
+        "lon": 103.008748,
+        "elevation_m": 437.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-020",
+      "full_name": "Nguyễn Văn Hùng",
+      "age": 43,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.581561,
+        "lon": 103.013455,
+        "elevation_m": 446.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-021",
+      "full_name": "Moong Thị Piêng",
+      "age": 37,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.576528,
+        "lon": 103.015842,
+        "elevation_m": 522.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-022",
+      "full_name": "Quàng Văn Đôi",
+      "age": 47,
+      "ethnic_group_demo": "thai",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.57592,
+        "lon": 103.019173,
+        "elevation_m": 431.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-023",
+      "full_name": "Mùa Thị Say",
+      "age": 44,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.580724,
+        "lon": 103.013942,
+        "elevation_m": 425.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-024",
+      "full_name": "Cút Thị Xuân",
+      "age": 46,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.580725,
+        "lon": 103.018212,
+        "elevation_m": 471.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-025",
+      "full_name": "Thào Thị Chá",
+      "age": 60,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.576539,
+        "lon": 103.020837,
+        "elevation_m": 438.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-026",
+      "full_name": "Moong Thị Piêng",
+      "age": 39,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.577958,
+        "lon": 103.008067,
+        "elevation_m": 544.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-027",
+      "full_name": "Moong Văn Piêng",
+      "age": 21,
+      "ethnic_group_demo": "khomu",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.58378,
+        "lon": 103.01526,
+        "elevation_m": 592.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-028",
+      "full_name": "Cút Thị Mai",
+      "age": 69,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.586026,
+        "lon": 103.018866,
+        "elevation_m": 651.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-029",
+      "full_name": "Mùa A Tủa",
+      "age": 52,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.5739,
+        "lon": 103.015472,
+        "elevation_m": 475.0
+      }
+    },
+    {
+      "household_id": "HH-LĨNH-030",
+      "full_name": "Moong Văn Sơn",
+      "age": 64,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Lĩnh",
+      "location": {
+        "lat": 21.577712,
+        "lon": 103.008716,
+        "elevation_m": 535.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-001",
+      "full_name": "Lê Thị Hà",
+      "age": 57,
+      "ethnic_group_demo": "kinh",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.608864,
+        "lon": 103.044601,
+        "elevation_m": 627.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-002",
+      "full_name": "Vừ A Rua",
+      "age": 31,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.605986,
+        "lon": 103.045607,
+        "elevation_m": 688.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-003",
+      "full_name": "Quàng Thị Ún",
+      "age": 22,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.608725,
+        "lon": 103.050065,
+        "elevation_m": 805.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-004",
+      "full_name": "Mùa A Dơ",
+      "age": 35,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.608208,
+        "lon": 103.044368,
+        "elevation_m": 659.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-005",
+      "full_name": "Sùng A Tống",
+      "age": 24,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.602057,
+        "lon": 103.045017,
+        "elevation_m": 681.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-006",
+      "full_name": "Nguyễn Văn Thắng",
+      "age": 42,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "sat_vung_nguy_co"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.59867,
+        "lon": 103.052376,
+        "elevation_m": 843.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-007",
+      "full_name": "Moong Văn Piêng",
+      "age": 36,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.602517,
+        "lon": 103.054687,
+        "elevation_m": 830.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-008",
+      "full_name": "Nguyễn Văn Bình",
+      "age": 53,
+      "ethnic_group_demo": "kinh",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.600487,
+        "lon": 103.054721,
+        "elevation_m": 806.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-009",
+      "full_name": "Sùng Thị Súa",
+      "age": 32,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.609752,
+        "lon": 103.044529,
+        "elevation_m": 611.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-010",
+      "full_name": "Mùa A Tủa",
+      "age": 51,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.605502,
+        "lon": 103.057658,
+        "elevation_m": 979.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-011",
+      "full_name": "Lò Thị Diệp",
+      "age": 44,
+      "ethnic_group_demo": "thai",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.607756,
+        "lon": 103.046228,
+        "elevation_m": 731.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-012",
+      "full_name": "Thào A Súa",
+      "age": 65,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.603081,
+        "lon": 103.054519,
+        "elevation_m": 830.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-013",
+      "full_name": "Giàng A Chinh",
+      "age": 67,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.609241,
+        "lon": 103.047241,
+        "elevation_m": 666.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-014",
+      "full_name": "Giàng A Chứ",
+      "age": 46,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.609438,
+        "lon": 103.049652,
+        "elevation_m": 747.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-015",
+      "full_name": "Cút Thị Mai",
+      "age": 43,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.601295,
+        "lon": 103.044366,
+        "elevation_m": 624.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-016",
+      "full_name": "Moong Thị Piêng",
+      "age": 47,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.607742,
+        "lon": 103.049337,
+        "elevation_m": 822.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-017",
+      "full_name": "Giàng A Vảng",
+      "age": 51,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.6075,
+        "lon": 103.049405,
+        "elevation_m": 822.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-018",
+      "full_name": "Thào Thị Chá",
+      "age": 33,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.608354,
+        "lon": 103.052634,
+        "elevation_m": 908.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-019",
+      "full_name": "Vừ Thị Mỷ",
+      "age": 49,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.610367,
+        "lon": 103.054178,
+        "elevation_m": 963.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-020",
+      "full_name": "Nguyễn Thị Hạnh",
+      "age": 65,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.611845,
+        "lon": 103.050712,
+        "elevation_m": 744.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-021",
+      "full_name": "Mùa A Tủa",
+      "age": 34,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.606885,
+        "lon": 103.047866,
+        "elevation_m": 763.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-022",
+      "full_name": "Moong Thị Hoa",
+      "age": 83,
+      "ethnic_group_demo": "khomu",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.611328,
+        "lon": 103.053459,
+        "elevation_m": 914.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-023",
+      "full_name": "Cút Thị Mai",
+      "age": 35,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.604399,
+        "lon": 103.056822,
+        "elevation_m": 933.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-024",
+      "full_name": "Nguyễn Thị Hương",
+      "age": 43,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.60045,
+        "lon": 103.053675,
+        "elevation_m": 802.0
+      }
+    },
+    {
+      "household_id": "HH-TINTỐC-025",
+      "full_name": "Moong Văn Sơn",
+      "age": 32,
+      "ethnic_group_demo": "khomu",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Tin Tốc",
+      "location": {
+        "lat": 21.604032,
+        "lon": 103.051935,
+        "elevation_m": 848.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-001",
+      "full_name": "Vừ A Rua",
+      "age": 74,
+      "ethnic_group_demo": "mong",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.620374,
+        "lon": 103.012312,
+        "elevation_m": 1039.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-002",
+      "full_name": "Quàng Văn Đôi",
+      "age": 49,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.61871,
+        "lon": 103.009192,
+        "elevation_m": 976.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-003",
+      "full_name": "Moong Văn Sơn",
+      "age": 28,
+      "ethnic_group_demo": "khomu",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.618156,
+        "lon": 103.003254,
+        "elevation_m": 909.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-004",
+      "full_name": "Lê Thị Hà",
+      "age": 27,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.615515,
+        "lon": 103.012281,
+        "elevation_m": 789.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-005",
+      "full_name": "Thào Thị Dợ",
+      "age": 57,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.620669,
+        "lon": 103.00888,
+        "elevation_m": 950.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-006",
+      "full_name": "Quàng Văn Chinh",
+      "age": 35,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.614188,
+        "lon": 103.011509,
+        "elevation_m": 792.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-007",
+      "full_name": "Nguyễn Thị Hạnh",
+      "age": 46,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.61665,
+        "lon": 103.002498,
+        "elevation_m": 830.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-008",
+      "full_name": "Cút Văn Đôi",
+      "age": 64,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "khong_dien_thoai"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.61657,
+        "lon": 103.006921,
+        "elevation_m": 945.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-009",
+      "full_name": "Trần Văn Nam",
+      "age": 40,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.610406,
+        "lon": 103.007019,
+        "elevation_m": 911.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-010",
+      "full_name": "Moong Văn Piêng",
+      "age": 32,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.615693,
+        "lon": 103.01695,
+        "elevation_m": 699.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-011",
+      "full_name": "Lê Thị Hà",
+      "age": 35,
+      "ethnic_group_demo": "kinh",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.616525,
+        "lon": 103.003378,
+        "elevation_m": 848.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-012",
+      "full_name": "Quàng Văn Chinh",
+      "age": 31,
+      "ethnic_group_demo": "thai",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.614051,
+        "lon": 103.015897,
+        "elevation_m": 817.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-013",
+      "full_name": "Thào A Súa",
+      "age": 63,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.622127,
+        "lon": 103.009398,
+        "elevation_m": 920.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-014",
+      "full_name": "Lầu A Chua",
+      "age": 53,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.61659,
+        "lon": 103.004565,
+        "elevation_m": 870.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-015",
+      "full_name": "Lò Thị Sen",
+      "age": 48,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.616596,
+        "lon": 103.008088,
+        "elevation_m": 953.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN1-016",
+      "full_name": "Sùng Thị Chá",
+      "age": 40,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 1",
+      "location": {
+        "lat": 21.613355,
+        "lon": 103.012188,
+        "elevation_m": 719.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-001",
+      "full_name": "Nguyễn Văn Hùng",
+      "age": 35,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.615538,
+        "lon": 103.01027,
+        "elevation_m": 856.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-002",
+      "full_name": "Lò Thị Kia",
+      "age": 80,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.614376,
+        "lon": 103.001961,
+        "elevation_m": 770.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-003",
+      "full_name": "Cút Văn Sáng",
+      "age": 33,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.623645,
+        "lon": 102.999243,
+        "elevation_m": 649.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-004",
+      "full_name": "Nguyễn Văn Cường",
+      "age": 45,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.622966,
+        "lon": 102.998043,
+        "elevation_m": 736.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-005",
+      "full_name": "Nguyễn Thị Lan",
+      "age": 75,
+      "ethnic_group_demo": "kinh",
+      "occupation": "khong_co",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.616476,
+        "lon": 103.000256,
+        "elevation_m": 813.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-006",
+      "full_name": "Quàng Thị Xuân",
+      "age": 53,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.621054,
+        "lon": 103.004459,
+        "elevation_m": 808.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-007",
+      "full_name": "Cút Thị Xuân",
+      "age": 48,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.619282,
+        "lon": 103.012018,
+        "elevation_m": 1013.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-008",
+      "full_name": "Lò Thị Nga",
+      "age": 68,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.619104,
+        "lon": 103.001851,
+        "elevation_m": 827.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-009",
+      "full_name": "Trần Văn Sơn",
+      "age": 51,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.617857,
+        "lon": 103.008641,
+        "elevation_m": 978.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-010",
+      "full_name": "Sùng A Rùa",
+      "age": 49,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.620385,
+        "lon": 103.004558,
+        "elevation_m": 838.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-011",
+      "full_name": "Quàng Thị Thu",
+      "age": 51,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.615596,
+        "lon": 103.008406,
+        "elevation_m": 913.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-012",
+      "full_name": "Mùa A Tủa",
+      "age": 47,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.618181,
+        "lon": 103.002832,
+        "elevation_m": 909.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-013",
+      "full_name": "Cút Văn Sáng",
+      "age": 38,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.619969,
+        "lon": 103.003643,
+        "elevation_m": 828.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-014",
+      "full_name": "Trần Văn Nam",
+      "age": 35,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.617072,
+        "lon": 103.006736,
+        "elevation_m": 966.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-015",
+      "full_name": "Nguyễn Thị Lan",
+      "age": 30,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.617118,
+        "lon": 103.008299,
+        "elevation_m": 980.0
+      }
+    },
+    {
+      "household_id": "HH-HUỔICHAN2-016",
+      "full_name": "Trần Văn Sơn",
+      "age": 62,
+      "ethnic_group_demo": "kinh",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Huổi Chan 2",
+      "location": {
+        "lat": 21.621027,
+        "lon": 102.998508,
+        "elevation_m": 714.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-001",
+      "full_name": "Moong Văn Sơn",
+      "age": 47,
+      "ethnic_group_demo": "khomu",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.565784,
+        "lon": 103.054306,
+        "elevation_m": 1053.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-002",
+      "full_name": "Trần Văn Nam",
+      "age": 80,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.566822,
+        "lon": 103.066897,
+        "elevation_m": 1232.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-003",
+      "full_name": "Mùa A Dơ",
+      "age": 47,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.567133,
+        "lon": 103.066987,
+        "elevation_m": 1232.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-004",
+      "full_name": "Trần Văn Sơn",
+      "age": 69,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.565311,
+        "lon": 103.060997,
+        "elevation_m": 1209.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-005",
+      "full_name": "Lê Thị Thu",
+      "age": 63,
+      "ethnic_group_demo": "kinh",
+      "occupation": "tai_xe",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "khong_dien_thoai"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.571644,
+        "lon": 103.054101,
+        "elevation_m": 988.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-006",
+      "full_name": "Trần Văn Sơn",
+      "age": 19,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.566688,
+        "lon": 103.064779,
+        "elevation_m": 1153.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-007",
+      "full_name": "Trần Văn Sơn",
+      "age": 59,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.568093,
+        "lon": 103.060503,
+        "elevation_m": 1172.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-008",
+      "full_name": "Lầu A Chua",
+      "age": 75,
+      "ethnic_group_demo": "mong",
+      "occupation": "khong_co",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.569051,
+        "lon": 103.061104,
+        "elevation_m": 1154.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-009",
+      "full_name": "Sùng Thị Chá",
+      "age": 35,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.567627,
+        "lon": 103.056724,
+        "elevation_m": 1177.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-010",
+      "full_name": "Quàng Thị Bua",
+      "age": 59,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.576009,
+        "lon": 103.064117,
+        "elevation_m": 1153.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-011",
+      "full_name": "Nguyễn Thị Lan",
+      "age": 35,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.565845,
+        "lon": 103.063965,
+        "elevation_m": 1116.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-012",
+      "full_name": "Nguyễn Thị Lan",
+      "age": 28,
+      "ethnic_group_demo": "kinh",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.575265,
+        "lon": 103.058326,
+        "elevation_m": 1197.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-013",
+      "full_name": "Vừ A Tếnh",
+      "age": 54,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.575991,
+        "lon": 103.061698,
+        "elevation_m": 1138.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-014",
+      "full_name": "Mùa A Dơ",
+      "age": 38,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.563813,
+        "lon": 103.056784,
+        "elevation_m": 1230.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-015",
+      "full_name": "Nguyễn Văn Cường",
+      "age": 44,
+      "ethnic_group_demo": "kinh",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.567529,
+        "lon": 103.057939,
+        "elevation_m": 1229.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT1-016",
+      "full_name": "Cút Văn Đôi",
+      "age": 38,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 1",
+      "location": {
+        "lat": 21.574924,
+        "lon": 103.058559,
+        "elevation_m": 1210.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-001",
+      "full_name": "Giàng A Vảng",
+      "age": 54,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.571375,
+        "lon": 103.072332,
+        "elevation_m": 1394.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-002",
+      "full_name": "Quàng Văn Chinh",
+      "age": 35,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.561552,
+        "lon": 103.073888,
+        "elevation_m": 1253.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-003",
+      "full_name": "Nguyễn Thị Hạnh",
+      "age": 44,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.563327,
+        "lon": 103.062728,
+        "elevation_m": 1223.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-004",
+      "full_name": "Lò Thị Mai",
+      "age": 65,
+      "ethnic_group_demo": "thai",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "khong_dien_thoai"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.568668,
+        "lon": 103.073928,
+        "elevation_m": 1264.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-005",
+      "full_name": "Moong Thị Hoa",
+      "age": 62,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.566115,
+        "lon": 103.071897,
+        "elevation_m": 1202.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-006",
+      "full_name": "Lò Văn Dũng",
+      "age": 62,
+      "ethnic_group_demo": "thai",
+      "occupation": "chan_nuoi",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "khong_dien_thoai"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.560186,
+        "lon": 103.069565,
+        "elevation_m": 1168.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-007",
+      "full_name": "Cút Văn Đôi",
+      "age": 82,
+      "ethnic_group_demo": "khomu",
+      "occupation": "khong_co",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "gia_neo_don"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.570509,
+        "lon": 103.073849,
+        "elevation_m": 1334.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-008",
+      "full_name": "Thào A Chỉnh",
+      "age": 48,
+      "ethnic_group_demo": "mong",
+      "occupation": "giao_vien",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.567799,
+        "lon": 103.063245,
+        "elevation_m": 1147.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-009",
+      "full_name": "Vừ A Dính",
+      "age": 47,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.571142,
+        "lon": 103.066916,
+        "elevation_m": 1241.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-010",
+      "full_name": "Cút Thị Mai",
+      "age": 37,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.561306,
+        "lon": 103.073023,
+        "elevation_m": 1246.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-011",
+      "full_name": "Moong Văn Piêng",
+      "age": 34,
+      "ethnic_group_demo": "khomu",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.561673,
+        "lon": 103.073108,
+        "elevation_m": 1220.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-012",
+      "full_name": "Moong Văn Sơn",
+      "age": 28,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.565328,
+        "lon": 103.072186,
+        "elevation_m": 1171.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-013",
+      "full_name": "Lò Thị Sen",
+      "age": 58,
+      "ethnic_group_demo": "thai",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.568305,
+        "lon": 103.072551,
+        "elevation_m": 1271.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-014",
+      "full_name": "Cút Thị Mai",
+      "age": 38,
+      "ethnic_group_demo": "khomu",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.561889,
+        "lon": 103.075633,
+        "elevation_m": 1259.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-015",
+      "full_name": "Lò Thị Piêng",
+      "age": 43,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.567675,
+        "lon": 103.070706,
+        "elevation_m": 1309.0
+      }
+    },
+    {
+      "household_id": "HH-PÚNGGIẮT2-016",
+      "full_name": "Lầu A Chua",
+      "age": 50,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Púng Giắt 2",
+      "location": {
+        "lat": 21.5582,
+        "lon": 103.071278,
+        "elevation_m": 1165.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-001",
+      "full_name": "Nguyễn Thị Hạnh",
+      "age": 28,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.624924,
+        "lon": 103.020085,
+        "elevation_m": 757.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-002",
+      "full_name": "Trần Văn Sơn",
+      "age": 62,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.623122,
+        "lon": 103.019099,
+        "elevation_m": 817.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-003",
+      "full_name": "Thào A Chỉnh",
+      "age": 30,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.629074,
+        "lon": 103.013132,
+        "elevation_m": 922.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-004",
+      "full_name": "Thào A Chỉnh",
+      "age": 43,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.62838,
+        "lon": 103.018693,
+        "elevation_m": 862.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-005",
+      "full_name": "Lò Văn Inh",
+      "age": 24,
+      "ethnic_group_demo": "thai",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.623729,
+        "lon": 103.018018,
+        "elevation_m": 801.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-006",
+      "full_name": "Vừ Thị Mỷ",
+      "age": 65,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.633579,
+        "lon": 103.022119,
+        "elevation_m": 837.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-007",
+      "full_name": "Sùng Thị Mai",
+      "age": 19,
+      "ethnic_group_demo": "mong",
+      "occupation": "chan_nuoi",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.627964,
+        "lon": 103.02591,
+        "elevation_m": 790.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-008",
+      "full_name": "Moong Văn Sơn",
+      "age": 46,
+      "ethnic_group_demo": "khomu",
+      "occupation": "tai_xe",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.624997,
+        "lon": 103.022695,
+        "elevation_m": 676.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-009",
+      "full_name": "Quàng Văn Sáng",
+      "age": 45,
+      "ethnic_group_demo": "thai",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.626435,
+        "lon": 103.025172,
+        "elevation_m": 719.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-010",
+      "full_name": "Trần Văn Nam",
+      "age": 58,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.631016,
+        "lon": 103.018837,
+        "elevation_m": 955.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-011",
+      "full_name": "Sùng Thị Chá",
+      "age": 57,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.634279,
+        "lon": 103.019947,
+        "elevation_m": 972.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-012",
+      "full_name": "Nguyễn Văn Bình",
+      "age": 61,
+      "ethnic_group_demo": "kinh",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.633747,
+        "lon": 103.019492,
+        "elevation_m": 963.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-013",
+      "full_name": "Mùa A Dơ",
+      "age": 56,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.636251,
+        "lon": 103.023429,
+        "elevation_m": 902.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-014",
+      "full_name": "Lầu A Tủa",
+      "age": 23,
+      "ethnic_group_demo": "mong",
+      "occupation": "tai_xe",
+      "priority_level": "vulnerable",
+      "vulnerability_reason": [
+        "mu_chu"
+      ],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.62624,
+        "lon": 103.024687,
+        "elevation_m": 728.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-015",
+      "full_name": "Moong Văn Piêng",
+      "age": 20,
+      "ethnic_group_demo": "khomu",
+      "occupation": "giao_vien",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.627232,
+        "lon": 103.013732,
+        "elevation_m": 954.0
+      }
+    },
+    {
+      "household_id": "HH-ĐỈNHĐÈO-016",
+      "full_name": "Lầu A Tủa",
+      "age": 59,
+      "ethnic_group_demo": "mong",
+      "occupation": "nong_dan",
+      "priority_level": "normal",
+      "vulnerability_reason": [],
+      "verified_by": "cán bộ xã (demo)",
+      "verified_at": "2026-07-17",
+      "village_name_demo": "Đỉnh Đèo",
+      "location": {
+        "lat": 21.634389,
+        "lon": 103.025915,
+        "elevation_m": 779.0
+      }
+    }
+  ]
+}
