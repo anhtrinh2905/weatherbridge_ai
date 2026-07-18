@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,4 +13,24 @@ class Settings(BaseSettings):
     )
     open_meteo_timeout_seconds: int = 60
     open_meteo_retry_attempts: int = 3
+    notification_delivery_mode: str = "disabled"
+    pii_mode: str = "simulated"
+    pii_encryption_key: str | None = None
+    pii_hash_key: str | None = None
+    pii_key_version: str = "v1"
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    @model_validator(mode="after")
+    def validate_sensitive_configuration(self) -> "Settings":
+        if self.pii_mode not in {"simulated", "live"}:
+            raise ValueError("PII_MODE must be either simulated or live")
+        if self.pii_mode == "live" and (
+            not self.pii_encryption_key or not self.pii_hash_key
+        ):
+            raise ValueError("PII live mode requires encryption and hash keys")
+        if self.notification_delivery_mode not in {"disabled", "simulate"}:
+            raise ValueError(
+                "NOTIFICATION_DELIVERY_MODE must be disabled or simulate until "
+                "a provider is configured"
+            )
+        return self

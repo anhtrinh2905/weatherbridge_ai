@@ -72,6 +72,319 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Profile */
+        get: operations["get_profile_api_v1_profile_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Profile */
+        patch: operations["update_profile_api_v1_profile_patch"];
+        trace?: never;
+    };
+    "/api/v1/residents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Residents */
+        get: operations["list_residents_api_v1_residents_get"];
+        put?: never;
+        /** Create Resident */
+        post: operations["create_resident_api_v1_residents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/residents/{resident_id}/link-account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Link Resident Account */
+        post: operations["link_resident_account_api_v1_residents__resident_id__link_account_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/households": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Households */
+        get: operations["list_households_api_v1_households_get"];
+        put?: never;
+        /** Create Household */
+        post: operations["create_household_api_v1_households_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/households/{household_id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Household Member */
+        post: operations["add_household_member_api_v1_households__household_id__members_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Subscriptions */
+        get: operations["list_subscriptions_api_v1_subscriptions_get"];
+        put?: never;
+        /** Create Subscription */
+        post: operations["create_subscription_api_v1_subscriptions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Grant Consent */
+        post: operations["grant_consent_api_v1_subscriptions_consent_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hazards/manifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Manifest */
+        get: operations["manifest_api_v1_hazards_manifest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hazards/cell": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inspect Cell */
+        get: operations["inspect_cell_api_v1_hazards_cell_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Alerts */
+        get: operations["list_alerts_api_v1_alerts_get"];
+        put?: never;
+        /** Create Alert */
+        post: operations["create_alert_api_v1_alerts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Alert */
+        post: operations["submit_alert_api_v1_alerts__alert_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Alert */
+        post: operations["publish_alert_api_v1_alerts__alert_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alert Inbox */
+        get: operations["alert_inbox_api_v1_alerts_inbox_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/acknowledgements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acknowledge Alert */
+        post: operations["acknowledge_alert_api_v1_alerts__alert_id__acknowledgements_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evacuations/shelters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Shelters */
+        get: operations["list_shelters_api_v1_evacuations_shelters_get"];
+        put?: never;
+        /** Create Shelter */
+        post: operations["create_shelter_api_v1_evacuations_shelters_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evacuations/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Orders */
+        get: operations["list_orders_api_v1_evacuations_orders_get"];
+        put?: never;
+        /** Create Order */
+        post: operations["create_order_api_v1_evacuations_orders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evacuations/orders/{order_id}/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign Evacuation */
+        post: operations["assign_evacuation_api_v1_evacuations_orders__order_id__assignments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evacuations/safety-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Safety */
+        post: operations["record_safety_api_v1_evacuations_safety_events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ai/jobs": {
         parameters: {
             query?: never;
@@ -134,6 +447,142 @@ export interface paths {
         put?: never;
         /** Refresh Forecast */
         post: operations["refresh_forecast_api_v1_forecasts__location_code__refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/forecast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Forecast */
+        post: operations["forecast_api_v1_open_meteo_forecast_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/elevation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Elevation */
+        post: operations["elevation_api_v1_open_meteo_elevation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/geocoding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Geocoding */
+        post: operations["geocoding_api_v1_open_meteo_geocoding_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/ensemble": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ensemble */
+        post: operations["ensemble_api_v1_open_meteo_ensemble_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/historical-weather": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Historical Weather */
+        post: operations["historical_weather_api_v1_open_meteo_historical_weather_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/previous-runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Previous Runs */
+        post: operations["previous_runs_api_v1_open_meteo_previous_runs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/historical-forecast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Historical Forecast */
+        post: operations["historical_forecast_api_v1_open_meteo_historical_forecast_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/open-meteo/flood": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Flood */
+        post: operations["flood_api_v1_open_meteo_flood_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -259,10 +708,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/hazard-archive/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Locations */
+        get: operations["list_locations_api_v1_admin_hazard_archive_locations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/hazard-archive/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Events */
+        get: operations["list_events_api_v1_admin_hazard_archive_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/hazard-archive/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Coverage */
+        get: operations["coverage_api_v1_admin_hazard_archive_coverage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/hazard-archive/backfills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Backfill */
+        post: operations["create_backfill_api_v1_admin_hazard_archive_backfills_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/hazard-archive/exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Training Export */
+        post: operations["create_training_export_api_v1_admin_hazard_archive_exports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AcknowledgeAlertRequest */
+        AcknowledgeAlertRequest: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "seen" | "safe" | "need_help";
+        };
         /**
          * AdminAiJobResponse
          * @description Job view for admins: like AiJobResponse but exposes owner + payload so an
@@ -350,6 +892,207 @@ export interface components {
              */
             updated_at: string;
         };
+        /** AlertCreateRequest */
+        AlertCreateRequest: {
+            /**
+             * Source
+             * @default manual
+             * @enum {string}
+             */
+            source: "manual" | "evacuation";
+            /** Hazard Type */
+            hazard_type?: ("flash_flood" | "landslide" | "fog") | null;
+            /** Level */
+            level: number;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "prepare" | "go_now";
+            /** Confidence */
+            confidence: number;
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /**
+             * Deadline At
+             * Format: date-time
+             */
+            deadline_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Target Area Codes */
+            target_area_codes: string[];
+        };
+        /** AlertInboxItem */
+        AlertInboxItem: {
+            /**
+             * Alert Id
+             * Format: uuid
+             */
+            alert_id: string;
+            /**
+             * Recipient Id
+             * Format: uuid
+             */
+            recipient_id: string;
+            /** Hazard Type */
+            hazard_type: string | null;
+            /** Level */
+            level: number;
+            /** Tier */
+            tier: string;
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /** Deadline Instruction */
+            deadline_instruction: string;
+            /**
+             * Deadline At
+             * Format: date-time
+             */
+            deadline_at: string;
+            /** Acknowledgement Status */
+            acknowledgement_status: string;
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+        };
+        /** AlertResponse */
+        AlertResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Source */
+            source: string;
+            /** Status */
+            status: string;
+            /** Hazard Type */
+            hazard_type: string | null;
+            /** Level */
+            level: number;
+            /** Tier */
+            tier: string;
+            /** Confidence */
+            confidence: number;
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /**
+             * Deadline At
+             * Format: date-time
+             */
+            deadline_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Target Area Codes */
+            target_area_codes: string[];
+            /** Recipient Count */
+            recipient_count: number;
+            /** Delivery Count */
+            delivery_count: number;
+            /** Published At */
+            published_at: string | null;
+        };
+        /** ArchiveCoverageResponse */
+        ArchiveCoverageResponse: {
+            /** Location Code */
+            location_code: string;
+            /** Product */
+            product: string;
+            /** Model */
+            model: string;
+            /** Lead Hours */
+            lead_hours: number | null;
+            /**
+             * First Valid Time
+             * Format: date-time
+             */
+            first_valid_time: string;
+            /**
+             * Last Valid Time
+             * Format: date-time
+             */
+            last_valid_time: string;
+            /** Row Count */
+            row_count: number;
+        };
+        /** BackfillArchiveRequest */
+        BackfillArchiveRequest: {
+            /**
+             * Start Date
+             * Format: date
+             * @default 2021-03-23
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date?: string;
+            /**
+             * Products
+             * @default [
+             *       "historical_forecast",
+             *       "previous_runs",
+             *       "archive"
+             *     ]
+             */
+            products: ("historical_forecast" | "previous_runs" | "archive")[];
+            /** Location Codes */
+            location_codes?: string[] | null;
+            /**
+             * Forecast Model
+             * @default gfs_seamless
+             */
+            forecast_model: string;
+            /**
+             * Archive Model
+             * @default best_match
+             */
+            archive_model: string;
+            /**
+             * Continue On Error
+             * @default true
+             */
+            continue_on_error: boolean;
+        };
+        /** ContactCreateRequest */
+        ContactCreateRequest: {
+            /**
+             * Channel
+             * @enum {string}
+             */
+            channel: "sms" | "zalo" | "email" | "web_push" | "webhook";
+            /** Value */
+            value: string;
+            /**
+             * Is Primary
+             * @default false
+             */
+            is_primary: boolean;
+            /**
+             * Verified
+             * @default false
+             */
+            verified: boolean;
+        };
         /** CreateAiJobRequest */
         CreateAiJobRequest: {
             /**
@@ -374,6 +1117,246 @@ export interface components {
             email_verified: boolean;
             /** Roles */
             roles: string[];
+        };
+        /** DisasterEventResponse */
+        DisasterEventResponse: {
+            /** Code */
+            code: string;
+            /** Hazard Type */
+            hazard_type: string;
+            /**
+             * Started At Utc
+             * Format: date-time
+             */
+            started_at_utc: string;
+            /** Ended At Utc */
+            ended_at_utc: string | null;
+            /**
+             * Local Date
+             * Format: date
+             */
+            local_date: string;
+            /** Description */
+            description: string;
+            /** Verification Status */
+            verification_status: string;
+            /** Severity */
+            severity: string | null;
+            /** Locations */
+            locations: components["schemas"]["EventLocationResponse"][];
+            /** Sources */
+            sources: components["schemas"]["EventSourceResponse"][];
+        };
+        /** ElevationRequest */
+        ElevationRequest: {
+            /** Latitude */
+            latitude: number[];
+            /** Longitude */
+            longitude: number[];
+        };
+        /** EnsembleRequest */
+        EnsembleRequest: {
+            /**
+             * Latitude
+             * @description Latitude in WGS84 decimal degrees
+             */
+            latitude: number;
+            /**
+             * Longitude
+             * @description Longitude in WGS84 decimal degrees
+             */
+            longitude: number;
+            /** Models */
+            models: string[];
+            /** Hourly */
+            hourly: string[];
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
+            /** Elevation */
+            elevation?: number | null;
+            /** Temperature Unit */
+            temperature_unit?: ("celsius" | "fahrenheit") | null;
+            /** Wind Speed Unit */
+            wind_speed_unit?: ("kmh" | "ms" | "mph" | "kn") | null;
+            /** Precipitation Unit */
+            precipitation_unit?: ("mm" | "inch") | null;
+            /**
+             * Timeformat
+             * @default iso8601
+             * @enum {string}
+             */
+            timeformat: "iso8601" | "unixtime";
+            /** Cell Selection */
+            cell_selection?: ("land" | "sea" | "nearest") | null;
+            /**
+             * Forecast Days
+             * @default 7
+             */
+            forecast_days: number;
+            /** Past Days */
+            past_days?: number | null;
+        };
+        /** EvacuationAssignmentRequest */
+        EvacuationAssignmentRequest: {
+            /**
+             * Shelter Id
+             * Format: uuid
+             */
+            shelter_id: string;
+            /** Household Id */
+            household_id?: string | null;
+            /** Resident Id */
+            resident_id?: string | null;
+        };
+        /** EvacuationAssignmentResponse */
+        EvacuationAssignmentResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Evacuation Order Id
+             * Format: uuid
+             */
+            evacuation_order_id: string;
+            /**
+             * Shelter Id
+             * Format: uuid
+             */
+            shelter_id: string;
+            /** Household Id */
+            household_id: string | null;
+            /** Resident Id */
+            resident_id: string | null;
+            /** Status */
+            status: string;
+        };
+        /** EvacuationOrderCreateRequest */
+        EvacuationOrderCreateRequest: {
+            /**
+             * Alert Id
+             * Format: uuid
+             */
+            alert_id: string;
+            /** Area Code */
+            area_code: string;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Instructions */
+            instructions: string;
+        };
+        /** EvacuationOrderResponse */
+        EvacuationOrderResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Alert Id
+             * Format: uuid
+             */
+            alert_id: string;
+            /** Area Code */
+            area_code: string;
+            /** Status */
+            status: string;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Ends At */
+            ends_at: string | null;
+            /** Instructions */
+            instructions: string;
+            /** Assignment Count */
+            assignment_count: number;
+        };
+        /** EventLocationResponse */
+        EventLocationResponse: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Impact Role */
+            impact_role: string;
+            /** Confidence */
+            confidence: string;
+            /** Latitude */
+            latitude: number | null;
+            /** Longitude */
+            longitude: number | null;
+            /** Fatalities */
+            fatalities: number | null;
+            /** Missing People */
+            missing_people: number | null;
+            /** Injured People */
+            injured_people: number | null;
+            /** Damaged Houses */
+            damaged_houses: number | null;
+        };
+        /** EventSourceResponse */
+        EventSourceResponse: {
+            /** Title */
+            title: string;
+            /** Url */
+            url: string;
+            /** Publisher */
+            publisher: string | null;
+            /**
+             * Accessed At
+             * Format: date-time
+             */
+            accessed_at: string;
+        };
+        /** FloodRequest */
+        FloodRequest: {
+            /**
+             * Latitude
+             * @description Latitude in WGS84 decimal degrees
+             */
+            latitude: number;
+            /**
+             * Longitude
+             * @description Longitude in WGS84 decimal degrees
+             */
+            longitude: number;
+            /** Daily */
+            daily?: string[];
+            /**
+             * Forecast Days
+             * @default 92
+             */
+            forecast_days: number;
+            /** Past Days */
+            past_days?: number | null;
+            /** Start Date */
+            start_date?: string | null;
+            /** End Date */
+            end_date?: string | null;
+            /**
+             * Ensemble
+             * @default false
+             */
+            ensemble: boolean;
+            /**
+             * Timeformat
+             * @default iso8601
+             * @enum {string}
+             */
+            timeformat: "iso8601" | "unixtime";
+            /** Cell Selection */
+            cell_selection?: ("land" | "sea" | "nearest") | null;
         };
         /** ForecastDay */
         ForecastDay: {
@@ -405,6 +1388,55 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** ForecastRequest */
+        ForecastRequest: {
+            /**
+             * Latitude
+             * @description Latitude in WGS84 decimal degrees
+             */
+            latitude: number;
+            /**
+             * Longitude
+             * @description Longitude in WGS84 decimal degrees
+             */
+            longitude: number;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
+            /** Daily */
+            daily?: string[] | null;
+            /** Hourly */
+            hourly?: string[] | null;
+            /** Current */
+            current?: string[] | null;
+            /** Models */
+            models?: string[] | null;
+            /** Elevation */
+            elevation?: number | null;
+            /** Temperature Unit */
+            temperature_unit?: ("celsius" | "fahrenheit") | null;
+            /** Wind Speed Unit */
+            wind_speed_unit?: ("kmh" | "ms" | "mph" | "kn") | null;
+            /** Precipitation Unit */
+            precipitation_unit?: ("mm" | "inch") | null;
+            /**
+             * Timeformat
+             * @default iso8601
+             * @enum {string}
+             */
+            timeformat: "iso8601" | "unixtime";
+            /** Cell Selection */
+            cell_selection?: ("land" | "sea" | "nearest") | null;
+            /**
+             * Forecast Days
+             * @default 7
+             */
+            forecast_days: number;
+            /** Past Days */
+            past_days?: number | null;
+        };
         /** ForecastSnapshotResponse */
         ForecastSnapshotResponse: {
             /**
@@ -428,10 +1460,315 @@ export interface components {
              */
             fetched_at: string;
         };
+        /** GeoLocationResponse */
+        GeoLocationResponse: {
+            /** Code */
+            code: string;
+            /** Canonical Name */
+            canonical_name: string;
+            /** Location Type */
+            location_type: string;
+            /** Historical Admin Name */
+            historical_admin_name: string | null;
+            /** Current Admin Name */
+            current_admin_name: string | null;
+            /** Latitude */
+            latitude: number | null;
+            /** Longitude */
+            longitude: number | null;
+            /** Uncertainty M */
+            uncertainty_m: number | null;
+            /** Coordinate Confidence */
+            coordinate_confidence: string;
+            /** Coordinate Source */
+            coordinate_source: string | null;
+            /** Source Url */
+            source_url: string | null;
+            /** Is Sampling Location */
+            is_sampling_location: boolean;
+        };
+        /** GeocodingRequest */
+        GeocodingRequest: {
+            /** Name */
+            name: string;
+            /**
+             * Count
+             * @default 10
+             */
+            count: number;
+            /**
+             * Language
+             * @default en
+             */
+            language: string;
+            /**
+             * Format
+             * @default json
+             * @constant
+             */
+            format: "json";
+            /** Countrycode */
+            countryCode?: string | null;
+        };
+        /** GrantConsentRequest */
+        GrantConsentRequest: {
+            /** Policy Version */
+            policy_version: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HazardCellResponse */
+        HazardCellResponse: {
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Samples */
+            samples: components["schemas"]["HazardCellSample"][];
+            /** Dominant Source */
+            dominant_source: string | null;
+        };
+        /** HazardCellSample */
+        HazardCellSample: {
+            /** Hazard Type */
+            hazard_type: string;
+            /**
+             * Layer Id
+             * Format: uuid
+             */
+            layer_id: string;
+            /**
+             * Forecast Day
+             * Format: date
+             */
+            forecast_day: string;
+            /** Risk Level */
+            risk_level: number | null;
+            /** Score Min */
+            score_min: number | null;
+            /** Score Max */
+            score_max: number | null;
+            /** Confidence */
+            confidence: number;
+        };
+        /** HazardLayerResponse */
+        HazardLayerResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /** Hazard Type */
+            hazard_type: string;
+            /**
+             * Forecast Day
+             * Format: date
+             */
+            forecast_day: string;
+            /** Raster Url */
+            raster_url: string;
+            /** Web Png Url */
+            web_png_url: string;
+            /** Bbox */
+            bbox: {
+                [key: string]: unknown;
+            };
+            /** Crs */
+            crs: string;
+            /** Resolution M */
+            resolution_m: number;
+            /** Level Bins */
+            level_bins: unknown[];
+            /** Legend */
+            legend: {
+                [key: string]: unknown;
+            };
+            /** Confidence */
+            confidence: number;
+            /** Contribution Summary */
+            contribution_summary: {
+                [key: string]: unknown;
+            };
+            /**
+             * Issued At
+             * Format: date-time
+             */
+            issued_at: string;
+        };
+        /** HazardManifestResponse */
+        HazardManifestResponse: {
+            /**
+             * Requested Type
+             * @enum {string}
+             */
+            requested_type: "flash_flood" | "landslide" | "fog" | "dominant";
+            /** Layers */
+            layers: components["schemas"]["HazardLayerResponse"][];
+        };
+        /** HistoricalForecastRequest */
+        HistoricalForecastRequest: {
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date: string;
+            /**
+             * Latitude
+             * @description Latitude in WGS84 decimal degrees
+             */
+            latitude: number;
+            /**
+             * Longitude
+             * @description Longitude in WGS84 decimal degrees
+             */
+            longitude: number;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
+            /** Daily */
+            daily?: string[] | null;
+            /** Hourly */
+            hourly?: string[] | null;
+            /** Current */
+            current?: null;
+            /** Models */
+            models?: string[] | null;
+            /** Elevation */
+            elevation?: number | null;
+            /** Temperature Unit */
+            temperature_unit?: ("celsius" | "fahrenheit") | null;
+            /** Wind Speed Unit */
+            wind_speed_unit?: ("kmh" | "ms" | "mph" | "kn") | null;
+            /** Precipitation Unit */
+            precipitation_unit?: ("mm" | "inch") | null;
+            /**
+             * Timeformat
+             * @default iso8601
+             * @enum {string}
+             */
+            timeformat: "iso8601" | "unixtime";
+            /** Cell Selection */
+            cell_selection?: ("land" | "sea" | "nearest") | null;
+        };
+        /** HistoricalWeatherRequest */
+        HistoricalWeatherRequest: {
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date: string;
+            /**
+             * Latitude
+             * @description Latitude in WGS84 decimal degrees
+             */
+            latitude: number;
+            /**
+             * Longitude
+             * @description Longitude in WGS84 decimal degrees
+             */
+            longitude: number;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
+            /** Daily */
+            daily?: string[] | null;
+            /** Hourly */
+            hourly?: string[] | null;
+            /** Current */
+            current?: null;
+            /** Models */
+            models?: string[] | null;
+            /** Elevation */
+            elevation?: number | null;
+            /** Temperature Unit */
+            temperature_unit?: ("celsius" | "fahrenheit") | null;
+            /** Wind Speed Unit */
+            wind_speed_unit?: ("kmh" | "ms" | "mph" | "kn") | null;
+            /** Precipitation Unit */
+            precipitation_unit?: ("mm" | "inch") | null;
+            /**
+             * Timeformat
+             * @default iso8601
+             * @enum {string}
+             */
+            timeformat: "iso8601" | "unixtime";
+            /** Cell Selection */
+            cell_selection?: ("land" | "sea" | "nearest") | null;
+        };
+        /** HouseholdCreateRequest */
+        HouseholdCreateRequest: {
+            /** Code */
+            code: string;
+            /** Village Code */
+            village_code: string;
+            /** Address */
+            address?: string | null;
+            /**
+             * Source
+             * @default official
+             * @enum {string}
+             */
+            source: "official" | "import" | "demo";
+            /**
+             * Simulated
+             * @default true
+             */
+            simulated: boolean;
+        };
+        /** HouseholdMemberRequest */
+        HouseholdMemberRequest: {
+            /**
+             * Resident Id
+             * Format: uuid
+             */
+            resident_id: string;
+            /** Relationship */
+            relationship: string;
+            /**
+             * Is Head
+             * @default false
+             */
+            is_head: boolean;
+        };
+        /** HouseholdResponse */
+        HouseholdResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string;
+            /** Village Code */
+            village_code: string;
+            /** Address */
+            address: string | null;
+            /** Status */
+            status: string;
+            /** Simulated */
+            simulated: boolean;
         };
         /** IdentityConfigResponse */
         IdentityConfigResponse: {
@@ -457,6 +1794,187 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** LinkResidentAccountRequest */
+        LinkResidentAccountRequest: {
+            /** Keycloak Subject */
+            keycloak_subject: string;
+        };
+        /** PreviousRunRequest */
+        PreviousRunRequest: {
+            /**
+             * Latitude
+             * @description Latitude in WGS84 decimal degrees
+             */
+            latitude: number;
+            /**
+             * Longitude
+             * @description Longitude in WGS84 decimal degrees
+             */
+            longitude: number;
+            /** Hourly */
+            hourly: string[];
+            /** Models */
+            models?: string[] | null;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
+            /**
+             * Forecast Days
+             * @default 1
+             */
+            forecast_days: number;
+            /**
+             * Past Days
+             * @default 0
+             */
+            past_days: number | null;
+        };
+        /** ProfileResponse */
+        ProfileResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Keycloak Subject */
+            keycloak_subject: string;
+            /** Display Name */
+            display_name: string;
+            /** Preferred Locale */
+            preferred_locale: string;
+            /** Status */
+            status: string;
+            /** Domain Role */
+            domain_role: string | null;
+            /** Area Codes */
+            area_codes: string[];
+            /**
+             * Synced At
+             * Format: date-time
+             */
+            synced_at: string;
+        };
+        /** PublishAlertResponse */
+        PublishAlertResponse: {
+            alert: components["schemas"]["AlertResponse"];
+            /** Recipient Count */
+            recipient_count: number;
+            /** Delivery Count */
+            delivery_count: number;
+        };
+        /** ResidentCreateRequest */
+        ResidentCreateRequest: {
+            /** Full Name */
+            full_name: string;
+            /** Village Code */
+            village_code: string;
+            /** Birth Year */
+            birth_year?: number | null;
+            /**
+             * Source
+             * @default official
+             * @enum {string}
+             */
+            source: "self" | "official" | "import" | "demo";
+            /**
+             * Simulated
+             * @default true
+             */
+            simulated: boolean;
+            /** Contacts */
+            contacts?: components["schemas"]["ContactCreateRequest"][];
+            /** Locations */
+            locations?: components["schemas"]["ResidentPointRequest"][];
+            /** Livelihood Type */
+            livelihood_type?: ("farmer" | "livestock" | "forestry" | "other") | null;
+            /** Livelihood Details */
+            livelihood_details?: {
+                [key: string]: unknown;
+            };
+        };
+        /** ResidentPointRequest */
+        ResidentPointRequest: {
+            /**
+             * Location Type
+             * @enum {string}
+             */
+            location_type: "home" | "farm" | "livestock" | "watch_point";
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Label */
+            label?: string | null;
+            /** Precision M */
+            precision_m?: number | null;
+        };
+        /** ResidentResponse */
+        ResidentResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** User Profile Id */
+            user_profile_id: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Village Code */
+            village_code: string;
+            /** Birth Year */
+            birth_year: number | null;
+            /** Verification Status */
+            verification_status: string;
+            /** Simulated */
+            simulated: boolean;
+            /** Contact Channels */
+            contact_channels: string[];
+            /** Livelihood Types */
+            livelihood_types: string[];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** SafetyEventCreateRequest */
+        SafetyEventCreateRequest: {
+            /** Resident Id */
+            resident_id?: string | null;
+            /** Evacuation Order Id */
+            evacuation_order_id?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "safe" | "need_help" | "visited" | "at_shelter";
+            /** Notes */
+            notes?: string | null;
+        };
+        /** SafetyEventResponse */
+        SafetyEventResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Resident Id
+             * Format: uuid
+             */
+            resident_id: string;
+            /** Evacuation Order Id */
+            evacuation_order_id: string | null;
+            /** Status */
+            status: string;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+        };
         /** SetRoleRequest */
         SetRoleRequest: {
             /**
@@ -469,6 +1987,105 @@ export interface components {
         SetVillageRequest: {
             /** Village Id */
             village_id?: string | null;
+        };
+        /** ShelterCreateRequest */
+        ShelterCreateRequest: {
+            /** Code */
+            code: string;
+            /** Area Code */
+            area_code: string;
+            /** Name */
+            name: string;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Capacity */
+            capacity?: number | null;
+            /** Accessibility */
+            accessibility?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Simulated
+             * @default true
+             */
+            simulated: boolean;
+        };
+        /** ShelterResponse */
+        ShelterResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string;
+            /** Area Code */
+            area_code: string;
+            /** Name */
+            name: string;
+            /** Capacity */
+            capacity: number | null;
+            /** Accessibility */
+            accessibility: {
+                [key: string]: unknown;
+            };
+            /** Status */
+            status: string;
+            /** Simulated */
+            simulated: boolean;
+        };
+        /** SubscriptionCreateRequest */
+        SubscriptionCreateRequest: {
+            /** Resident Location Id */
+            resident_location_id?: string | null;
+            /**
+             * Hazard Type
+             * @enum {string}
+             */
+            hazard_type: "flash_flood" | "landslide" | "fog";
+            /**
+             * Minimum Level
+             * @default 1
+             */
+            minimum_level: number;
+            /**
+             * Channel
+             * @enum {string}
+             */
+            channel: "sms" | "zalo" | "email" | "web_push" | "webhook";
+            /** Quiet Hours Start */
+            quiet_hours_start?: string | null;
+            /** Quiet Hours End */
+            quiet_hours_end?: string | null;
+        };
+        /** SubscriptionResponse */
+        SubscriptionResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Resident Location Id */
+            resident_location_id: string | null;
+            /** Hazard Type */
+            hazard_type: string;
+            /** Minimum Level */
+            minimum_level: number;
+            /** Channel */
+            channel: string;
+            /** Quiet Hours Start */
+            quiet_hours_start: string | null;
+            /** Quiet Hours End */
+            quiet_hours_end: string | null;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /** UpdateProfileRequest */
+        UpdateProfileRequest: {
+            /** Preferred Locale */
+            preferred_locale: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -572,6 +2189,729 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CurrentUserResponse"];
+                };
+            };
+        };
+    };
+    get_profile_api_v1_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+        };
+    };
+    update_profile_api_v1_profile_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_residents_api_v1_residents_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResidentResponse"][];
+                };
+            };
+        };
+    };
+    create_resident_api_v1_residents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResidentCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResidentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_resident_account_api_v1_residents__resident_id__link_account_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LinkResidentAccountRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResidentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_households_api_v1_households_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdResponse"][];
+                };
+            };
+        };
+    };
+    create_household_api_v1_households_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_household_member_api_v1_households__household_id__members_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                household_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdMemberRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_subscriptions_api_v1_subscriptions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"][];
+                };
+            };
+        };
+    };
+    create_subscription_api_v1_subscriptions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriptionCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    grant_consent_api_v1_subscriptions_consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GrantConsentRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    manifest_api_v1_hazards_manifest_get: {
+        parameters: {
+            query?: {
+                hazard_type?: "flash_flood" | "landslide" | "fog" | "dominant";
+                forecast_day?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HazardManifestResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    inspect_cell_api_v1_hazards_cell_get: {
+        parameters: {
+            query: {
+                latitude: number;
+                longitude: number;
+                hazard_type?: "flash_flood" | "landslide" | "fog" | "dominant";
+                forecast_day?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HazardCellResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_alerts_api_v1_alerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"][];
+                };
+            };
+        };
+    };
+    create_alert_api_v1_alerts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_alert_api_v1_alerts__alert_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_alert_api_v1_alerts__alert_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublishAlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    alert_inbox_api_v1_alerts_inbox_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertInboxItem"][];
+                };
+            };
+        };
+    };
+    acknowledge_alert_api_v1_alerts__alert_id__acknowledgements_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcknowledgeAlertRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertInboxItem"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_shelters_api_v1_evacuations_shelters_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShelterResponse"][];
+                };
+            };
+        };
+    };
+    create_shelter_api_v1_evacuations_shelters_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShelterCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShelterResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_orders_api_v1_evacuations_orders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvacuationOrderResponse"][];
+                };
+            };
+        };
+    };
+    create_order_api_v1_evacuations_orders_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EvacuationOrderCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvacuationOrderResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_evacuation_api_v1_evacuations_orders__order_id__assignments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EvacuationAssignmentRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvacuationAssignmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_safety_api_v1_evacuations_safety_events_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SafetyEventCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SafetyEventResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -689,6 +3029,286 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ForecastRefreshResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    forecast_api_v1_open_meteo_forecast_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForecastRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    elevation_api_v1_open_meteo_elevation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ElevationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    geocoding_api_v1_open_meteo_geocoding_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GeocodingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ensemble_api_v1_open_meteo_ensemble_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnsembleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    historical_weather_api_v1_open_meteo_historical_weather_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HistoricalWeatherRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    previous_runs_api_v1_open_meteo_previous_runs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreviousRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    historical_forecast_api_v1_open_meteo_historical_forecast_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HistoricalForecastRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    flood_api_v1_open_meteo_flood_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FloodRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */
@@ -888,6 +3508,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_locations_api_v1_admin_hazard_archive_locations_get: {
+        parameters: {
+            query?: {
+                sampling_only?: boolean;
+                unresolved_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GeoLocationResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_events_api_v1_admin_hazard_archive_events_get: {
+        parameters: {
+            query?: {
+                verification_status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisasterEventResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    coverage_api_v1_admin_hazard_archive_coverage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArchiveCoverageResponse"][];
+                };
+            };
+        };
+    };
+    create_backfill_api_v1_admin_hazard_archive_backfills_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BackfillArchiveRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiJobResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_training_export_api_v1_admin_hazard_archive_exports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiJobResponse"];
                 };
             };
         };

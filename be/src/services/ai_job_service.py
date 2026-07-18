@@ -19,7 +19,9 @@ class AiJobService:
     async def create(self, payload: CreateAiJobRequest, user_id: str) -> AiJobResponse:
         return await self.create_system(payload.task, {"text": payload.text}, user_id)
 
-    async def create_system(self, task: str, payload: dict, user_id: str) -> AiJobResponse:
+    async def create_system(
+        self, task: str, payload: dict[str, object], user_id: str
+    ) -> AiJobResponse:
         now = utc_now()
         job = AiJob(
             user_id=user_id,

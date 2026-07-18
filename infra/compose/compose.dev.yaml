@@ -13,6 +13,13 @@ services:
       LITELLM_ENABLED: "false"
       LANGFUSE_ENABLED: "false"
       CORS_ORIGINS: http://localhost:5173
+      PII_MODE: ${PII_MODE:-simulated}
+      PII_ENCRYPTION_KEY: ${PII_ENCRYPTION_KEY:-}
+      PII_HASH_KEY: ${PII_HASH_KEY:-}
+      PII_KEY_VERSION: ${PII_KEY_VERSION:-v1}
+      OBJECT_STORAGE_BASE_URL: ${OBJECT_STORAGE_BASE_URL:-}
+      OBJECT_STORAGE_SIGNING_KEY: ${OBJECT_STORAGE_SIGNING_KEY:-}
+      OBJECT_STORAGE_URL_TTL_SECONDS: ${OBJECT_STORAGE_URL_TTL_SECONDS:-300}
     ports:
       - "8000:8000"
     volumes:
@@ -34,6 +41,11 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://vai:vai@db:5432/weather_bridge
       REDIS_URL: redis://redis:6379/0
+      PII_MODE: ${PII_MODE:-simulated}
+      PII_ENCRYPTION_KEY: ${PII_ENCRYPTION_KEY:-}
+      PII_HASH_KEY: ${PII_HASH_KEY:-}
+      PII_KEY_VERSION: ${PII_KEY_VERSION:-v1}
+      NOTIFICATION_DELIVERY_MODE: ${NOTIFICATION_DELIVERY_MODE:-disabled}
     volumes:
       - ../../be/src:/app/be/src
       - ../../worker/src:/app/worker/src

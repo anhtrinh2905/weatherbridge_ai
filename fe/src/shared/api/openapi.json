@@ -98,6 +98,1002 @@
         }
       }
     },
+    "/api/v1/profile": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get Profile",
+        "operationId": "get_profile_api_v1_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Update Profile",
+        "operationId": "update_profile_api_v1_profile_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/residents": {
+      "get": {
+        "tags": [
+          "residents"
+        ],
+        "summary": "List Residents",
+        "operationId": "list_residents_api_v1_residents_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ResidentResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Residents Api V1 Residents Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "residents"
+        ],
+        "summary": "Create Resident",
+        "operationId": "create_resident_api_v1_residents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResidentCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResidentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/residents/{resident_id}/link-account": {
+      "post": {
+        "tags": [
+          "residents"
+        ],
+        "summary": "Link Resident Account",
+        "operationId": "link_resident_account_api_v1_residents__resident_id__link_account_post",
+        "parameters": [
+          {
+            "name": "resident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resident Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkResidentAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResidentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households": {
+      "get": {
+        "tags": [
+          "households"
+        ],
+        "summary": "List Households",
+        "operationId": "list_households_api_v1_households_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/HouseholdResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Households Api V1 Households Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Create Household",
+        "operationId": "create_household_api_v1_households_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/members": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Add Household Member",
+        "operationId": "add_household_member_api_v1_households__household_id__members_post",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Household Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdMemberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/subscriptions": {
+      "get": {
+        "tags": [
+          "subscriptions"
+        ],
+        "summary": "List Subscriptions",
+        "operationId": "list_subscriptions_api_v1_subscriptions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SubscriptionResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Subscriptions Api V1 Subscriptions Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "subscriptions"
+        ],
+        "summary": "Create Subscription",
+        "operationId": "create_subscription_api_v1_subscriptions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/subscriptions/consent": {
+      "post": {
+        "tags": [
+          "subscriptions"
+        ],
+        "summary": "Grant Consent",
+        "operationId": "grant_consent_api_v1_subscriptions_consent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hazards/manifest": {
+      "get": {
+        "tags": [
+          "hazards"
+        ],
+        "summary": "Manifest",
+        "operationId": "manifest_api_v1_hazards_manifest_get",
+        "parameters": [
+          {
+            "name": "hazard_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "flash_flood",
+                "landslide",
+                "fog",
+                "dominant"
+              ],
+              "type": "string",
+              "default": "dominant",
+              "title": "Hazard Type"
+            }
+          },
+          {
+            "name": "forecast_day",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Forecast Day"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HazardManifestResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hazards/cell": {
+      "get": {
+        "tags": [
+          "hazards"
+        ],
+        "summary": "Inspect Cell",
+        "operationId": "inspect_cell_api_v1_hazards_cell_get",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Latitude"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Longitude"
+            }
+          },
+          {
+            "name": "hazard_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "flash_flood",
+                "landslide",
+                "fog",
+                "dominant"
+              ],
+              "type": "string",
+              "default": "dominant",
+              "title": "Hazard Type"
+            }
+          },
+          {
+            "name": "forecast_day",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Forecast Day"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HazardCellResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "List Alerts",
+        "operationId": "list_alerts_api_v1_alerts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AlertResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Alerts Api V1 Alerts Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Create Alert",
+        "operationId": "create_alert_api_v1_alerts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{alert_id}/submit": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Submit Alert",
+        "operationId": "submit_alert_api_v1_alerts__alert_id__submit_post",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{alert_id}/publish": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Publish Alert",
+        "operationId": "publish_alert_api_v1_alerts__alert_id__publish_post",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishAlertResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/inbox": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Alert Inbox",
+        "operationId": "alert_inbox_api_v1_alerts_inbox_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AlertInboxItem"
+                  },
+                  "type": "array",
+                  "title": "Response Alert Inbox Api V1 Alerts Inbox Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{alert_id}/acknowledgements": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Acknowledge Alert",
+        "operationId": "acknowledge_alert_api_v1_alerts__alert_id__acknowledgements_post",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcknowledgeAlertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertInboxItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evacuations/shelters": {
+      "get": {
+        "tags": [
+          "evacuations"
+        ],
+        "summary": "List Shelters",
+        "operationId": "list_shelters_api_v1_evacuations_shelters_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ShelterResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Shelters Api V1 Evacuations Shelters Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "evacuations"
+        ],
+        "summary": "Create Shelter",
+        "operationId": "create_shelter_api_v1_evacuations_shelters_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShelterCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShelterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evacuations/orders": {
+      "get": {
+        "tags": [
+          "evacuations"
+        ],
+        "summary": "List Orders",
+        "operationId": "list_orders_api_v1_evacuations_orders_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EvacuationOrderResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Orders Api V1 Evacuations Orders Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "evacuations"
+        ],
+        "summary": "Create Order",
+        "operationId": "create_order_api_v1_evacuations_orders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvacuationOrderCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvacuationOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evacuations/orders/{order_id}/assignments": {
+      "post": {
+        "tags": [
+          "evacuations"
+        ],
+        "summary": "Assign Evacuation",
+        "operationId": "assign_evacuation_api_v1_evacuations_orders__order_id__assignments_post",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvacuationAssignmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvacuationAssignmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evacuations/safety-events": {
+      "post": {
+        "tags": [
+          "evacuations"
+        ],
+        "summary": "Record Safety",
+        "operationId": "record_safety_api_v1_evacuations_safety_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyEventCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafetyEventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/ai/jobs": {
       "post": {
         "tags": [
@@ -249,6 +1245,350 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ForecastRefreshResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/forecast": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Forecast",
+        "operationId": "forecast_api_v1_open_meteo_forecast_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForecastRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Forecast Api V1 Open Meteo Forecast Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/elevation": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Elevation",
+        "operationId": "elevation_api_v1_open_meteo_elevation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElevationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Elevation Api V1 Open Meteo Elevation Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/geocoding": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Geocoding",
+        "operationId": "geocoding_api_v1_open_meteo_geocoding_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeocodingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Geocoding Api V1 Open Meteo Geocoding Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/ensemble": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Ensemble",
+        "operationId": "ensemble_api_v1_open_meteo_ensemble_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnsembleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Ensemble Api V1 Open Meteo Ensemble Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/historical-weather": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Historical Weather",
+        "operationId": "historical_weather_api_v1_open_meteo_historical_weather_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HistoricalWeatherRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Historical Weather Api V1 Open Meteo Historical Weather Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/previous-runs": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Previous Runs",
+        "operationId": "previous_runs_api_v1_open_meteo_previous_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviousRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Previous Runs Api V1 Open Meteo Previous Runs Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/historical-forecast": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Historical Forecast",
+        "operationId": "historical_forecast_api_v1_open_meteo_historical_forecast_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HistoricalForecastRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Historical Forecast Api V1 Open Meteo Historical Forecast Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/open-meteo/flood": {
+      "post": {
+        "tags": [
+          "open-meteo"
+        ],
+        "summary": "Flood",
+        "operationId": "flood_api_v1_open_meteo_flood_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FloodRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Flood Api V1 Open Meteo Flood Post"
                 }
               }
             }
@@ -545,10 +1885,225 @@
           }
         }
       }
+    },
+    "/api/v1/admin/hazard-archive/locations": {
+      "get": {
+        "tags": [
+          "admin-hazard-archive"
+        ],
+        "summary": "List Locations",
+        "operationId": "list_locations_api_v1_admin_hazard_archive_locations_get",
+        "parameters": [
+          {
+            "name": "sampling_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Sampling Only"
+            }
+          },
+          {
+            "name": "unresolved_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Unresolved Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeoLocationResponse"
+                  },
+                  "title": "Response List Locations Api V1 Admin Hazard Archive Locations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/hazard-archive/events": {
+      "get": {
+        "tags": [
+          "admin-hazard-archive"
+        ],
+        "summary": "List Events",
+        "operationId": "list_events_api_v1_admin_hazard_archive_events_get",
+        "parameters": [
+          {
+            "name": "verification_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Verification Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DisasterEventResponse"
+                  },
+                  "title": "Response List Events Api V1 Admin Hazard Archive Events Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/hazard-archive/coverage": {
+      "get": {
+        "tags": [
+          "admin-hazard-archive"
+        ],
+        "summary": "Coverage",
+        "operationId": "coverage_api_v1_admin_hazard_archive_coverage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ArchiveCoverageResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Coverage Api V1 Admin Hazard Archive Coverage Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/hazard-archive/backfills": {
+      "post": {
+        "tags": [
+          "admin-hazard-archive"
+        ],
+        "summary": "Create Backfill",
+        "operationId": "create_backfill_api_v1_admin_hazard_archive_backfills_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BackfillArchiveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiJobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/hazard-archive/exports": {
+      "post": {
+        "tags": [
+          "admin-hazard-archive"
+        ],
+        "summary": "Create Training Export",
+        "operationId": "create_training_export_api_v1_admin_hazard_archive_exports_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AcknowledgeAlertRequest": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "seen",
+              "safe",
+              "need_help"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "AcknowledgeAlertRequest"
+      },
       "AdminAiJobResponse": {
         "properties": {
           "id": {
@@ -759,6 +2314,452 @@
         ],
         "title": "AiJobResponse"
       },
+      "AlertCreateRequest": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "evacuation"
+            ],
+            "title": "Source",
+            "default": "manual"
+          },
+          "hazard_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "flash_flood",
+                  "landslide",
+                  "fog"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hazard Type"
+          },
+          "level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Level"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "prepare",
+              "go_now"
+            ],
+            "title": "Tier"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "what_happened": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Action Instruction"
+          },
+          "deadline_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline At"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "target_area_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Target Area Codes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "tier",
+          "confidence",
+          "what_happened",
+          "danger_description",
+          "action_instruction",
+          "deadline_at",
+          "expires_at",
+          "target_area_codes"
+        ],
+        "title": "AlertCreateRequest"
+      },
+      "AlertInboxItem": {
+        "properties": {
+          "alert_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Alert Id"
+          },
+          "recipient_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Recipient Id"
+          },
+          "hazard_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hazard Type"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier"
+          },
+          "what_happened": {
+            "type": "string",
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "title": "Action Instruction"
+          },
+          "deadline_instruction": {
+            "type": "string",
+            "title": "Deadline Instruction"
+          },
+          "deadline_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline At"
+          },
+          "acknowledgement_status": {
+            "type": "string",
+            "title": "Acknowledgement Status"
+          },
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "alert_id",
+          "recipient_id",
+          "hazard_type",
+          "level",
+          "tier",
+          "what_happened",
+          "danger_description",
+          "action_instruction",
+          "deadline_instruction",
+          "deadline_at",
+          "acknowledgement_status",
+          "acknowledged_at"
+        ],
+        "title": "AlertInboxItem"
+      },
+      "AlertResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "hazard_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hazard Type"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "what_happened": {
+            "type": "string",
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "title": "Action Instruction"
+          },
+          "deadline_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline At"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "target_area_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Target Area Codes"
+          },
+          "recipient_count": {
+            "type": "integer",
+            "title": "Recipient Count"
+          },
+          "delivery_count": {
+            "type": "integer",
+            "title": "Delivery Count"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "status",
+          "hazard_type",
+          "level",
+          "tier",
+          "confidence",
+          "what_happened",
+          "danger_description",
+          "action_instruction",
+          "deadline_at",
+          "expires_at",
+          "target_area_codes",
+          "recipient_count",
+          "delivery_count",
+          "published_at"
+        ],
+        "title": "AlertResponse"
+      },
+      "ArchiveCoverageResponse": {
+        "properties": {
+          "location_code": {
+            "type": "string",
+            "title": "Location Code"
+          },
+          "product": {
+            "type": "string",
+            "title": "Product"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "lead_hours": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Hours"
+          },
+          "first_valid_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "First Valid Time"
+          },
+          "last_valid_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Valid Time"
+          },
+          "row_count": {
+            "type": "integer",
+            "title": "Row Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "location_code",
+          "product",
+          "model",
+          "lead_hours",
+          "first_valid_time",
+          "last_valid_time",
+          "row_count"
+        ],
+        "title": "ArchiveCoverageResponse"
+      },
+      "BackfillArchiveRequest": {
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date",
+            "default": "2021-03-23"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "title": "End Date"
+          },
+          "products": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "historical_forecast",
+                "previous_runs",
+                "archive"
+              ]
+            },
+            "type": "array",
+            "title": "Products",
+            "default": [
+              "historical_forecast",
+              "previous_runs",
+              "archive"
+            ]
+          },
+          "location_codes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Codes"
+          },
+          "forecast_model": {
+            "type": "string",
+            "title": "Forecast Model",
+            "default": "gfs_seamless"
+          },
+          "archive_model": {
+            "type": "string",
+            "title": "Archive Model",
+            "default": "best_match"
+          },
+          "continue_on_error": {
+            "type": "boolean",
+            "title": "Continue On Error",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "BackfillArchiveRequest"
+      },
+      "ContactCreateRequest": {
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "sms",
+              "zalo",
+              "email",
+              "web_push",
+              "webhook"
+            ],
+            "title": "Channel"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Value"
+          },
+          "is_primary": {
+            "type": "boolean",
+            "title": "Is Primary",
+            "default": false
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "channel",
+          "value"
+        ],
+        "title": "ContactCreateRequest"
+      },
       "CreateAiJobRequest": {
         "properties": {
           "task": {
@@ -835,6 +2836,711 @@
           "roles"
         ],
         "title": "CurrentUserResponse"
+      },
+      "DisasterEventResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "hazard_type": {
+            "type": "string",
+            "title": "Hazard Type"
+          },
+          "started_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At Utc"
+          },
+          "ended_at_utc": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At Utc"
+          },
+          "local_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Local Date"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "locations": {
+            "items": {
+              "$ref": "#/components/schemas/EventLocationResponse"
+            },
+            "type": "array",
+            "title": "Locations"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/EventSourceResponse"
+            },
+            "type": "array",
+            "title": "Sources"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "hazard_type",
+          "started_at_utc",
+          "ended_at_utc",
+          "local_date",
+          "description",
+          "verification_status",
+          "severity",
+          "locations",
+          "sources"
+        ],
+        "title": "DisasterEventResponse"
+      },
+      "ElevationRequest": {
+        "properties": {
+          "latitude": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Longitude"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "ElevationRequest"
+      },
+      "EnsembleRequest": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "description": "Latitude in WGS84 decimal degrees"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "description": "Longitude in WGS84 decimal degrees"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Models"
+          },
+          "hourly": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Hourly"
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Timezone",
+            "default": "UTC"
+          },
+          "elevation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elevation"
+          },
+          "temperature_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "celsius",
+                  "fahrenheit"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Unit"
+          },
+          "wind_speed_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "kmh",
+                  "ms",
+                  "mph",
+                  "kn"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed Unit"
+          },
+          "precipitation_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mm",
+                  "inch"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precipitation Unit"
+          },
+          "timeformat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "unixtime"
+            ],
+            "title": "Timeformat",
+            "default": "iso8601"
+          },
+          "cell_selection": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "land",
+                  "sea",
+                  "nearest"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Selection"
+          },
+          "forecast_days": {
+            "type": "integer",
+            "maximum": 35.0,
+            "minimum": 1.0,
+            "title": "Forecast Days",
+            "default": 7
+          },
+          "past_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 92.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Past Days"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude",
+          "models",
+          "hourly"
+        ],
+        "title": "EnsembleRequest"
+      },
+      "EvacuationAssignmentRequest": {
+        "properties": {
+          "shelter_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shelter Id"
+          },
+          "household_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Household Id"
+          },
+          "resident_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resident Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "shelter_id"
+        ],
+        "title": "EvacuationAssignmentRequest"
+      },
+      "EvacuationAssignmentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "evacuation_order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evacuation Order Id"
+          },
+          "shelter_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shelter Id"
+          },
+          "household_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Household Id"
+          },
+          "resident_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resident Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "evacuation_order_id",
+          "shelter_id",
+          "household_id",
+          "resident_id",
+          "status"
+        ],
+        "title": "EvacuationAssignmentResponse"
+      },
+      "EvacuationOrderCreateRequest": {
+        "properties": {
+          "alert_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Alert Id"
+          },
+          "area_code": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Area Code"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ends At"
+          },
+          "instructions": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Instructions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "alert_id",
+          "area_code",
+          "starts_at",
+          "instructions"
+        ],
+        "title": "EvacuationOrderCreateRequest"
+      },
+      "EvacuationOrderResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "alert_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Alert Id"
+          },
+          "area_code": {
+            "type": "string",
+            "title": "Area Code"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ends At"
+          },
+          "instructions": {
+            "type": "string",
+            "title": "Instructions"
+          },
+          "assignment_count": {
+            "type": "integer",
+            "title": "Assignment Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "alert_id",
+          "area_code",
+          "status",
+          "starts_at",
+          "ends_at",
+          "instructions",
+          "assignment_count"
+        ],
+        "title": "EvacuationOrderResponse"
+      },
+      "EventLocationResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "impact_role": {
+            "type": "string",
+            "title": "Impact Role"
+          },
+          "confidence": {
+            "type": "string",
+            "title": "Confidence"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "fatalities": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fatalities"
+          },
+          "missing_people": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing People"
+          },
+          "injured_people": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Injured People"
+          },
+          "damaged_houses": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damaged Houses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "impact_role",
+          "confidence",
+          "latitude",
+          "longitude",
+          "fatalities",
+          "missing_people",
+          "injured_people",
+          "damaged_houses"
+        ],
+        "title": "EventLocationResponse"
+      },
+      "EventSourceResponse": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "publisher": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publisher"
+          },
+          "accessed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Accessed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "publisher",
+          "accessed_at"
+        ],
+        "title": "EventSourceResponse"
+      },
+      "FloodRequest": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "description": "Latitude in WGS84 decimal degrees"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "description": "Longitude in WGS84 decimal degrees"
+          },
+          "daily": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Daily"
+          },
+          "forecast_days": {
+            "type": "integer",
+            "maximum": 210.0,
+            "minimum": 1.0,
+            "title": "Forecast Days",
+            "default": 92
+          },
+          "past_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 92.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Past Days"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "ensemble": {
+            "type": "boolean",
+            "title": "Ensemble",
+            "default": false
+          },
+          "timeformat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "unixtime"
+            ],
+            "title": "Timeformat",
+            "default": "iso8601"
+          },
+          "cell_selection": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "land",
+                  "sea",
+                  "nearest"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Selection"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "FloodRequest"
       },
       "ForecastDay": {
         "properties": {
@@ -919,6 +3625,200 @@
         ],
         "title": "ForecastRefreshResponse"
       },
+      "ForecastRequest": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "description": "Latitude in WGS84 decimal degrees"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "description": "Longitude in WGS84 decimal degrees"
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Timezone",
+            "default": "UTC"
+          },
+          "daily": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily"
+          },
+          "hourly": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hourly"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current"
+          },
+          "models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Models"
+          },
+          "elevation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elevation"
+          },
+          "temperature_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "celsius",
+                  "fahrenheit"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Unit"
+          },
+          "wind_speed_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "kmh",
+                  "ms",
+                  "mph",
+                  "kn"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed Unit"
+          },
+          "precipitation_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mm",
+                  "inch"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precipitation Unit"
+          },
+          "timeformat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "unixtime"
+            ],
+            "title": "Timeformat",
+            "default": "iso8601"
+          },
+          "cell_selection": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "land",
+                  "sea",
+                  "nearest"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Selection"
+          },
+          "forecast_days": {
+            "type": "integer",
+            "maximum": 16.0,
+            "minimum": 1.0,
+            "title": "Forecast Days",
+            "default": 7
+          },
+          "past_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 92.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Past Days"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "ForecastRequest"
+      },
       "ForecastSnapshotResponse": {
         "properties": {
           "id": {
@@ -967,6 +3867,187 @@
         ],
         "title": "ForecastSnapshotResponse"
       },
+      "GeoLocationResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "canonical_name": {
+            "type": "string",
+            "title": "Canonical Name"
+          },
+          "location_type": {
+            "type": "string",
+            "title": "Location Type"
+          },
+          "historical_admin_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Historical Admin Name"
+          },
+          "current_admin_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Admin Name"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "uncertainty_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty M"
+          },
+          "coordinate_confidence": {
+            "type": "string",
+            "title": "Coordinate Confidence"
+          },
+          "coordinate_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coordinate Source"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "is_sampling_location": {
+            "type": "boolean",
+            "title": "Is Sampling Location"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "canonical_name",
+          "location_type",
+          "historical_admin_name",
+          "current_admin_name",
+          "latitude",
+          "longitude",
+          "uncertainty_m",
+          "coordinate_confidence",
+          "coordinate_source",
+          "source_url",
+          "is_sampling_location"
+        ],
+        "title": "GeoLocationResponse"
+      },
+      "GeocodingRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "count": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Count",
+            "default": 10
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 2,
+            "title": "Language",
+            "default": "en"
+          },
+          "format": {
+            "type": "string",
+            "const": "json",
+            "title": "Format",
+            "default": "json"
+          },
+          "countryCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Countrycode"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "GeocodingRequest"
+      },
+      "GrantConsentRequest": {
+        "properties": {
+          "policy_version": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Policy Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "policy_version"
+        ],
+        "title": "GrantConsentRequest"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -979,6 +4060,698 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HazardCellResponse": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "samples": {
+            "items": {
+              "$ref": "#/components/schemas/HazardCellSample"
+            },
+            "type": "array",
+            "title": "Samples"
+          },
+          "dominant_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dominant Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude",
+          "samples",
+          "dominant_source"
+        ],
+        "title": "HazardCellResponse"
+      },
+      "HazardCellSample": {
+        "properties": {
+          "hazard_type": {
+            "type": "string",
+            "title": "Hazard Type"
+          },
+          "layer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Layer Id"
+          },
+          "forecast_day": {
+            "type": "string",
+            "format": "date",
+            "title": "Forecast Day"
+          },
+          "risk_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Level"
+          },
+          "score_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Min"
+          },
+          "score_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Max"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hazard_type",
+          "layer_id",
+          "forecast_day",
+          "risk_level",
+          "score_min",
+          "score_max",
+          "confidence"
+        ],
+        "title": "HazardCellSample"
+      },
+      "HazardLayerResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Run Id"
+          },
+          "hazard_type": {
+            "type": "string",
+            "title": "Hazard Type"
+          },
+          "forecast_day": {
+            "type": "string",
+            "format": "date",
+            "title": "Forecast Day"
+          },
+          "raster_url": {
+            "type": "string",
+            "title": "Raster Url"
+          },
+          "web_png_url": {
+            "type": "string",
+            "title": "Web Png Url"
+          },
+          "bbox": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Bbox"
+          },
+          "crs": {
+            "type": "string",
+            "title": "Crs"
+          },
+          "resolution_m": {
+            "type": "number",
+            "title": "Resolution M"
+          },
+          "level_bins": {
+            "items": {},
+            "type": "array",
+            "title": "Level Bins"
+          },
+          "legend": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Legend"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "contribution_summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Contribution Summary"
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issued At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "run_id",
+          "hazard_type",
+          "forecast_day",
+          "raster_url",
+          "web_png_url",
+          "bbox",
+          "crs",
+          "resolution_m",
+          "level_bins",
+          "legend",
+          "confidence",
+          "contribution_summary",
+          "issued_at"
+        ],
+        "title": "HazardLayerResponse"
+      },
+      "HazardManifestResponse": {
+        "properties": {
+          "requested_type": {
+            "type": "string",
+            "enum": [
+              "flash_flood",
+              "landslide",
+              "fog",
+              "dominant"
+            ],
+            "title": "Requested Type"
+          },
+          "layers": {
+            "items": {
+              "$ref": "#/components/schemas/HazardLayerResponse"
+            },
+            "type": "array",
+            "title": "Layers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requested_type",
+          "layers"
+        ],
+        "title": "HazardManifestResponse"
+      },
+      "HistoricalForecastRequest": {
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "title": "End Date"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "description": "Latitude in WGS84 decimal degrees"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "description": "Longitude in WGS84 decimal degrees"
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Timezone",
+            "default": "UTC"
+          },
+          "daily": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily"
+          },
+          "hourly": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hourly"
+          },
+          "current": {
+            "type": "null",
+            "title": "Current"
+          },
+          "models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Models"
+          },
+          "elevation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elevation"
+          },
+          "temperature_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "celsius",
+                  "fahrenheit"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Unit"
+          },
+          "wind_speed_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "kmh",
+                  "ms",
+                  "mph",
+                  "kn"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed Unit"
+          },
+          "precipitation_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mm",
+                  "inch"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precipitation Unit"
+          },
+          "timeformat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "unixtime"
+            ],
+            "title": "Timeformat",
+            "default": "iso8601"
+          },
+          "cell_selection": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "land",
+                  "sea",
+                  "nearest"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Selection"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start_date",
+          "end_date",
+          "latitude",
+          "longitude"
+        ],
+        "title": "HistoricalForecastRequest"
+      },
+      "HistoricalWeatherRequest": {
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "title": "End Date"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "description": "Latitude in WGS84 decimal degrees"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "description": "Longitude in WGS84 decimal degrees"
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Timezone",
+            "default": "UTC"
+          },
+          "daily": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily"
+          },
+          "hourly": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hourly"
+          },
+          "current": {
+            "type": "null",
+            "title": "Current"
+          },
+          "models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Models"
+          },
+          "elevation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elevation"
+          },
+          "temperature_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "celsius",
+                  "fahrenheit"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Unit"
+          },
+          "wind_speed_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "kmh",
+                  "ms",
+                  "mph",
+                  "kn"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed Unit"
+          },
+          "precipitation_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mm",
+                  "inch"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precipitation Unit"
+          },
+          "timeformat": {
+            "type": "string",
+            "enum": [
+              "iso8601",
+              "unixtime"
+            ],
+            "title": "Timeformat",
+            "default": "iso8601"
+          },
+          "cell_selection": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "land",
+                  "sea",
+                  "nearest"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Selection"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start_date",
+          "end_date",
+          "latitude",
+          "longitude"
+        ],
+        "title": "HistoricalWeatherRequest"
+      },
+      "HouseholdCreateRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Code"
+          },
+          "village_code": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Village Code"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "official",
+              "import",
+              "demo"
+            ],
+            "title": "Source",
+            "default": "official"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "village_code"
+        ],
+        "title": "HouseholdCreateRequest"
+      },
+      "HouseholdMemberRequest": {
+        "properties": {
+          "resident_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Resident Id"
+          },
+          "relationship": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Relationship"
+          },
+          "is_head": {
+            "type": "boolean",
+            "title": "Is Head",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "resident_id",
+          "relationship"
+        ],
+        "title": "HouseholdMemberRequest"
+      },
+      "HouseholdResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "village_code": {
+            "type": "string",
+            "title": "Village Code"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "village_code",
+          "address",
+          "status",
+          "simulated"
+        ],
+        "title": "HouseholdResponse"
       },
       "IdentityConfigResponse": {
         "properties": {
@@ -1041,6 +4814,507 @@
         ],
         "title": "JobStatsResponse"
       },
+      "LinkResidentAccountRequest": {
+        "properties": {
+          "keycloak_subject": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Keycloak Subject"
+          }
+        },
+        "type": "object",
+        "required": [
+          "keycloak_subject"
+        ],
+        "title": "LinkResidentAccountRequest"
+      },
+      "PreviousRunRequest": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "description": "Latitude in WGS84 decimal degrees"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "description": "Longitude in WGS84 decimal degrees"
+          },
+          "hourly": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Hourly"
+          },
+          "models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Models"
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Timezone",
+            "default": "UTC"
+          },
+          "forecast_days": {
+            "type": "integer",
+            "maximum": 16.0,
+            "minimum": 1.0,
+            "title": "Forecast Days",
+            "default": 1
+          },
+          "past_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 92.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Past Days",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude",
+          "hourly"
+        ],
+        "title": "PreviousRunRequest"
+      },
+      "ProfileResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "keycloak_subject": {
+            "type": "string",
+            "title": "Keycloak Subject"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "preferred_locale": {
+            "type": "string",
+            "title": "Preferred Locale"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "domain_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Role"
+          },
+          "area_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Area Codes"
+          },
+          "synced_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Synced At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "keycloak_subject",
+          "display_name",
+          "preferred_locale",
+          "status",
+          "domain_role",
+          "area_codes",
+          "synced_at"
+        ],
+        "title": "ProfileResponse"
+      },
+      "PublishAlertResponse": {
+        "properties": {
+          "alert": {
+            "$ref": "#/components/schemas/AlertResponse"
+          },
+          "recipient_count": {
+            "type": "integer",
+            "title": "Recipient Count"
+          },
+          "delivery_count": {
+            "type": "integer",
+            "title": "Delivery Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "alert",
+          "recipient_count",
+          "delivery_count"
+        ],
+        "title": "PublishAlertResponse"
+      },
+      "ResidentCreateRequest": {
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Full Name"
+          },
+          "village_code": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Village Code"
+          },
+          "birth_year": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2200.0,
+                "minimum": 1900.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birth Year"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "self",
+              "official",
+              "import",
+              "demo"
+            ],
+            "title": "Source",
+            "default": "official"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated",
+            "default": true
+          },
+          "contacts": {
+            "items": {
+              "$ref": "#/components/schemas/ContactCreateRequest"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Contacts"
+          },
+          "locations": {
+            "items": {
+              "$ref": "#/components/schemas/ResidentPointRequest"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Locations"
+          },
+          "livelihood_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "farmer",
+                  "livestock",
+                  "forestry",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Livelihood Type"
+          },
+          "livelihood_details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Livelihood Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "full_name",
+          "village_code"
+        ],
+        "title": "ResidentCreateRequest"
+      },
+      "ResidentPointRequest": {
+        "properties": {
+          "location_type": {
+            "type": "string",
+            "enum": [
+              "home",
+              "farm",
+              "livestock",
+              "watch_point"
+            ],
+            "title": "Location Type"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "precision_m": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precision M"
+          }
+        },
+        "type": "object",
+        "required": [
+          "location_type",
+          "latitude",
+          "longitude"
+        ],
+        "title": "ResidentPointRequest"
+      },
+      "ResidentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_profile_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Profile Id"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "village_code": {
+            "type": "string",
+            "title": "Village Code"
+          },
+          "birth_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birth Year"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated"
+          },
+          "contact_channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Contact Channels"
+          },
+          "livelihood_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Livelihood Types"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_profile_id",
+          "full_name",
+          "village_code",
+          "birth_year",
+          "verification_status",
+          "simulated",
+          "contact_channels",
+          "livelihood_types",
+          "created_at"
+        ],
+        "title": "ResidentResponse"
+      },
+      "SafetyEventCreateRequest": {
+        "properties": {
+          "resident_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resident Id"
+          },
+          "evacuation_order_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evacuation Order Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "safe",
+              "need_help",
+              "visited",
+              "at_shelter"
+            ],
+            "title": "Status"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "SafetyEventCreateRequest"
+      },
+      "SafetyEventResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "resident_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Resident Id"
+          },
+          "evacuation_order_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evacuation Order Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "resident_id",
+          "evacuation_order_id",
+          "status",
+          "occurred_at"
+        ],
+        "title": "SafetyEventResponse"
+      },
       "SetRoleRequest": {
         "properties": {
           "role": {
@@ -1076,6 +5350,289 @@
         },
         "type": "object",
         "title": "SetVillageRequest"
+      },
+      "ShelterCreateRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Code"
+          },
+          "area_code": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Area Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "accessibility": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Accessibility"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "area_code",
+          "name",
+          "latitude",
+          "longitude"
+        ],
+        "title": "ShelterCreateRequest"
+      },
+      "ShelterResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "area_code": {
+            "type": "string",
+            "title": "Area Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "accessibility": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Accessibility"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "area_code",
+          "name",
+          "capacity",
+          "accessibility",
+          "status",
+          "simulated"
+        ],
+        "title": "ShelterResponse"
+      },
+      "SubscriptionCreateRequest": {
+        "properties": {
+          "resident_location_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resident Location Id"
+          },
+          "hazard_type": {
+            "type": "string",
+            "enum": [
+              "flash_flood",
+              "landslide",
+              "fog"
+            ],
+            "title": "Hazard Type"
+          },
+          "minimum_level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Minimum Level",
+            "default": 1
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "sms",
+              "zalo",
+              "email",
+              "web_push",
+              "webhook"
+            ],
+            "title": "Channel"
+          },
+          "quiet_hours_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Hours Start"
+          },
+          "quiet_hours_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Hours End"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hazard_type",
+          "channel"
+        ],
+        "title": "SubscriptionCreateRequest"
+      },
+      "SubscriptionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "resident_location_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resident Location Id"
+          },
+          "hazard_type": {
+            "type": "string",
+            "title": "Hazard Type"
+          },
+          "minimum_level": {
+            "type": "integer",
+            "title": "Minimum Level"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "quiet_hours_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Hours Start"
+          },
+          "quiet_hours_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Hours End"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "resident_location_id",
+          "hazard_type",
+          "minimum_level",
+          "channel",
+          "quiet_hours_start",
+          "quiet_hours_end",
+          "is_active"
+        ],
+        "title": "SubscriptionResponse"
+      },
+      "UpdateProfileRequest": {
+        "properties": {
+          "preferred_locale": {
+            "type": "string",
+            "maxLength": 35,
+            "minLength": 2,
+            "title": "Preferred Locale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "preferred_locale"
+        ],
+        "title": "UpdateProfileRequest"
       },
       "ValidationError": {
         "properties": {

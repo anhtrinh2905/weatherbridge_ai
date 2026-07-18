@@ -18,8 +18,8 @@ class AdminAiJobResponse(BaseModel):
     user_id: str
     task: str
     status: str
-    payload: dict | None = None
-    result: dict | None = None
+    payload: dict[str, object] | None = None
+    result: dict[str, object] | None = None
     error: str | None = None
     created_at: datetime
     updated_at: datetime
