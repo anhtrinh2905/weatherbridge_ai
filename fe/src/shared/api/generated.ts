@@ -366,6 +366,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hazards/{location_code}/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Latest Hazard Risk */
+        get: operations["latest_hazard_risk_api_v1_hazards__location_code__latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/alerts": {
         parameters: {
             query?: never;
@@ -447,6 +464,23 @@ export interface paths {
         put?: never;
         /** Create Translation Draft */
         post: operations["create_translation_draft_api_v1_alerts__alert_id__translations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/translations/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Translation Draft */
+        post: operations["generate_translation_draft_api_v1_alerts__alert_id__translations_generate_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -897,6 +931,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/geocode/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reverse Geocode */
+        post: operations["reverse_geocode_api_v1_geocode_reverse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/translations": {
         parameters: {
             query?: never;
@@ -913,23 +964,6 @@ export interface paths {
          *     and fe/src/shared/i18n/ for that offline path.
          */
         post: operations["translate_api_v1_translations_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/speech/mms": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Synthesize Mms Speech */
-        post: operations["synthesize_mms_speech_api_v1_speech_mms_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1323,6 +1357,8 @@ export interface components {
              * @default false
              */
             audio_available: boolean;
+            /** Audio Asset Url */
+            audio_asset_url?: string | null;
             /** Acknowledgement Status */
             acknowledgement_status: string;
             /** Acknowledged At */
@@ -1415,6 +1451,11 @@ export interface components {
              * @enum {string}
              */
             translation_method: "manual" | "machine";
+        };
+        /** AlertTranslationGenerateRequest */
+        AlertTranslationGenerateRequest: {
+            /** Locale */
+            locale: string;
         };
         /** AlertTranslationResponse */
         AlertTranslationResponse: {
@@ -1875,6 +1916,12 @@ export interface components {
             rainfall_mm: number;
             /** Peak Intensity Mm H */
             peak_intensity_mm_h: number;
+            /** Min Visibility M */
+            min_visibility_m?: number | null;
+            /** Temperature 2M C */
+            temperature_2m_c?: number | null;
+            /** Dew Point 2M C */
+            dew_point_2m_c?: number | null;
         };
         /** ForecastFreshnessItem */
         ForecastFreshnessItem: {
@@ -2063,6 +2110,33 @@ export interface components {
             /** Confidence */
             confidence: number;
         };
+        /**
+         * HazardDay
+         * @description One forecast day with its rainfall trigger and composite risk.
+         *
+         *     Risk fields are optional so snapshots written before the scoring pipeline
+         *     (or by a future field-set) still deserialize.
+         */
+        HazardDay: {
+            /** Date */
+            date: string;
+            /** Rainfall Mm */
+            rainfall_mm: number;
+            /** Peak Intensity Mm H */
+            peak_intensity_mm_h?: number | null;
+            /** Corrected Rainfall Mm */
+            corrected_rainfall_mm?: number | null;
+            /** Bias Corrected */
+            bias_corrected?: boolean | null;
+            /** Id Exceedance */
+            id_exceedance?: number | null;
+            /** Trigger Level */
+            trigger_level?: number | null;
+            /** Risk Level */
+            risk_level?: number | null;
+            /** Risk Name */
+            risk_name?: string | null;
+        };
         /** HazardLayerResponse */
         HazardLayerResponse: {
             /**
@@ -2121,6 +2195,24 @@ export interface components {
             requested_type: "flash_flood" | "landslide" | "fog" | "dominant";
             /** Layers */
             layers: components["schemas"]["HazardLayerResponse"][];
+        };
+        /** HazardRiskResponse */
+        HazardRiskResponse: {
+            /** Location Code */
+            location_code: string;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Source */
+            source: string;
+            /**
+             * Computed At
+             * Format: date-time
+             */
+            computed_at: string;
+            /** Days */
+            days: components["schemas"]["HazardDay"][];
         };
         /** HistoricalForecastRequest */
         HistoricalForecastRequest: {
@@ -2324,6 +2416,11 @@ export interface components {
             tts_enabled: boolean;
             /** Fallback Locale Code */
             fallback_locale_code: string | null;
+            /**
+             * Requires Native Review
+             * @default false
+             */
+            requires_native_review: boolean;
         };
         /** NotificationChannelResponse */
         NotificationChannelResponse: {
@@ -2525,6 +2622,27 @@ export interface components {
              */
             created_at: string;
         };
+        /** ReverseGeocodeRequest */
+        ReverseGeocodeRequest: {
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+        };
+        /** ReverseGeocodeResponse */
+        ReverseGeocodeResponse: {
+            /** Displayname */
+            displayName: string;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /**
+             * Source
+             * @default nominatim
+             */
+            source: string;
+        };
         /** SafetyEventCreateRequest */
         SafetyEventCreateRequest: {
             /** Resident Id */
@@ -2621,16 +2739,6 @@ export interface components {
             status: string;
             /** Simulated */
             simulated: boolean;
-        };
-        /** SpeechSynthesisRequest */
-        SpeechSynthesisRequest: {
-            /** Text */
-            text: string;
-            /**
-             * Language
-             * @default hmn
-             */
-            language: string;
         };
         /** SubscriptionCreateRequest */
         SubscriptionCreateRequest: {
@@ -3539,6 +3647,37 @@ export interface operations {
             };
         };
     };
+    latest_hazard_risk_api_v1_hazards__location_code__latest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                location_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HazardRiskResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_alerts_api_v1_alerts_get: {
         parameters: {
             query?: never;
@@ -3728,6 +3867,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["AlertTranslationDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertTranslationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_translation_draft_api_v1_alerts__alert_id__translations_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertTranslationGenerateRequest"];
             };
         };
         responses: {
@@ -4616,6 +4790,39 @@ export interface operations {
             };
         };
     };
+    reverse_geocode_api_v1_geocode_reverse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReverseGeocodeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReverseGeocodeResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     translate_api_v1_translations_post: {
         parameters: {
             query?: never;
@@ -4636,39 +4843,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TranslationResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    synthesize_mms_speech_api_v1_speech_mms_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SpeechSynthesisRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

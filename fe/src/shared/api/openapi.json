@@ -1061,6 +1061,48 @@
         }
       }
     },
+    "/api/v1/hazards/{location_code}/latest": {
+      "get": {
+        "tags": [
+          "hazards"
+        ],
+        "summary": "Latest Hazard Risk",
+        "operationId": "latest_hazard_risk_api_v1_hazards__location_code__latest_get",
+        "parameters": [
+          {
+            "name": "location_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Location Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HazardRiskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/alerts": {
       "get": {
         "tags": [
@@ -1328,6 +1370,59 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AlertTranslationDraftRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertTranslationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{alert_id}/translations/generate": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Generate Translation Draft",
+        "operationId": "generate_translation_draft_api_v1_alerts__alert_id__translations_generate_post",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertTranslationGenerateRequest"
               }
             }
           }
@@ -2475,6 +2570,47 @@
         }
       }
     },
+    "/api/v1/geocode/reverse": {
+      "post": {
+        "tags": [
+          "geocode"
+        ],
+        "summary": "Reverse Geocode",
+        "operationId": "reverse_geocode_api_v1_geocode_reverse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReverseGeocodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReverseGeocodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/translations": {
       "post": {
         "tags": [
@@ -2501,45 +2637,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/TranslationResponse"
                 }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/speech/mms": {
-      "post": {
-        "tags": [
-          "speech"
-        ],
-        "summary": "Synthesize Mms Speech",
-        "operationId": "synthesize_mms_speech_api_v1_speech_mms_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SpeechSynthesisRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
               }
             }
           },
@@ -3430,6 +3527,17 @@
             "title": "Audio Available",
             "default": false
           },
+          "audio_asset_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Asset Url"
+          },
           "acknowledgement_status": {
             "type": "string",
             "title": "Acknowledgement Status"
@@ -3674,6 +3782,21 @@
           "deadline_instruction"
         ],
         "title": "AlertTranslationDraftRequest"
+      },
+      "AlertTranslationGenerateRequest": {
+        "properties": {
+          "locale": {
+            "type": "string",
+            "maxLength": 35,
+            "minLength": 2,
+            "title": "Locale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locale"
+        ],
+        "title": "AlertTranslationGenerateRequest"
       },
       "AlertTranslationResponse": {
         "properties": {
@@ -4896,6 +5019,39 @@
           "peak_intensity_mm_h": {
             "type": "number",
             "title": "Peak Intensity Mm H"
+          },
+          "min_visibility_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Visibility M"
+          },
+          "temperature_2m_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature 2M C"
+          },
+          "dew_point_2m_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dew Point 2M C"
           }
         },
         "type": "object",
@@ -5510,6 +5666,102 @@
         ],
         "title": "HazardCellSample"
       },
+      "HazardDay": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "rainfall_mm": {
+            "type": "number",
+            "title": "Rainfall Mm"
+          },
+          "peak_intensity_mm_h": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Intensity Mm H"
+          },
+          "corrected_rainfall_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrected Rainfall Mm"
+          },
+          "bias_corrected": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bias Corrected"
+          },
+          "id_exceedance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id Exceedance"
+          },
+          "trigger_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trigger Level"
+          },
+          "risk_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Level"
+          },
+          "risk_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "rainfall_mm"
+        ],
+        "title": "HazardDay",
+        "description": "One forecast day with its rainfall trigger and composite risk.\n\nRisk fields are optional so snapshots written before the scoring pipeline\n(or by a future field-set) still deserialize."
+      },
       "HazardLayerResponse": {
         "properties": {
           "id": {
@@ -5622,6 +5874,48 @@
           "layers"
         ],
         "title": "HazardManifestResponse"
+      },
+      "HazardRiskResponse": {
+        "properties": {
+          "location_code": {
+            "type": "string",
+            "title": "Location Code"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "computed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Computed At"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/HazardDay"
+            },
+            "type": "array",
+            "title": "Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "location_code",
+          "latitude",
+          "longitude",
+          "source",
+          "computed_at",
+          "days"
+        ],
+        "title": "HazardRiskResponse"
       },
       "HistoricalForecastRequest": {
         "properties": {
@@ -6213,6 +6507,11 @@
               }
             ],
             "title": "Fallback Locale Code"
+          },
+          "requires_native_review": {
+            "type": "boolean",
+            "title": "Requires Native Review",
+            "default": false
           }
         },
         "type": "object",
@@ -6786,6 +7085,56 @@
         ],
         "title": "ResidentResponse"
       },
+      "ReverseGeocodeRequest": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          }
+        },
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "ReverseGeocodeRequest"
+      },
+      "ReverseGeocodeResponse": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "title": "Displayname"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "nominatim"
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName",
+          "latitude",
+          "longitude"
+        ],
+        "title": "ReverseGeocodeResponse"
+      },
       "SafetyEventCreateRequest": {
         "properties": {
           "resident_id": {
@@ -7043,26 +7392,6 @@
           "simulated"
         ],
         "title": "ShelterResponse"
-      },
-      "SpeechSynthesisRequest": {
-        "properties": {
-          "text": {
-            "type": "string",
-            "maxLength": 1200,
-            "minLength": 1,
-            "title": "Text"
-          },
-          "language": {
-            "type": "string",
-            "title": "Language",
-            "default": "hmn"
-          }
-        },
-        "type": "object",
-        "required": [
-          "text"
-        ],
-        "title": "SpeechSynthesisRequest"
       },
       "SubscriptionCreateRequest": {
         "properties": {

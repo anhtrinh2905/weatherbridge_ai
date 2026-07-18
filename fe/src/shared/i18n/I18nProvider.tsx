@@ -3,10 +3,9 @@ import hmnLocale from "./locales/hmn.json";
 import hmnMeta from "./locales/hmn.meta.json";
 import viLocale from "./locales/vi.json";
 
-export type Locale = "vi" | "hmn" | "th";
+export type Locale = "vi" | "hmn-x-dienbien" | "tai-x-muongpon";
 
 const STORAGE_KEY = "wba:locale";
-const MACHINE_TRANSLATIONS_ENABLED = import.meta.env.VITE_ENABLE_MACHINE_TRANSLATIONS === "true";
 
 /**
  * Thái Điện Biên (Tai Dam) has no viable text machine-translation (see docs/architecture
@@ -14,9 +13,9 @@ const MACHINE_TRANSLATIONS_ENABLED = import.meta.env.VITE_ENABLE_MACHINE_TRANSLA
  * rather than mistranslating or using Thailand's unrelated "Thai" language.
  */
 const LOCALES: Record<Locale, Record<string, string>> = {
-  vi: viLocale,
-  hmn: hmnLocale,
-  th: viLocale,
+  "vi": viLocale,
+  "hmn-x-dienbien": hmnLocale,
+  "tai-x-muongpon": viLocale,
 };
 
 // Hmong is a low-resource language for machine translation — always flag it as unreviewed
@@ -36,8 +35,7 @@ const I18nContext = createContext<I18nContextValue | undefined>(undefined);
 
 function readStoredLocale(): Locale {
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "hmn" && !MACHINE_TRANSLATIONS_ENABLED) return "vi";
-  return stored === "vi" || stored === "hmn" || stored === "th" ? stored : "vi";
+  return stored === "vi" || stored === "hmn-x-dienbien" || stored === "tai-x-muongpon" ? (stored as Locale) : "vi";
 }
 
 function interpolate(template: string, params?: Record<string, string | number>): string {
@@ -51,9 +49,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(readStoredLocale);
 
   const setLocale = useCallback((next: Locale) => {
-    const resolved = next === "hmn" && !MACHINE_TRANSLATIONS_ENABLED ? "vi" : next;
-    setLocaleState(resolved);
-    localStorage.setItem(STORAGE_KEY, resolved);
+    setLocaleState(next);
+    localStorage.setItem(STORAGE_KEY, next);
   }, []);
 
   const t = useCallback(
@@ -73,8 +70,4 @@ export function useTranslation(): I18nContextValue {
   const ctx = useContext(I18nContext);
   if (!ctx) throw new Error("useTranslation must be used within I18nProvider");
   return ctx;
-}
-
-export function machineTranslationsEnabled() {
-  return MACHINE_TRANSLATIONS_ENABLED;
 }

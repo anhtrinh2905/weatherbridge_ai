@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { synthesizeMmsSpeech } from "./api";
+import { operationsApi } from "../operations/api";
 
-export function useMmsSpeech() {
+export function useAlertAudio() {
   const audioUrlRef = useRef<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -14,13 +14,13 @@ export function useMmsSpeech() {
     };
   }, []);
 
-  const play = useCallback(async (text: string) => {
+  const play = useCallback(async (alertId: string) => {
     setError(null);
     setIsLoading(true);
     try {
       audioRef.current?.pause();
       if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
-      const audio = await synthesizeMmsSpeech(text);
+      const audio = await operationsApi.alertAudio(alertId);
       const url = URL.createObjectURL(audio);
       audioUrlRef.current = url;
       const player = new Audio(url);
@@ -28,13 +28,13 @@ export function useMmsSpeech() {
       player.onended = () => setIsPlaying(false);
       player.onerror = () => {
         setIsPlaying(false);
-        setError("Không phát được âm thanh Hmong.");
+        setError("Không phát được âm thanh.");
       };
       setIsPlaying(true);
       await player.play();
     } catch (exc) {
       setIsPlaying(false);
-      setError(exc instanceof Error ? exc.message : "Không tạo được âm thanh Hmong.");
+      setError(exc instanceof Error ? exc.message : "Không tải được âm thanh.");
     } finally {
       setIsLoading(false);
     }

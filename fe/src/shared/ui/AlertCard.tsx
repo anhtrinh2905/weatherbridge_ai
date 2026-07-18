@@ -2,8 +2,7 @@ import { AlertTriangle, ChevronDown, ChevronUp, Clock, CloudRain, ShieldCheck, S
 import { useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
 import { useLocalizedLabels } from "../i18n/useLocalizedLabels";
-import { useMmsSpeech } from "../../features/speech/useMmsSpeech";
-import { useDynamicTranslation } from "../../features/translation/useDynamicTranslation";
+import { useAlertAudio } from "../../features/speech/useMmsSpeech";
 import type { Alert, HazardType } from "../domain/types";
 import { cn } from "../lib/cn";
 import { TierBadge } from "./HazardBadge";
@@ -26,7 +25,7 @@ export function AlertCard({
 }) {
   const { locale, t } = useTranslation();
   const labels = useLocalizedLabels();
-  const speech = useMmsSpeech();
+  const speech = useAlertAudio();
   const [expanded, setExpanded] = useState(false);
   const isGoNow = alert.tier === "go_now";
   const dayLevel = getHazardLevel(alert.villageId, alert.hazardType, forecastDay);
@@ -34,15 +33,10 @@ export function AlertCard({
   const isHero = size === "hero";
   const level = dayLevel?.level ?? alert.level;
 
-  // alert.whatToDo/what come from the mock bulletin generator (a stand-in for a real AI/worker
-  // pipeline) — unlike the static UI chrome above, this text isn't known ahead of time, so it's
-  // translated live (Redis-cached server-side) instead of shipped in the offline locale catalog.
-  const { texts: [translatedWhatToDo, translatedWhat] } = useDynamicTranslation([
-    alert.whatToDo,
-    alert.what,
-  ]);
-  const shouldOfferHmongSpeech = locale === "hmn";
-  const speechText = `${translatedWhatToDo}. ${translatedWhat}`;
+  const translatedWhatToDo = alert.whatToDo;
+  const translatedWhat = alert.what;
+  const shouldOfferHmongSpeech = locale === "hmn-x-dienbien";
+  // The speech generation has moved to backend GET /alerts/{id}/audio
 
   return (
     <article
@@ -82,7 +76,7 @@ export function AlertCard({
           <div className="mt-4">
             <button
               type="button"
-              onClick={() => speech.play(speechText)}
+              onClick={() => speech.play(alert.id)}
               disabled={speech.isLoading}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-accent/35 bg-accent/10 px-4 text-sm font-semibold text-accent transition hover:bg-accent/15 disabled:cursor-wait disabled:opacity-60"
             >

@@ -480,6 +480,10 @@ class AlertService:
         self, recipient: AlertRecipient, alert: Alert, content: AlertContent
     ) -> AlertInboxItem:
         locale = await self.session.get(Locale, content.locale)
+        audio_available = bool(
+            locale and locale.tts_enabled and content.media_asset_id is not None
+        )
+        audio_url = f"/api/v1/alerts/{alert.id}/audio?locale={content.locale}"
         return AlertInboxItem(
             alert_id=alert.id,
             recipient_id=recipient.id,
@@ -493,9 +497,8 @@ class AlertService:
             deadline_at=alert.deadline_at,
             content_locale=content.locale,
             is_locale_fallback=content.locale != recipient.preferred_locale,
-            audio_available=bool(
-                locale and locale.tts_enabled and content.locale == "hmn-x-dienbien"
-            ),
+            audio_available=audio_available,
+            audio_asset_url=audio_url if audio_available else None,
             acknowledgement_status=recipient.acknowledgement_status,
             acknowledged_at=recipient.acknowledged_at,
         )
