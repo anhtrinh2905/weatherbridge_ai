@@ -1,10 +1,32 @@
 from fastapi import APIRouter
 
-from api.v1.endpoints import admin, ai_jobs, auth, forecasts, hazard_archive, health, open_meteo
+from api.v1.endpoints import (
+    admin,
+    ai_jobs,
+    alerts,
+    auth,
+    evacuations,
+    forecasts,
+    hazard_archive,
+    hazards,
+    health,
+    households,
+    open_meteo,
+    profile,
+    residents,
+    subscriptions,
+)
 
 router = APIRouter()
 router.include_router(health.router, prefix="/health", tags=["health"])
 router.include_router(auth.router, prefix="/auth", tags=["auth"])
+router.include_router(profile.router, prefix="/profile", tags=["profile"])
+router.include_router(residents.router, prefix="/residents", tags=["residents"])
+router.include_router(households.router, prefix="/households", tags=["households"])
+router.include_router(subscriptions.router, prefix="/subscriptions", tags=["subscriptions"])
+router.include_router(hazards.router, prefix="/hazards", tags=["hazards"])
+router.include_router(alerts.router, prefix="/alerts", tags=["alerts"])
+router.include_router(evacuations.router, prefix="/evacuations", tags=["evacuations"])
 router.include_router(ai_jobs.router, prefix="/ai/jobs", tags=["ai-jobs"])
 router.include_router(forecasts.router, prefix="/forecasts", tags=["forecasts"])
 router.include_router(open_meteo.router, prefix="/open-meteo", tags=["open-meteo"])

@@ -1,5 +1,12 @@
 from typing import Any, Protocol
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.errors import AppError
+from core.time import utc_now
+from database.domain_models import UserAreaAssignment, UserProfile
+from database.models import GeoLocation
 from modules.admin.schemas import DOMAIN_ROLES, AdminUserResponse
 
 # Priority order when a user (wrongly) holds more than one domain role — the
@@ -19,8 +26,9 @@ class AdminUserService:
     """User administration on top of Keycloak. Enforces the domain rule that a
     user has exactly one of the four domain roles at a time."""
 
-    def __init__(self, client: KeycloakAdmin) -> None:
+    def __init__(self, client: KeycloakAdmin, session: AsyncSession | None = None) -> None:
         self.client = client
+        self.session = session
 
     async def list_users(self) -> list[AdminUserResponse]:
         users = await self.client.list_users()
@@ -36,9 +44,78 @@ class AdminUserService:
         await self.client.remove_realm_roles(user_id, stale)
         if role not in current:
             await self.client.add_realm_roles(user_id, [role])
+        if self.session is not None:
+            profile = await self._ensure_profile(user_id)
+            assignments = (
+                await self.session.scalars(
+                    select(UserAreaAssignment).where(
+                        UserAreaAssignment.profile_id == profile.id,
+                        UserAreaAssignment.valid_to.is_(None),
+                    )
+                )
+            ).all()
+            for assignment in assignments:
+                assignment.role = role
+            await self.session.commit()
 
     async def set_village(self, user_id: str, village_id: str | None) -> None:
+        area: GeoLocation | None = None
+        if self.session is not None and village_id:
+            candidates = {village_id, f"village-{village_id}", f"commune-{village_id}"}
+            area = await self.session.scalar(
+                select(GeoLocation).where(GeoLocation.code.in_(candidates))
+            )
+            if area is None:
+                raise AppError(404, "Area not found", "area_not_found")
         await self.client.set_user_attribute(user_id, "village_id", village_id or None)
+        if self.session is None:
+            return
+        profile = await self._ensure_profile(user_id)
+        now = utc_now()
+        active = (
+            await self.session.scalars(
+                select(UserAreaAssignment).where(
+                    UserAreaAssignment.profile_id == profile.id,
+                    UserAreaAssignment.valid_to.is_(None),
+                )
+            )
+        ).all()
+        for assignment in active:
+            assignment.valid_to = now
+        if area is not None:
+            roles = await self.client.get_realm_roles(user_id)
+            role = next((item for item in _ROLE_PRIORITY if item in roles), "resident")
+            self.session.add(
+                UserAreaAssignment(
+                    profile_id=profile.id,
+                    role=role,
+                    geo_location_id=area.id,
+                    valid_from=now,
+                    created_at=now,
+                )
+            )
+        await self.session.commit()
+
+    async def _ensure_profile(self, user_id: str) -> UserProfile:
+        assert self.session is not None
+        profile = await self.session.scalar(
+            select(UserProfile).where(UserProfile.keycloak_subject == user_id)
+        )
+        if profile is not None:
+            return profile
+        now = utc_now()
+        profile = UserProfile(
+            keycloak_subject=user_id,
+            display_name=user_id,
+            preferred_locale="vi",
+            status="pending_sync",
+            synced_at=now,
+            created_at=now,
+            updated_at=now,
+        )
+        self.session.add(profile)
+        await self.session.flush()
+        return profile
 
     @staticmethod
     def _to_response(user: dict[str, Any], roles: list[str]) -> AdminUserResponse:

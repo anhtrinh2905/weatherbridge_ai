@@ -97,5 +97,6 @@ async def get_hazard_archive_service(
 
 async def get_admin_user_service(
     client: KeycloakAdminClient = Depends(get_keycloak_admin_client),
+    session: AsyncSession = Depends(get_db),
 ) -> AsyncIterator[AdminUserService]:
-    yield AdminUserService(client)
+    yield AdminUserService(client, session)

@@ -122,10 +122,10 @@ Forbidden: `fe → DB/Redis/object-storage-write` directly; `be/src/ai` or `work
 - **Prevents:** non-reproducible runs; hardcoded thresholds; an officer accidentally changing the science; scoring silently falling back to the wrong artifact.
 - **Rule:** **model calibration** (feature weights `wᵢ`, I–D `α`/`β`, 5-level bin edges, feature-stack version) is a **versioned artifact with provenance**, immutable per run and pinned by `calibration_version` on each `hazard_run`. Version ids are **monotonic and explicit** (`calib-YYYYMMDD-N`, `stack-YYYYMMDD-N`) or content hashes; scoring **fails closed** — it refuses to run if the pinned artifact or its provenance record is missing. **Operational alert thresholds** (officer-tunable, per hazard type / village, incl. the level→tier cut of AD-9) live in the Postgres `threshold_config` table with an audit trail. Scoring reads calibration **only** from the pinned artifact; officer edits touch **only** `threshold_config`.
 
-### AD-8 — RBAC data-scoping at the service layer; simulated persons only
+### AD-8 — RBAC data-scoping at the service layer; gated resident PII
 - **Binds:** FR17–FR19, NFR6, PRD §8; `be/`, `fe/`
-- **Prevents:** cross-village data leakage; capture of real personal data.
-- **Rule:** four Keycloak realm roles — `admin`, `commune_officer`, `village_head`, `resident`. Every resident/household/alert query is **scoped by role + village at the service layer** (not the UI): `village_head` sees only their own village, `commune_officer` the whole commune, `resident` only their own. All person rows carry `simulated = true`; **no real PII is ingested or stored**. Tokens are held **in memory only** — never `localStorage`. Signed object-storage URLs are short-lived; hazard rasters are commune-wide non-PII, so URL scoping is availability hygiene, not a confidentiality boundary.
+- **Prevents:** cross-village data leakage; uncontrolled capture or disclosure of personal data.
+- **Rule:** four Keycloak realm roles — `admin`, `commune_officer`, `village_head`, `resident`. Roles come from Keycloak, while time-bounded `user_area_assignment` rows are the backend source of geographic scope. Every resident/household/alert query is **scoped by role + assigned area at the service layer** (not the UI or a `village_id` token claim): `village_head` sees assigned villages, `commune_officer` assigned communes and descendants, `resident` only linked profiles/households, and `admin` the system. Runtime defaults to `PII_MODE=simulated`; real PII is blocked until privacy/legal/security gates are approved and live mode has AES-GCM/HMAC keys, consent, audit, retention, and least-privilege controls. Tokens are held **in memory only** — never `localStorage`. Signed object-storage URLs are short-lived; hazard rasters are commune-wide non-PII, so URL scoping is availability hygiene, not a confidentiality boundary.
 
 ### AD-9 — Alert integrity: 4 parts + countdown; single-source 5→2 tier; low-literacy view
 - **Binds:** FR4, FR6, FR7, FR8, NFR3, G2; `be/`, `fe/`
@@ -302,7 +302,7 @@ infra/
 | FR5, G4 backtest 25/7/2024 | `ai/backtest` + village registry | AD-10 |
 | FR6, FR7 threshold-crossing alerts, 4 parts + countdown | `worker/jobs/refresh_hazard` + `be/services/alert_service` | AD-5, AD-6, AD-9 |
 | FR9 configurable thresholds | `be/modules/thresholds` + `threshold_config` | AD-6, AD-7 |
-| FR10, FR11 resident profile (mock) + per-role recommendation text | `resident_sim` + `be/src/ai/alert_text` | AD-2, AD-6, AD-8 |
+| FR10, FR11 resident profile + livelihood recommendation text | `be/modules/residents` + `be/services/alert_service` | AD-2, AD-6, AD-8 |
 | FR17–FR19 RBAC, dashboards, report export | Keycloak + `be/services/*` + `fe/features/dashboard` | AD-8 |
 | Heatmap rendering, combined view, time axis | `fe/features/heatmap` (MapLibre) + object storage | AD-4 |
 | NFR1/NFR3/R3 safety posture (disclaimer, confidence, low-literacy, no over-claim) | `fe` shared components + model | AD-11 |
@@ -313,7 +313,7 @@ infra/
 - **Multi-channel & last-mile relay** (FR13–FR16, NFR2): loudspeaker/TTS in Mông/Thái, SMS, Amber-Alert audio, no-smartphone reach, responsibility log, escalation — Roadmap; MVP simulates. TTS must pass native-speaker validation before any real dispatch.
 - **Evacuation routing** (FR12, "where to run"): needs a safe-point layer + routing — Roadmap.
 - **Frost / heavy-rain hazard layers**: require a temperature trigger (not rainfall) — a separate model, not a variant of the two core triggers (addendum §1). Roadmap.
-- **Real PII / consent flow** (Nghị định 13/2023): MVP is simulated data only; a lawful consent basis is required before any real resident data.
+- **Real PII activation** (Nghị định 13/2023): schema and encryption controls are prepared, but deployment stays in simulated mode until lawful basis, consent UX, retention/anonymization operations, access review, incident response, and production key management are approved.
 - **Cloud deployment target & Terraform**: `infra/terraform/` stays README-only until a provider is chosen; object storage, secret manager, and managed Postgres/Redis are selected then (existing `docs/architecture/deployment.md` cloud topology extends with the AD-4 object-storage bucket).
 - **Local calibration of I–D α/β and bin edges**: MVP ships global Guzzetti values flagged as over-warning; local calibration is a calibration-artifact revision once inventory allows (does not change any AD).
 - **Commercial forecast plan**: Open-Meteo free tier is non-commercial; a funded/operational deployment needs a paid plan or self-hosted stack (the forecast `Protocol` keeps this swappable).

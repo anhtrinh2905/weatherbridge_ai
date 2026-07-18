@@ -7,9 +7,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from core.config import get_settings
+from database import domain_models, models  # noqa: F401
 from database.base import Base
-from database import models  # noqa: F401
-
 
 config = context.config
 settings = get_settings()
@@ -21,19 +20,33 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 
+def include_name(name: str | None, type_: str, parent_names: dict[str, str | None]) -> bool:
+    """Ignore PostGIS/Tiger extension objects during autogenerate drift checks."""
+    if type_ == "schema":
+        return name in {None, "public"}
+    if type_ == "table":
+        return name == "alembic_version" or name in target_metadata.tables
+    return True
+
+
 def run_migrations_offline() -> None:
     context.configure(
         url=settings.database_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_name=include_name,
     )
     with context.begin_transaction():
         context.run_migrations()
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        include_name=include_name,
+    )
     with context.begin_transaction():
         context.run_migrations()
 

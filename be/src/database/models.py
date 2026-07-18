@@ -10,6 +10,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -19,6 +20,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database.base import Base
+from database.spatial import SpatialValue
 
 
 class JobStatus(StrEnum):
@@ -35,8 +37,8 @@ class AiJob(Base):
     user_id: Mapped[str] = mapped_column(String(255), index=True)
     task: Mapped[str] = mapped_column(String(80))
     status: Mapped[str] = mapped_column(String(20), default=JobStatus.QUEUED.value, index=True)
-    payload: Mapped[dict] = mapped_column(JSON)
-    result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    payload: Mapped[dict[str, object]] = mapped_column(JSON)
+    result: Mapped[dict[str, object] | None] = mapped_column(JSON, nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
@@ -57,7 +59,7 @@ class ForecastSnapshot(Base):
     longitude: Mapped[float] = mapped_column(Float)
     source: Mapped[str] = mapped_column(String(120))
     # [{"date": "YYYY-MM-DD", "rainfall_mm": float, "peak_intensity_mm_h": float}]
-    days: Mapped[list] = mapped_column(JSON)
+    days: Mapped[list[dict[str, object]]] = mapped_column(JSON)
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
 
@@ -71,10 +73,13 @@ class GeoLocation(Base):
             "(latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180)",
             name="ck_geo_locations_coordinates",
         ),
+        Index("ix_geo_locations_code", "code"),
+        Index("ix_geo_locations_boundary_gist", "boundary", postgresql_using="gist"),
+        Index("ix_geo_locations_centroid_gist", "centroid", postgresql_using="gist"),
     )
 
     id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
-    code: Mapped[str] = mapped_column(String(120), unique=True, index=True)
+    code: Mapped[str] = mapped_column(String(120), unique=True)
     canonical_name: Mapped[str] = mapped_column(String(255))
     parent_id: Mapped[UUID | None] = mapped_column(
         Uuid(as_uuid=True), ForeignKey("geo_locations.id"), nullable=True, index=True
@@ -84,7 +89,13 @@ class GeoLocation(Base):
     current_admin_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
-    impact_geometry: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    impact_geometry: Mapped[dict[str, object] | None] = mapped_column(JSON, nullable=True)
+    boundary: Mapped[object | None] = mapped_column(SpatialValue("MULTIPOLYGON"), nullable=True)
+    centroid: Mapped[object | None] = mapped_column(
+        SpatialValue("POINT", geography=True), nullable=True
+    )
+    admin_level: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     uncertainty_m: Mapped[int | None] = mapped_column(Integer, nullable=True)
     coordinate_source: Mapped[str | None] = mapped_column(String(120), nullable=True)
     source_url: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -97,9 +108,10 @@ class GeoLocation(Base):
 
 class DisasterEvent(Base):
     __tablename__ = "disaster_events"
+    __table_args__ = (Index("ix_disaster_events_code", "code"),)
 
     id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
-    code: Mapped[str] = mapped_column(String(120), unique=True, index=True)
+    code: Mapped[str] = mapped_column(String(120), unique=True)
     hazard_type: Mapped[str] = mapped_column(String(40), index=True)
     started_at_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
     ended_at_utc: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -167,7 +179,7 @@ class IngestionRun(Base):
     status: Mapped[str] = mapped_column(String(20), index=True)
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    parameters: Mapped[dict] = mapped_column(JSON)
+    parameters: Mapped[dict[str, object]] = mapped_column(JSON)
     row_count: Mapped[int] = mapped_column(Integer, default=0)
     raw_response_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -222,7 +234,7 @@ class ForecastHourly(Base):
     soil_moisture_3_to_9cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     soil_moisture_9_to_27cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     soil_moisture_27_to_81cm: Mapped[float | None] = mapped_column(Float, nullable=True)
-    quality_flags: Mapped[dict] = mapped_column(JSON)
+    quality_flags: Mapped[dict[str, object]] = mapped_column(JSON)
     retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
@@ -268,7 +280,7 @@ class WeatherObservationHourly(Base):
     soil_moisture_7_to_28cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     soil_moisture_28_to_100cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     soil_moisture_100_to_255cm: Mapped[float | None] = mapped_column(Float, nullable=True)
-    quality_flags: Mapped[dict] = mapped_column(JSON)
+    quality_flags: Mapped[dict[str, object]] = mapped_column(JSON)
     retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
@@ -297,5 +309,5 @@ class EventFeature(Base):
     rain_24h_mm: Mapped[float | None] = mapped_column(Float, nullable=True)
     rain_72h_mm: Mapped[float | None] = mapped_column(Float, nullable=True)
     antecedent_7d_mm: Mapped[float | None] = mapped_column(Float, nullable=True)
-    feature_values: Mapped[dict] = mapped_column(JSON)
+    feature_values: Mapped[dict[str, object]] = mapped_column(JSON)
     computed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

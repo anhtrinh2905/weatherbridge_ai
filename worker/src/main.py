@@ -13,6 +13,7 @@ from archive_operations import TRAINING_CSV_EXPORT_TASK, export_training_csv
 from forecast_ingest import FORECAST_INGEST_TASK, ingest_forecast
 from job_queue import next_job
 from job_store import ai_jobs, set_status
+from notification_dispatch import process_outbox_batch
 from open_meteo_backfill import HISTORICAL_WEATHER_BACKFILL_TASK, backfill_open_meteo
 from settings import Settings
 
@@ -78,6 +79,9 @@ async def run() -> None:
             job_id = await next_job(redis)
             if job_id:
                 await process_job(job_id, session_factory, settings)
+            else:
+                async with session_factory() as session:
+                    await process_outbox_batch(session, settings)
     finally:
         await redis.aclose()
         await engine.dispose()

@@ -17,6 +17,10 @@ interface Viewport {
   panY: number;
 }
 
+interface StoredViewport extends Viewport {
+  rasterKey: string;
+}
+
 interface PointerPosition {
   x: number;
   y: number;
@@ -63,8 +67,26 @@ export function RasterHazardMap({
   const dragRef = useRef<{ start: PointerPosition; viewport: Viewport; moved: boolean } | null>(null);
   const pinchRef = useRef<{ distance: number; midpoint: PointerPosition; viewport: Viewport } | null>(null);
   const suppressClickRef = useRef(false);
-  const [viewport, setViewport] = useState<Viewport>({ zoom: MIN_ZOOM, panX: 0, panY: 0 });
+  const rasterKey = `${layer}:${day}`;
+  const rasterKeyRef = useRef(rasterKey);
+  const resetViewport: Viewport = { zoom: MIN_ZOOM, panX: 0, panY: 0 };
+  const [storedViewport, setStoredViewport] = useState<StoredViewport>({
+    ...resetViewport,
+    rasterKey,
+  });
+  const viewport = storedViewport.rasterKey === rasterKey ? storedViewport : resetViewport;
+  const setViewport = (update: React.SetStateAction<Viewport>) => {
+    setStoredViewport((current) => {
+      const currentViewport = current.rasterKey === rasterKey ? current : resetViewport;
+      const next = typeof update === "function" ? update(currentViewport) : update;
+      return { ...next, rasterKey };
+    });
+  };
   const [isPanning, setIsPanning] = useState(false);
+
+  useEffect(() => {
+    rasterKeyRef.current = rasterKey;
+  }, [rasterKey]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -88,17 +110,20 @@ export function RasterHazardMap({
   }, [day, layer]);
 
   useEffect(() => {
-    setViewport({ zoom: MIN_ZOOM, panX: 0, panY: 0 });
-  }, [day, layer]);
-
-  useEffect(() => {
     if (!focusPoint || focusRequest === 0) return;
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
     const zoom = 2;
     const pointX = (focusPoint.x / RASTER_W) * rect.width;
     const pointY = (focusPoint.y / RASTER_H) * rect.height;
-    setViewport(clampViewport({ zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom }, rect.width, rect.height));
+    setStoredViewport({
+      ...clampViewport(
+        { zoom, panX: rect.width / 2 - pointX * zoom, panY: rect.height / 2 - pointY * zoom },
+        rect.width,
+        rect.height,
+      ),
+      rasterKey: rasterKeyRef.current,
+    });
   }, [focusPoint, focusRequest]);
 
   const containerRect = () => containerRef.current?.getBoundingClientRect() ?? null;
