@@ -12,6 +12,6 @@ Open these URLs:
 - Keycloak admin: `http://localhost:8080/admin` (`admin` / `admin` locally only)
 - Mailpit: `http://localhost:8025`
 
-The first Keycloak import creates the `vai-code` realm and the public
-`vai-code-fe` client. If the realm is changed, remove the local Keycloak volume
+The first Keycloak import creates the `weather-bridge` realm and the public
+`weather-bridge-fe` client. If the realm is changed, remove the local Keycloak volume
 and restart the stack rather than editing a running realm manually.

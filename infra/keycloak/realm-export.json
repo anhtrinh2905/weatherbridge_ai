@@ -1,19 +1,22 @@
 {
-  "realm": "vai-code",
+  "realm": "weather-bridge",
   "enabled": true,
-  "displayName": "VAI Code",
+  "displayName": "Weather Bridge AI",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
   "verifyEmail": true,
   "resetPasswordAllowed": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "loginTheme": "vai-code",
+  "internationalizationEnabled": true,
+  "supportedLocales": ["vi", "en"],
+  "defaultLocale": "vi",
+  "loginTheme": "weather-bridge",
   "accountTheme": "keycloak.v2",
   "clients": [
     {
-      "clientId": "vai-code-fe",
-      "name": "VAI Code frontend",
+      "clientId": "weather-bridge-fe",
+      "name": "Weather Bridge AI frontend",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": true,
@@ -38,8 +41,8 @@
   "smtpServer": {
     "host": "mailpit",
     "port": "1025",
-    "from": "noreply@vai-code.local",
-    "fromDisplayName": "VAI Code",
+    "from": "noreply@weather-bridge.local",
+    "fromDisplayName": "Weather Bridge AI",
     "auth": false,
     "ssl": false,
     "starttls": false

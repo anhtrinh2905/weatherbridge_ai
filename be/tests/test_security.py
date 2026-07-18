@@ -3,7 +3,7 @@ from auth.keycloak import KeycloakVerifier
 
 def test_keycloak_claims_map_to_application_user() -> None:
     verifier = object.__new__(KeycloakVerifier)
-    verifier.settings = type("Settings", (), {"keycloak_client_id": "vai-code-fe"})()
+    verifier.settings = type("Settings", (), {"keycloak_client_id": "weather-bridge-fe"})()
     user = verifier._to_user(
         {
             "sub": "kc-user",
@@ -11,7 +11,7 @@ def test_keycloak_claims_map_to_application_user() -> None:
             "preferred_username": "person",
             "email_verified": True,
             "realm_access": {"roles": ["user"]},
-            "resource_access": {"vai-code-fe": {"roles": ["builder"]}},
+            "resource_access": {"weather-bridge-fe": {"roles": ["builder"]}},
         }
     )
     assert user.id == "kc-user"

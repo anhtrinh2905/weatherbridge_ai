@@ -5,14 +5,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "VAI Code"
+    app_name: str = "Weather Bridge AI"
     app_env: str = "development"
-    database_url: str = "postgresql+asyncpg://vai:vai@localhost:5432/vai_code"
+    database_url: str = "postgresql+asyncpg://vai:vai@localhost:5432/weather_bridge"
     redis_url: str = "redis://localhost:6379/0"
     keycloak_url: str = "http://localhost:8080"
     keycloak_internal_url: str | None = None
-    keycloak_realm: str = "vai-code"
-    keycloak_client_id: str = "vai-code-fe"
+    keycloak_realm: str = "weather-bridge"
+    keycloak_client_id: str = "weather-bridge-fe"
     keycloak_issuer: str | None = None
     keycloak_audience: str | None = None
     keycloak_jwks_cache_seconds: int = Field(default=300, ge=30, le=3600)

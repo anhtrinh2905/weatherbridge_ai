@@ -1,0 +1,1010 @@
+/* ============================================================
+   weatherbridge_ai — Keycloak login theme
+   Mirrors fe/src/shared/styles/globals.css + design/opendesign/artifacts/tokens.css
+   Same palette: amber accent #F2A93B, teal positive #3DD6A4,
+   deep canvas #0B0E14, panel #121821.
+   ============================================================ */
+
+:root {
+  --wba-bg: #0B0E14;
+  --wba-bg-elev: #0E1219;
+  --wba-surface: #121821;
+  --wba-surface-2: #1A2230;
+  --wba-surface-3: #222C3D;
+  --wba-fg: #E6EDF6;
+  --wba-fg-strong: #F4F8FE;
+  --wba-muted: #8794A8;
+  --wba-muted-2: #5C6878;
+  --wba-border: #232C3B;
+  --wba-border-soft: #1B2230;
+  --wba-border-strong: #2E3A4F;
+  --wba-accent: #F2A93B;
+  --wba-accent-hover: #F7B85A;
+  --wba-accent-press: #D9952A;
+  --wba-accent-faint: rgba(242, 169, 59, 0.12);
+  --wba-accent-ring: rgba(242, 169, 59, 0.42);
+  --wba-positive: #3DD6A4;
+  --wba-positive-faint: rgba(61, 214, 164, 0.12);
+  --wba-danger: #F26B6B;
+  --wba-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", sans-serif;
+  --wba-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+/* ---- Base ---- */
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--wba-bg) !important;
+  color: var(--wba-fg) !important;
+  font-family: var(--wba-font-sans) !important;
+  -webkit-font-smoothing: antialiased !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+html {
+  color-scheme: dark !important;
+}
+
+::selection {
+  background: var(--wba-accent-faint) !important;
+  color: var(--wba-fg-strong) !important;
+}
+
+:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--wba-bg), 0 0 0 4px var(--wba-accent-ring) !important;
+  border-radius: 6px !important;
+}
+
+/* ---- Login outer + background glow + grid ---- */
+.pf-v5-c-login,
+.pf-v5-c-login__outer {
+  background:
+    radial-gradient(40rem 30rem at 50% -12%, var(--wba-accent-faint), transparent 60%),
+    radial-gradient(44rem 34rem at 50% 115%, var(--wba-positive-faint), transparent 60%),
+    var(--wba-bg) !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+}
+
+.pf-v5-c-login__outer::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  opacity: 0.32 !important;
+  background-image:
+    linear-gradient(var(--wba-border-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--wba-border-soft) 1px, transparent 1px) !important;
+  background-size: 48px 48px !important;
+  -webkit-mask-image: radial-gradient(42rem 32rem at 50% 42%, #000 22%, transparent 72%) !important;
+  mask-image: radial-gradient(42rem 32rem at 50% 42%, #000 22%, transparent 72%) !important;
+}
+
+/* ---- Layout container: center, breathe ---- */
+.pf-v5-c-login__main {
+  display: flex !important;
+  flex-direction: column !important;
+  background: linear-gradient(160deg, var(--wba-surface), color-mix(in oklab, var(--wba-surface) 92%, var(--wba-bg)) 60%, var(--wba-surface)) !important;
+  border: 1px solid var(--wba-border) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px rgba(255, 255, 255, 0.04) !important;
+  overflow: hidden !important;
+  width: min(440px, calc(100vw - 2rem)) !important;
+  max-width: 440px !important;
+}
+
+.pf-v5-c-login__main-header,
+.pf-v5-c-login__main-body,
+.pf-v5-c-login__main-footer {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-header {
+  padding: 2.25rem 2rem 0.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  text-align: center !important;
+}
+
+.pf-v5-c-login__main-body {
+  padding: 0.75rem 2rem 1.5rem !important;
+  flex: 1 1 auto !important;
+}
+
+.pf-v5-c-login__main-footer {
+  padding: 0.5rem 2rem 1.75rem !important;
+}
+
+/* ---- Brand / logo ---- */
+.pf-v5-c-login__main-header .pf-v5-c-brand {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.6rem !important;
+  margin-bottom: 0.25rem !important;
+  text-decoration: none !important;
+}
+
+.pf-v5-c-login__main-header .pf-v5-c-brand img,
+.pf-v5-c-login__main-header .pf-v5-c-brand svg {
+  height: 30px !important;
+  width: 30px !important;
+  border-radius: 8px !important;
+  background: linear-gradient(160deg, var(--wba-accent), color-mix(in oklab, var(--wba-accent) 60%, var(--wba-positive))) !important;
+  padding: 5px !important;
+  box-shadow: 0 6px 18px rgba(242, 169, 59, 0.22) !important;
+}
+
+.pf-v5-c-login__main-header .pf-v5-c-brand::after {
+  content: "Weather Bridge AI" !important;
+  font-family: var(--wba-font-mono) !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  color: var(--wba-fg-strong) !important;
+}
+
+/* ---- Headings ---- */
+.pf-v5-c-login__main-header .pf-v5-c-title,
+.pf-v5-c-login__main-body .pf-v5-c-title,
+.pf-v5-c-login__main-body h1 {
+  color: var(--wba-fg-strong) !important;
+  font-family: var(--wba-font-sans) !important;
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  margin: 0.25rem 0 0 !important;
+}
+
+.pf-v5-c-login__main-header .pf-v5-c-title {
+  font-size: 1.75rem !important;
+}
+
+.pf-v5-c-login__main-header-subtext,
+.pf-v5-c-login__main-header .pf-v5-c-title + p {
+  color: var(--wba-muted) !important;
+  font-family: var(--wba-font-mono) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  margin: 0.25rem 0 0 !important;
+}
+
+/* ---- Form ---- */
+.pf-v5-c-form {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+  margin-top: 1.25rem !important;
+}
+
+.pf-v5-c-form__group {
+  margin-bottom: 0 !important;
+}
+
+.pf-v5-c-form__group-label,
+.pf-v5-c-form__label {
+  margin-bottom: 0.4rem !important;
+}
+
+.pf-v5-c-form__label-text,
+.pf-v5-c-form__label {
+  color: var(--wba-muted) !important;
+  font-family: var(--wba-font-mono) !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+.pf-v5-c-form__label-text .pf-v5-c-form__label-required,
+.pf-v5-c-form__label-required {
+  color: var(--wba-accent) !important;
+  margin-left: 2px !important;
+}
+
+/* ---- Inputs ---- */
+.pf-v5-c-form-control,
+.pf-v5-c-login__main-body input[type="text"],
+.pf-v5-c-login__main-body input[type="email"],
+.pf-v5-c-login__main-body input[type="password"],
+.pf-v5-c-login__main-body input:not([type]) {
+  width: 100% !important;
+  height: 46px !important;
+  padding: 0 0.9rem !important;
+  background: var(--wba-bg-elev) !important;
+  border: 1px solid var(--wba-border) !important;
+  border-radius: 12px !important;
+  color: var(--wba-fg) !important;
+  font-family: var(--wba-font-sans) !important;
+  font-size: 0.95rem !important;
+  transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-form-control::placeholder,
+.pf-v5-c-login__main-body input::placeholder {
+  color: var(--wba-muted-2) !important;
+}
+
+.pf-v5-c-form-control:hover,
+.pf-v5-c-login__main-body input:hover {
+  border-color: var(--wba-border-strong) !important;
+}
+
+.pf-v5-c-form-control:focus,
+.pf-v5-c-form-control.pf-m-focus,
+.pf-v5-c-login__main-body input:focus {
+  outline: none !important;
+  border-color: var(--wba-accent) !important;
+  box-shadow: 0 0 0 3px var(--wba-accent-faint) !important;
+  background: var(--wba-bg) !important;
+}
+
+/* password reveal toggle button */
+.pf-v5-c-login__main-body .pf-v5-c-form-control__toggle,
+.pf-v5-c-login__main-body .pf-v5-c-form__helper,
+.pf-v5-c-login__main-body button.pf-v5-c-form-control__toggle {
+  background: transparent !important;
+  border: none !important;
+  color: var(--wba-muted) !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-form-control__toggle:hover {
+  color: var(--wba-fg) !important;
+}
+
+/* ---- Checkbox (Remember me) ---- */
+.pf-v5-c-check,
+.pf-v5-c-checkbox {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin: 0.25rem 0 !important;
+}
+
+.pf-v5-c-checkbox__label,
+.pf-v5-c-check__label {
+  color: var(--wba-muted) !important;
+  font-size: 0.85rem !important;
+  cursor: pointer !important;
+}
+
+.pf-v5-c-checkbox__input,
+.pf-v5-c-check__input {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--wba-border-strong) !important;
+  background: var(--wba-bg-elev) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: border-color 120ms ease, background 120ms ease !important;
+  flex: none !important;
+}
+
+.pf-v5-c-checkbox__input:hover,
+.pf-v5-c-check__input:hover {
+  border-color: var(--wba-accent) !important;
+}
+
+.pf-v5-c-checkbox__input:checked,
+.pf-v5-c-check__input:checked {
+  background: var(--wba-accent) !important;
+  border-color: var(--wba-accent) !important;
+}
+
+.pf-v5-c-checkbox__input:checked::after,
+.pf-v5-c-check__input:checked::after {
+  content: "" !important;
+  width: 5px !important;
+  height: 9px !important;
+  border: solid #1A1206 !important;
+  border-width: 0 2px 2px 0 !important;
+  transform: rotate(45deg) translateY(-1px) !important;
+}
+
+/* ---- Buttons ---- */
+.pf-v5-c-button {
+  height: 46px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.01em !important;
+  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease !important;
+  border: 1px solid transparent !important;
+}
+
+.pf-v5-c-button:hover {
+  transform: translateY(-1px) !important;
+}
+
+.pf-v5-c-button:active {
+  transform: translateY(0) !important;
+}
+
+.pf-v5-c-button.pf-m-primary {
+  background: var(--wba-accent) !important;
+  color: #1A1206 !important;
+  border: none !important;
+  box-shadow: 0 6px 18px rgba(242, 169, 59, 0.22), 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  width: 100% !important;
+  margin-top: 0.5rem !important;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  background: var(--wba-accent-hover) !important;
+  box-shadow: 0 8px 22px rgba(242, 169, 59, 0.3), 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+.pf-v5-c-button.pf-m-primary:active {
+  background: var(--wba-accent-press) !important;
+}
+
+.pf-v5-c-button.pf-m-secondary,
+.pf-v5-c-button.pf-m-tertiary {
+  background: var(--wba-surface-2) !important;
+  border: 1px solid var(--wba-border-strong) !important;
+  color: var(--wba-fg) !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-button.pf-m-secondary:hover {
+  background: var(--wba-surface-3) !important;
+  border-color: var(--wba-accent-ring) !important;
+}
+
+.pf-v5-c-button.pf-m-link {
+  background: transparent !important;
+  color: var(--wba-accent) !important;
+  font-weight: 600 !important;
+  padding: 0.4rem 0.6rem !important;
+  height: auto !important;
+}
+
+.pf-v5-c-button.pf-m-link:hover {
+  color: var(--wba-accent-hover) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+  transform: none !important;
+}
+
+/* ---- Links ---- */
+a {
+  color: var(--wba-accent) !important;
+  font-weight: 600 !important;
+  transition: color 120ms ease !important;
+}
+
+a:hover {
+  color: var(--wba-accent-hover) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+/* ---- Footer area (register link, etc.) ---- */
+.pf-v5-c-login__main-footer,
+.pf-v5-c-login__main-footer * {
+  color: var(--wba-muted) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-footer .pf-v5-c-login__main-footer-links,
+.pf-v5-c-login__main-footer .pf-v5-c-list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.pf-v5-c-login__main-footer-item,
+.pf-v5-c-login__main-footer-links-item {
+  color: var(--wba-muted) !important;
+  font-size: 0.875rem !important;
+}
+
+.pf-v5-c-login__main-footer-band {
+  background: transparent !important;
+  border-top: 1px solid var(--wba-border-soft) !important;
+  padding: 0.9rem 2rem !important;
+  margin: 0 -2rem -1.75rem !important;
+  text-align: center !important;
+  color: var(--wba-muted-2) !important;
+  font-family: var(--wba-font-mono) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* ---- Global footer ---- */
+.pf-v5-c-login__footer,
+.pf-v5-c-login__footer * {
+  color: var(--wba-muted-2) !important;
+}
+
+.pf-v5-c-login__footer {
+  padding: 1rem 1.25rem 1.5rem !important;
+  font-family: var(--wba-font-mono) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.05em !important;
+  text-align: center !important;
+}
+
+/* ---- Alert / info banners ---- */
+.pf-v5-c-alert,
+.pf-v5-c-login__main-body .pf-v5-c-alert {
+  border-radius: 12px !important;
+  border: 1px solid var(--wba-border) !important;
+  background: var(--wba-surface-2) !important;
+  box-shadow: none !important;
+  padding: 0.6rem 0.9rem !important;
+  font-size: 0.85rem !important;
+}
+
+.pf-v5-c-alert.pf-m-success,
+.pf-v5-c-alert.pf-m-inline.pf-m-success {
+  border-left: 2px solid var(--wba-positive) !important;
+}
+
+.pf-v5-c-alert.pf-m-warning,
+.pf-v5-c-alert.pf-m-inline.pf-m-warning {
+  border-left: 2px solid var(--wba-accent) !important;
+}
+
+.pf-v5-c-alert.pf-m-danger,
+.pf-v5-c-alert.pf-m-inline.pf-m-danger,
+.pf-v5-c-alert.pf-m-error,
+.pf-v5-c-alert.pf-m-inline.pf-m-error {
+  border-left: 2px solid var(--wba-danger) !important;
+}
+
+.pf-v5-c-alert__title,
+.pf-v5-c-alert__description {
+  color: var(--wba-fg) !important;
+}
+
+/* ---- Required field note ---- */
+.pf-v5-c-form__required,
+.pf-v5-c-login__main-body .pf-v5-c-form__helper-text {
+  color: var(--wba-muted-2) !important;
+  font-size: 0.78rem !important;
+}
+
+/* ---- Register form tweaks ---- */
+.pf-v5-c-login__main-body .pf-v5-c-form .pf-v5-c-form__group + .pf-v5-c-form__group {
+  margin-top: 0 !important;
+}
+
+/* ---- Hide the native dark/light toggle area cleanly if present ---- */
+.pf-v5-c-login__main-header-utilities {
+  display: none !important;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+  .pf-v5-c-login__main {
+    width: calc(100vw - 1.5rem) !important;
+    border-radius: 18px !important;
+  }
+  .pf-v5-c-login__main-header,
+  .pf-v5-c-login__main-body,
+  .pf-v5-c-login__main-footer {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---- PatternFly structural reset: one seamless rounded field ---- */
+#kc-header {
+  display: none !important;
+}
+
+.pf-v5-c-login__main-header::before {
+  content: "Weather Bridge AI" !important;
+  display: block !important;
+  align-self: center !important;
+  min-height: 38px !important;
+  margin: 0 auto 1.25rem !important;
+  padding-left: 48px !important;
+  background-image: url("../img/weather-bridge-mark.svg") !important;
+  background-position: left center !important;
+  background-repeat: no-repeat !important;
+  background-size: 38px 38px !important;
+  color: var(--wba-fg-strong) !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  line-height: 38px !important;
+  white-space: nowrap !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-form-control {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: var(--wba-bg-elev) !important;
+  border: 1px solid var(--wba-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-form-control::before,
+.pf-v5-c-login__main-body .pf-v5-c-form-control::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-form-control > input {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  display: block !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  padding: 0 1rem !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--wba-fg) !important;
+  outline: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-form-control:hover {
+  border-color: var(--wba-border-strong) !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-form-control:focus-within {
+  border-color: var(--wba-accent) !important;
+  box-shadow: 0 0 0 3px var(--wba-accent-faint) !important;
+  background: var(--wba-bg) !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-input-group {
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  width: 100% !important;
+  height: 48px !important;
+  overflow: hidden !important;
+  background: var(--wba-bg-elev) !important;
+  border: 1px solid var(--wba-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-input-group:hover {
+  border-color: var(--wba-border-strong) !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-input-group:focus-within {
+  border-color: var(--wba-accent) !important;
+  box-shadow: 0 0 0 3px var(--wba-accent-faint) !important;
+  background: var(--wba-bg) !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-input-group .pf-v5-c-form-control {
+  height: 100% !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-input-group__item {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-button.pf-m-control {
+  display: grid !important;
+  place-items: center !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--wba-surface-2) !important;
+  border: 0 !important;
+  border-left: 1px solid var(--wba-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--wba-muted) !important;
+  transform: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-button.pf-m-control::before,
+.pf-v5-c-login__main-body .pf-v5-c-button.pf-m-control::after {
+  content: none !important;
+  display: none !important;
+}
+
+.pf-v5-c-login__main-body .pf-v5-c-button.pf-m-control:hover {
+  background: var(--wba-surface-3) !important;
+  color: var(--wba-fg-strong) !important;
+}
+
+#kc-registration {
+  width: 100% !important;
+  margin-top: 0.75rem !important;
+  padding-top: 1.25rem !important;
+  border-top: 1px solid var(--wba-border-soft) !important;
+  text-align: center !important;
+}
+
+#kc-registration-container,
+.pf-v5-c-login__main-footer {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+#kc-registration span {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.35rem !important;
+  color: var(--wba-muted) !important;
+  font-family: var(--wba-font-sans) !important;
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.5 !important;
+  white-space: nowrap !important;
+}
+
+#kc-registration a {
+  color: var(--wba-accent) !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 390px) {
+  #kc-registration span {
+    white-space: normal !important;
+  }
+}
+
+/* ---- Split-screen identity experience ---- */
+.pf-v5-c-login {
+  display: grid !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  place-items: center !important;
+  overflow-x: hidden !important;
+  padding: clamp(1rem, 3vw, 3rem) !important;
+}
+
+.pf-v5-c-login__container {
+  container-type: inline-size !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.08fr) minmax(26rem, 0.92fr) !important;
+  grid-template-rows: 1fr !important;
+  grid-template-areas: none !important;
+  gap: 0 !important;
+  width: min(74rem, calc(100vw - 2rem)) !important;
+  max-width: 74rem !important;
+  height: min(53rem, calc(100dvh - 2rem)) !important;
+  min-height: min(46rem, calc(100dvh - 2rem)) !important;
+  margin: auto !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  background: var(--wba-surface) !important;
+  border: 1px solid var(--wba-border) !important;
+  border-radius: 30px !important;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.58), inset 0 1px rgba(255, 255, 255, 0.04) !important;
+  animation: none !important;
+}
+
+#kc-header {
+  position: relative !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  min-width: 0 !important;
+  min-height: 100% !important;
+  height: auto !important;
+  flex-direction: column !important;
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: clamp(2.25rem, 5vw, 4.5rem) !important;
+  overflow: hidden !important;
+  color: var(--wba-fg) !important;
+  background:
+    radial-gradient(34rem 28rem at 0% 10%, var(--wba-positive-faint), transparent 64%),
+    radial-gradient(38rem 30rem at 100% 90%, var(--wba-accent-faint), transparent 64%),
+    linear-gradient(150deg, var(--wba-surface-2), var(--wba-bg)) !important;
+  border: 0 !important;
+  border-right: 1px solid var(--wba-border) !important;
+  border-radius: 29px !important;
+  animation: none !important;
+}
+
+#kc-header::before {
+  content: "ĐỊNH DANH AN TOÀN / CẢNH BÁO TÁC ĐỘNG" !important;
+  order: 1 !important;
+  display: block !important;
+  margin-top: 0 !important;
+  color: var(--wba-accent) !important;
+  font-family: var(--wba-font-mono) !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  line-height: 1.4 !important;
+}
+
+#kc-header::after {
+  content: "Biến dự báo thành\A hành động đúng hạn." !important;
+  order: 2 !important;
+  display: block !important;
+  max-width: 9.5em !important;
+  margin-top: 1.25rem !important;
+  color: var(--wba-fg-strong) !important;
+  font-size: clamp(2.5rem, 4.6vw, 5rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.06em !important;
+  line-height: 0.98 !important;
+  white-space: pre-line !important;
+}
+
+#kc-header-wrapper {
+  order: 0 !important;
+  display: flex !important;
+  width: auto !important;
+  height: auto !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  margin: 0 0 clamp(4rem, 10vh, 7rem) !important;
+  color: var(--wba-fg-strong) !important;
+  font-family: var(--wba-font-sans) !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  line-height: 1.2 !important;
+}
+
+#kc-header-wrapper::before {
+  content: "" !important;
+  display: block !important;
+  width: 42px !important;
+  height: 42px !important;
+  flex: 0 0 42px !important;
+  background: url("../img/weather-bridge-mark.svg") center / contain no-repeat !important;
+}
+
+.pf-v5-c-login__main {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 100% !important;
+  height: auto !important;
+  align-self: stretch !important;
+  justify-content: center !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  background:
+    radial-gradient(26rem 20rem at 100% 0%, var(--wba-accent-faint), transparent 68%),
+    var(--wba-surface) !important;
+  border: 0 !important;
+  border-radius: 29px !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.pf-v5-c-login__main-header,
+.pf-v5-c-login__main-body,
+.pf-v5-c-login__main-footer {
+  width: min(100%, 31rem) !important;
+  margin-inline: auto !important;
+}
+
+.pf-v5-c-login__main-header {
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem) 0.5rem !important;
+}
+
+.pf-v5-c-login__main-body {
+  padding: 0.75rem clamp(1.5rem, 4vw, 3rem) 1.25rem !important;
+}
+
+.pf-v5-c-login__main-footer {
+  padding: 0.25rem clamp(1.5rem, 4vw, 3rem) 2rem !important;
+}
+
+.pf-v5-c-login__main-header::before {
+  content: none !important;
+  display: none !important;
+}
+
+.pf-v5-c-login__container:has(#kc-register-form) {
+  grid-template-columns: minmax(26rem, 0.92fr) minmax(0, 1.08fr) !important;
+}
+
+.pf-v5-c-login__container:has(#kc-register-form) #kc-header {
+  grid-column: 2 !important;
+  border-right: 0 !important;
+  border-left: 1px solid var(--wba-border) !important;
+  border-radius: 29px !important;
+  animation: none !important;
+}
+
+.pf-v5-c-login__container:has(#kc-register-form) .pf-v5-c-login__main {
+  grid-column: 1 !important;
+  border-radius: 29px !important;
+  animation: none !important;
+}
+
+.pf-v5-c-login__container.kc-auth-swapping {
+  pointer-events: none !important;
+}
+
+.pf-v5-c-login__container.kc-auth-swapping #kc-header {
+  z-index: 2 !important;
+  will-change: transform !important;
+}
+
+.pf-v5-c-login__container.kc-auth-swapping .pf-v5-c-login__main {
+  z-index: 1 !important;
+  will-change: opacity, transform !important;
+}
+
+@media (max-width: 1080px) {
+  .pf-v5-c-login__container {
+    grid-template-columns: minmax(0, 0.82fr) minmax(25rem, 1.18fr) !important;
+  }
+
+  .pf-v5-c-login__container:has(#kc-register-form) {
+    grid-template-columns: minmax(25rem, 1.18fr) minmax(0, 0.82fr) !important;
+  }
+
+  #kc-header {
+    padding: 2.5rem !important;
+  }
+
+  #kc-header::after {
+    font-size: clamp(2.3rem, 4.5vw, 3.8rem) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .pf-v5-c-login {
+    display: block !important;
+    padding: 0 !important;
+  }
+
+  .pf-v5-c-login__container,
+  .pf-v5-c-login__container:has(#kc-register-form) {
+    display: flex !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    flex-direction: column !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #kc-header,
+  .pf-v5-c-login__container:has(#kc-register-form) #kc-header {
+    order: 0 !important;
+    min-height: auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 1rem 1.25rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--wba-border) !important;
+    border-radius: 0 !important;
+    animation: none !important;
+  }
+
+  #kc-header::before,
+  #kc-header::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  #kc-header-wrapper {
+    margin: 0 !important;
+    font-size: 0.9rem !important;
+  }
+
+  #kc-header-wrapper::before {
+    width: 36px !important;
+    height: 36px !important;
+    flex-basis: 36px !important;
+  }
+
+  .pf-v5-c-login__main,
+  .pf-v5-c-login__container:has(#kc-register-form) .pf-v5-c-login__main {
+    order: 1 !important;
+    width: 100% !important;
+    min-height: calc(100dvh - 69px) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    animation: none !important;
+  }
+
+  .pf-v5-c-login__main-header,
+  .pf-v5-c-login__main-body,
+  .pf-v5-c-login__main-footer {
+    width: min(100%, 34rem) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .pf-v5-c-login__main-header {
+    padding: 2rem 1.25rem 0.5rem !important;
+  }
+
+  .pf-v5-c-login__main-body {
+    padding: 0.75rem 1.25rem 1.25rem !important;
+  }
+
+  .pf-v5-c-login__main-footer {
+    padding: 0.25rem 1.25rem 1.5rem !important;
+  }
+
+  .pf-v5-c-login__main-header .pf-v5-c-title,
+  .pf-v5-c-login__main-body .pf-v5-c-title,
+  .pf-v5-c-login__main-body h1 {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-v5-c-login__container,
+  #kc-header,
+  .pf-v5-c-login__main {
+    animation: none !important;
+  }
+}

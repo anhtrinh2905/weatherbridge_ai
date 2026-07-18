@@ -463,7 +463,7 @@ disabled until a named authority approves its workflow and audit requirements.
 | Python | 3.12 |
 | Node.js | 24 |
 | pnpm | 11 |
-| FastAPI | 0.128.8 |
+| FastAPI | 0.139.2 |
 | SQLAlchemy | 2.0.51 |
 | PostgreSQL | 16 |
 | Redis Server | 7 |

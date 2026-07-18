@@ -14,11 +14,11 @@ export function RegisterPage() {
   }, [authenticated, navigate]);
 
   return (
-    <AuthLayout eyebrow="Create account" title="Start with a clean identity" description="Create your VAI Code account through Keycloak. The same flow handles email verification and future sign-in providers.">
+    <AuthLayout eyebrow="Tạo tài khoản" title="Bắt đầu với danh tính an toàn" description="Đăng ký tài khoản Weather Bridge AI qua Keycloak. Hệ thống cũng xử lý xác minh email và các phương thức đăng nhập sau này.">
       <div className="space-y-5">
-        <div className="grid gap-3 sm:grid-cols-2"><div className="rounded-2xl border border-white/10 bg-white/5 p-4"><MailCheck size={18} className="text-cyan-300" /><p className="mt-4 text-sm font-semibold text-white">Verified email</p><p className="mt-1 text-xs leading-5 text-slate-500">Registration asks you to confirm ownership.</p></div><div className="rounded-2xl border border-white/10 bg-white/5 p-4"><ShieldCheck size={18} className="text-emerald-300" /><p className="mt-4 text-sm font-semibold text-white">Secure recovery</p><p className="mt-1 text-xs leading-5 text-slate-500">Password recovery stays outside the app.</p></div></div>
-        <Button className="w-full" onClick={() => void register()}>Continue to registration <ArrowRight size={16} /></Button>
-        <p className="text-center text-sm text-slate-500">Already have an account? <Link to="/login" className="font-semibold text-cyan-300 hover:text-cyan-200">Sign in</Link></p>
+        <div className="grid gap-3 sm:grid-cols-2"><div className="rounded-2xl border border-border bg-surface-2 p-4"><MailCheck size={18} className="text-accent" /><p className="mt-4 text-sm font-semibold text-fg-strong">Email đã xác minh</p><p className="mt-1 text-xs leading-5 text-muted">Bạn cần xác nhận quyền sở hữu email khi đăng ký.</p></div><div className="rounded-2xl border border-border bg-surface-2 p-4"><ShieldCheck size={18} className="text-positive" /><p className="mt-4 text-sm font-semibold text-fg-strong">Khôi phục an toàn</p><p className="mt-1 text-xs leading-5 text-muted">Mật khẩu không đi qua ứng dụng Weather Bridge AI.</p></div></div>
+        <Button className="w-full" onClick={() => void register()}>Tiếp tục đăng ký <ArrowRight size={16} /></Button>
+        <p className="text-center text-sm text-muted">Đã có tài khoản? <Link to="/login" className="font-semibold text-accent hover:text-accent-hover">Đăng nhập</Link></p>
       </div>
     </AuthLayout>
   );

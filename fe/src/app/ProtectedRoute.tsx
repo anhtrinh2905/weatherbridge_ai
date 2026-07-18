@@ -7,7 +7,7 @@ export function ProtectedRoute() {
   const { authenticated, initialized } = useAuth();
 
   if (!initialized) {
-    return <div className="grid min-h-screen place-items-center bg-slate-950"><Spinner label="Checking your session" /></div>;
+    return <div className="grid min-h-screen place-items-center bg-canvas"><Spinner label="Đang kiểm tra phiên đăng nhập" /></div>;
   }
 
   if (!authenticated) {

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from redis.asyncio import Redis
 
-QUEUE_NAME = "vai-code:jobs"
+QUEUE_NAME = "weather-bridge:jobs"
 
 
 async def next_job(redis: Redis) -> UUID | None:

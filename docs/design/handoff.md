@@ -6,6 +6,6 @@ tokens must be adapted into:
 - `fe/src/shared/styles/`;
 - shared React UI components;
 - landing and auth entry surfaces;
-- the Keycloak login theme under `infra/keycloak/themes/vai-code`.
+- the Keycloak login theme under `infra/keycloak/themes/weather-bridge`.
 
 Do not introduce a second unrelated color, type, spacing, or component system.

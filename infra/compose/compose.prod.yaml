@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   proxy:
-    image: vai-code-proxy
+    image: weather-bridge-proxy
     build:
       context: ../..
       dockerfile: infra/docker/proxy.Dockerfile

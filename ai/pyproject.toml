@@ -1,5 +1,5 @@
 [project]
-name = "vai-code-training"
+name = "weather-bridge-training"
 version = "0.1.0"
 description = "Offline data, training, pretraining, evaluation, and model registry workspace"
 requires-python = ">=3.12,<3.15"

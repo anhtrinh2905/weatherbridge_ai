@@ -60,6 +60,9 @@ test-results/
 
 # Local editor and generated design state
 .idea/
+.cursor/
+.windsurf/
+.continue/
 .vscode/*.local.json
 .codegraph/
 design/.local/

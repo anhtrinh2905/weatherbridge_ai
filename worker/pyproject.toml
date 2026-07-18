@@ -1,7 +1,7 @@
 [project]
-name = "vai-code-worker"
+name = "weather-bridge-worker"
 version = "0.1.0"
-description = "VAI Code background worker"
+description = "Weather Bridge AI background worker"
 requires-python = ">=3.12,<3.15"
 dependencies = [
   "asyncpg>=0.30.0,<1",

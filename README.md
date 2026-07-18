@@ -1,6 +1,6 @@
 # weatherbridge_ai
 
-> Scaffolded from the [VAI Code](https://github.com/namnv2004/V-AI-Code) starter.
+> Scaffolded from the [VAI Code](https://github.com/namnv2004/V-AI-Code) starter, rebranded to Weather Bridge AI.
 
 Production-oriented hackathon starter with a React/Vite frontend, FastAPI backend,
 background worker, and an isolated AI runtime.
@@ -56,7 +56,7 @@ Bearer access tokens against Keycloak discovery metadata and cached JWKS keys.
 All online AI services live under `be/src/ai` and `be/src/services`. Training
 code never runs in the API request process. The API creates a job and the worker
 executes the backend AI service. LiteLLM is an OpenAI-compatible gateway and
-Langfuse is an observability backing service; neither becomes a second VAI Code
+Langfuse is an observability backing service; neither becomes a second Weather Bridge AI
 API.
 
 ## Open-source and data use

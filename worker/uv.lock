@@ -811,7 +811,7 @@ wheels = [
 ]
 
 [[package]]
-name = "vai-code-worker"
+name = "weather-bridge-worker"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
