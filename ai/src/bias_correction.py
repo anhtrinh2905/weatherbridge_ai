@@ -91,6 +91,20 @@ def _cyclic_time_features(valid_time_utc: str) -> dict[str, float]:
     }
 
 
+def featurize_record(record: dict[str, str]) -> list[float]:
+    """Build one ``FORECAST_FEATURES`` vector from a CSV row.
+
+    The single source of truth for the feature contract, shared by training
+    (:func:`load_training_samples`) and any serving path (e.g. the rainfall
+    trigger applying the model to a forecast series).
+    """
+    cyclic = _cyclic_time_features(record.get("valid_time_utc", ""))
+    return [
+        cyclic[name] if name in cyclic else _to_float(record.get(name))
+        for name in FORECAST_FEATURES
+    ]
+
+
 def load_training_samples(path: Path) -> dict[str, np.ndarray]:
     """Read paired forecast/observation rows into model-ready arrays.
 
@@ -110,15 +124,10 @@ def load_training_samples(path: Path) -> dict[str, np.ndarray]:
             target = _to_float(record.get(TARGET_COLUMN))
             if math.isnan(target):
                 continue
-            cyclic = _cyclic_time_features(record.get("valid_time_utc", ""))
-            features = [
-                cyclic[name] if name in cyclic else _to_float(record.get(name))
-                for name in FORECAST_FEATURES
-            ]
-            rows.append(features)
+            rows.append(featurize_record(record))
             targets.append(target)
             raw.append(_to_float(record.get(RAW_FORECAST_COLUMN)))
-            times.append(cyclic["_epoch"])
+            times.append(_cyclic_time_features(record.get("valid_time_utc", ""))["_epoch"])
 
     return {
         "X": np.asarray(rows, dtype=float),

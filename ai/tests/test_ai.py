@@ -20,6 +20,19 @@ from data import (
 )
 from evaluate import evaluate, evaluate_predictions
 from pretrain import pretrain
+from rainfall_trigger import (
+    calibrate_alpha,
+    id_exceedance,
+    rolling_cumulative,
+    trigger_level,
+    trigger_levels,
+)
+from risk import (
+    composite_risk,
+    normalised_trigger,
+    risk_levels,
+    susceptibility_index,
+)
 from terrain import FEATURE_NAMES, feature_stack, terrain_features
 from train import fit_model
 
@@ -138,6 +151,78 @@ def test_evaluate_bias_correction_drops_nan_pairs() -> None:
     corrected = np.array([1.0, 2.0, 3.0, 4.0])
     metrics = evaluate_bias_correction(y, raw, corrected)
     assert metrics["count"] == 2  # only rows 0 and 3 are finite in all three
+
+
+def test_rolling_cumulative_trailing_window() -> None:
+    epochs = np.arange(4, dtype=float) * 3600.0  # hourly: 0,1,2,3h
+    precip = np.ones(4)
+    # 2h window keeps the current hour + the one before it.
+    assert list(rolling_cumulative(epochs, precip, 2)) == [1.0, 2.0, 2.0, 2.0]
+
+
+def test_id_exceedance_fires_on_burst_not_dry() -> None:
+    epochs = np.arange(6, dtype=float) * 3600.0
+    dry = np.zeros(6)
+    burst = np.array([0.0, 5.0, 5.0, 5.0, 0.0, 0.0])  # 15 mm / 3h
+    assert id_exceedance(epochs, dry).max() == 0.0
+    assert id_exceedance(epochs, burst).max() > 1.0
+
+
+def test_calibrate_alpha_puts_event_at_target() -> None:
+    epochs = np.arange(48, dtype=float) * 3600.0
+    precip = np.zeros(48)
+    precip[10:13] = 5.0  # a 15 mm / 3h burst = the "event"
+    event = np.zeros(48, dtype=bool)
+    event[9:14] = True
+    alpha = calibrate_alpha(epochs, precip, event, target_ratio=1.5)
+    ratio = id_exceedance(epochs, precip, alpha=alpha)
+    assert ratio[event].max() == pytest.approx(1.5, abs=1e-6)
+
+
+def test_trigger_level_boundaries() -> None:
+    assert trigger_level(0.3) == 0
+    assert trigger_level(0.6) == 1
+    assert trigger_level(1.2) == 2
+    assert trigger_level(1.7) == 3
+    assert trigger_level(2.5) == 4
+    assert list(trigger_levels(np.array([0.3, 1.2, 2.5]))) == [0, 2, 4]
+
+
+def test_susceptibility_index_heuristic_range() -> None:
+    dem = _synthetic_dem()
+    susc = susceptibility_index(dem, cellsize=30.0)
+    assert susc.shape == dem.shape
+    assert susc.min() >= 0.0 and susc.max() <= 1.0
+
+
+def test_susceptibility_index_uses_model_when_given() -> None:
+    dem = _synthetic_dem(size=16)
+
+    class _StubModel:
+        def predict_proba(self, X: np.ndarray) -> np.ndarray:
+            p = np.full(len(X), 0.7)
+            return np.column_stack([1 - p, p])
+
+    susc = susceptibility_index(dem, cellsize=30.0, model=_StubModel())
+    assert susc.shape == dem.shape
+    assert np.allclose(susc, 0.7)
+
+
+def test_composite_risk_and_semantics() -> None:
+    susc = np.array([0.1, 0.9])
+    assert list(composite_risk(susc, 0.0)) == [0.0, 0.0]  # no trigger -> no risk
+    assert composite_risk(susc, 1.0)[1] > composite_risk(susc, 1.0)[0]
+
+
+def test_normalised_trigger_caps_and_floors() -> None:
+    assert normalised_trigger(-1.0) == 0.0
+    assert normalised_trigger(1.0, saturation=2.0) == 0.5
+    assert normalised_trigger(5.0, saturation=2.0) == 1.0
+
+
+def test_risk_levels_binning() -> None:
+    risk = np.array([0.0, 0.1, 0.35, 0.9])
+    assert list(risk_levels(risk)) == [0, 1, 3, 4]
 
 
 def test_generic_helpers_retained() -> None:
