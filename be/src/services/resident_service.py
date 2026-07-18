@@ -731,6 +731,12 @@ class ResidentService:
             latitude = await self.session.scalar(select(func.ST_Y(location.location)))
         else:
             longitude, latitude = coordinates
+        if latitude is None or longitude is None:
+            raise AppError(
+                500,
+                "Resident location is missing coordinates",
+                "resident_location_coordinates_missing",
+            )
         label = (
             self.protector.reveal(
                 location.label_ciphertext, context="resident_location.label"
