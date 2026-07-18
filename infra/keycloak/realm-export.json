@@ -4,8 +4,8 @@
   "displayName": "Weather Bridge AI",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
-  "verifyEmail": true,
-  "resetPasswordAllowed": true,
+  "verifyEmail": false,
+  "resetPasswordAllowed": false,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "internationalizationEnabled": true,
@@ -24,11 +24,11 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
-      "redirectUris": ["http://localhost/*", "http://localhost:5173/*"],
-      "webOrigins": ["http://localhost", "http://localhost:5173"],
+      "redirectUris": ["http://localhost/*", "http://localhost:5173/*", "https://dev.weatherbridge.online/*", "https://dienbien.weatherbridge.online/*"],
+      "webOrigins": ["http://localhost", "http://localhost:5173", "https://dev.weatherbridge.online", "https://dienbien.weatherbridge.online"],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://localhost/*##http://localhost:5173/*"
+        "post.logout.redirect.uris": "http://localhost/*##http://localhost:5173/*##https://dev.weatherbridge.online/*##https://dienbien.weatherbridge.online/*"
       }
     }
   ],

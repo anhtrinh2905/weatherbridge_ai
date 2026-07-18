@@ -1,0 +1,48 @@
+# K3s runs the nginx ingress controller (NodePort 30080). Cloudflare Tunnel
+# forwards weatherbridge.online and auth.weatherbridge.online to localhost:30080.
+# The nginx controller routes by Host header to the right Service. TLS is
+# terminated at Cloudflare, so ingress only needs plain HTTP on port 80.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: weather-bridge
+  namespace: weather-bridge
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: weatherbridge.online
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: be
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fe
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak
+  namespace: weather-bridge
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: auth.weatherbridge.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
