@@ -1,3 +1,10 @@
+# Infra-only subset — NOT the local topology.
+# The canonical local topology is the repo-root `compose.yaml` (used by `make dev`
+# and the Story 1.1 `docker compose up` path); it builds fe/be/worker/keycloak/proxy
+# and runs migrations as a one-off job.
+# This file only provisions backing services (db, keycloak-db, redis, mailpit, keycloak)
+# and is layered by `make dev-prod` / `make dev-ai` via the .prod/.ai overlays.
+# See docs/architecture/deployment.md#Compose-file-layout.
 services:
   db:
     image: postgres:16-alpine

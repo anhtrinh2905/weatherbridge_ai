@@ -1,0 +1,96 @@
+# generated: 2026-07-18
+# last_updated: 2026-07-18 (story 2-2 implemented, in review)
+# project: WeatherBridge AI
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: docs/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
+
+generated: 2026-07-18
+last_updated: 2026-07-18
+project: WeatherBridge AI
+project_key: NOKEY
+tracking_system: file-system
+story_location: docs/stories
+
+development_status:
+  # Epic 1: Platform Foundation & Role-Based Access
+  epic-1: in-progress
+  1-1-scaffold-the-modular-monorepo-and-local-topology: ready-for-dev
+  1-2-sign-in-with-keycloak-using-authorization-code-pkce: backlog
+  1-3-validate-access-tokens-at-the-api: backlog
+  1-4-enforce-four-role-access-control: backlog
+  1-5-role-scoped-app-shell-on-the-shared-design-system: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Commune Hazard Heatmap
+  epic-2: in-progress
+  2-1-build-the-offline-terrain-feature-pipeline: backlog
+  2-2-ingest-3-7-day-rainfall-forecast: review
+  2-3-compute-the-per-type-hazard-score: backlog
+  2-4-refresh-the-heatmap-when-a-new-forecast-arrives: backlog
+  2-5-view-the-interactive-commune-heatmap: backlog
+  2-6-project-5-levels-to-a-resident-facing-2-level-view: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Threshold Alerts & Action Bulletins
+  epic-3: backlog
+  3-1-manage-the-configurable-per-type-threshold-table: backlog
+  3-2-generate-an-alert-when-a-village-exceeds-threshold: backlog
+  3-3-compose-the-4-part-action-bulletin: backlog
+  3-4-show-the-layered-resident-alert-card: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Resident Profiles, Triage & Recommendations (simulated)
+  epic-4: backlog
+  4-1-seed-simulated-resident-profiles-mapped-to-hazard: backlog
+  4-2-generate-occupation-based-recommendations: backlog
+  4-3-officer-and-village-head-triage-dashboard: backlog
+  4-4-export-the-alert-report-log: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Model Validation & Provenance
+  epic-5: backlog
+  5-1-digitize-ground-truth-for-the-25-7-2024-event: backlog
+  5-2-run-the-offline-backtest-evaluation: backlog
+  5-3-record-dataset-and-model-provenance: backlog
+  5-4-view-the-validation-report: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Human Relay & Multi-channel (Roadmap — not implemented in MVP)
+  epic-6: backlog
+  epic-6-retrospective: optional

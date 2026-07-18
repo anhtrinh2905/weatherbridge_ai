@@ -7,6 +7,19 @@ frontend, API, worker, Keycloak theme, and proxy images; starts PostgreSQL, Redi
 Mailpit, and Keycloak; applies migrations as a one-off job; and gates dependent
 services on readiness checks.
 
+### Compose file layout
+
+Two compose trees coexist deliberately; they are not two sources of truth for the same thing:
+
+- **Root `compose.yaml`** — the single canonical local topology. `make dev` and the
+  Story 1.1 `docker compose up` path both use it. It builds `fe`/`be`/`worker`/`keycloak`/`proxy`,
+  starts PostgreSQL/Redis/Mailpit/Keycloak, and runs migrations as a one-off `migrate` job.
+  Dev bootstrap credentials come from `${VAR:-default}` interpolation (defaults documented in
+  `.env.example`); no credential literals are committed.
+- **`infra/compose/compose.yaml` (+ `.dev`/`.prod`/`.ai` overlays)** — an infra-only subset
+  (db, keycloak-db, redis, mailpit, keycloak) used by `make dev-prod` and `make dev-ai`. It never
+  defines the application services and is not a substitute for the root topology.
+
 ## Single-server production
 
 Use `compose.prod.yaml` only for a deliberately managed single Docker host. It

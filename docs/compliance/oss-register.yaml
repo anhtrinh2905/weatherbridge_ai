@@ -41,3 +41,40 @@ components:
     use: project-local UI/UX agent skill for frontend implementation and review guidance
     modified: false
     notice: THIRD_PARTY_NOTICES.md
+  # --- ai/ offline landslide-susceptibility PoC (M1) ---
+  - name: scikit-learn
+    source: https://github.com/scikit-learn/scikit-learn
+    commit: "1.9.0"
+    license: BSD-3-Clause
+    use: gradient-boosting susceptibility classifier + offline metrics
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: numpy
+    source: https://github.com/numpy/numpy
+    commit: "2.5.1"
+    license: BSD-3-Clause
+    use: DEM terrain-feature computation and sampling
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  - name: rasterio
+    source: https://github.com/rasterio/rasterio
+    commit: "1.5.0"
+    license: BSD-3-Clause
+    use: GeoTIFF DEM I/O (offline data prep only)
+    modified: false
+    notice: THIRD_PARTY_NOTICES.md
+  # --- external datasets (provenance also in ai/data/manifests) ---
+  - name: copernicus-glo-30-dem
+    source: https://portal.opentopography.org/raster?opentopoID=OTSDEM.032021.4326.3
+    commit: ESA-Copernicus-GLO-30-2023_1
+    license: Copernicus-free-with-attribution
+    use: digital elevation model for terrain conditioning factors
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md
+  - name: nasa-coolr-global-landslide-catalog
+    source: https://gpm.nasa.gov/landslides/data.html
+    commit: GLC-2019-update
+    license: CC-BY-4.0
+    use: open landslide inventory (positive labels, VN subset)
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md

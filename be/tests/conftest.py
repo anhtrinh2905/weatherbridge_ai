@@ -14,7 +14,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from api.deps import get_current_user
+from api.deps import get_current_user, get_job_queue
 from auth.keycloak import CurrentUser
 from core.config import get_settings
 from database import Base
@@ -26,6 +26,25 @@ test_engine = create_async_engine(
     f"sqlite+aiosqlite:///{TEST_DB}", connect_args={"check_same_thread": False}
 )
 test_session_factory = async_sessionmaker(test_engine, expire_on_commit=False, class_=AsyncSession)
+
+
+class FakeJobQueue:
+    """In-memory queue stub so endpoint tests never need a live Redis."""
+
+    def __init__(self) -> None:
+        self.enqueued: list[object] = []
+
+    async def enqueue(self, job_id: object) -> None:
+        self.enqueued.append(job_id)
+
+    async def close(self) -> None:
+        pass
+
+
+@pytest.fixture
+async def db_session() -> AsyncIterator[AsyncSession]:
+    async with test_session_factory() as session:
+        yield session
 
 
 @pytest.fixture
@@ -40,6 +59,9 @@ async def client() -> AsyncIterator[AsyncClient]:
         async with test_session_factory() as session:
             yield session
 
+    async def override_job_queue() -> AsyncIterator[FakeJobQueue]:
+        yield FakeJobQueue()
+
     async def override_current_user() -> CurrentUser:
         return CurrentUser(
             id="test-user",
@@ -53,6 +75,7 @@ async def client() -> AsyncIterator[AsyncClient]:
 
     app.dependency_overrides[get_db] = override_db
     app.dependency_overrides[get_current_user] = override_current_user
+    app.dependency_overrides[get_job_queue] = override_job_queue
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://testserver"
     ) as http_client:

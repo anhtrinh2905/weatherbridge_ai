@@ -44,3 +44,10 @@ modification summary, and notice recorded in `third_party/` and
   `third_party/ui-ux-pro-max-skill/` from
   `https://github.com/nextlevelbuilder/ui-ux-pro-max-skill` at commit
   `f8ac5e1266dba8354ea96e19994d9f4345e7ec31`.
+
+## Vendored data
+
+- Mường Pồn commune boundary (`fe/src/features/demo/boundary.ts`): derived from
+  OpenStreetMap relation `19571212` via Nominatim on 2026-07-18; © OpenStreetMap
+  contributors, ODbL 1.0. Simplified (Douglas–Peucker) and normalized; see
+  `docs/compliance/data-provenance.md` for the transformation record.
