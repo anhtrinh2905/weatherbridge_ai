@@ -11,8 +11,8 @@ from ai.forecast.exceptions import (
 from ai.forecast.models import (
     ElevationRequest,
     EnsembleRequest,
-    ForecastRequest,
     FloodRequest,
+    ForecastRequest,
     GeocodingRequest,
     HistoricalForecastRequest,
     HistoricalWeatherRequest,
@@ -30,8 +30,8 @@ async def test_service_encodes_query_params_and_headers() -> None:
         assert request.url.params["longitude"] == "105"
         assert request.url.params["daily"] == "precipitation_sum,temperature_2m"
         assert request.url.params["forecast_days"] == "7"
-        assert request.headers["Authorization"] == "Bearer api-key"
-        assert request.headers["apikey"] == "api-key"
+        assert request.url.params["apikey"] == "api-key"
+        assert "Authorization" not in request.headers
         return httpx.Response(200, json={"source": "open-meteo"})
 
     settings = Settings(open_meteo_api_key="api-key")
@@ -90,7 +90,7 @@ async def test_service_uses_configured_timeout_when_client_created(
     captured = {}
 
     class FakeAsyncClient:
-        def __init__(self, *args: object, timeout: int, **kwargs: object) -> None:
+        def __init__(self, *args: object, timeout: httpx.Timeout, **kwargs: object) -> None:
             captured["timeout"] = timeout
 
         async def __aenter__(self) -> FakeAsyncClient:
@@ -110,7 +110,8 @@ async def test_service_uses_configured_timeout_when_client_created(
     payload = await service.forecast(ForecastRequest(latitude=10, longitude=20))
 
     assert payload == {"ok": True}
-    assert captured["timeout"] == 31
+    assert isinstance(captured["timeout"], httpx.Timeout)
+    assert captured["timeout"].read == 31
 
 
 @pytest.mark.asyncio
@@ -139,7 +140,12 @@ async def test_service_uses_configured_timeout_when_client_created(
         (
             "ensemble",
             "/v1/ensemble",
-            EnsembleRequest(latitude=21, longitude=105),
+            EnsembleRequest(
+                latitude=21,
+                longitude=105,
+                models=["icon_seamless"],
+                hourly=["temperature_2m"],
+            ),
         ),
         (
             "historical_weather",
@@ -154,7 +160,11 @@ async def test_service_uses_configured_timeout_when_client_created(
         (
             "previous_runs",
             "/v1/forecast",
-            PreviousRunRequest(latitude=21, longitude=105),
+            PreviousRunRequest(
+                latitude=21,
+                longitude=105,
+                hourly=["temperature_2m_previous_day1"],
+            ),
         ),
         (
             "historical_forecast",
@@ -185,3 +195,46 @@ async def test_service_uses_expected_family_endpoint(
         response = await getattr(service, method)(request_model)  # type: ignore[arg-type]
 
     assert response == {"source": method}
+
+
+@pytest.mark.asyncio
+async def test_service_retries_transient_status() -> None:
+    attempts = 0
+
+    def transport_handler(_: httpx.Request) -> httpx.Response:
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            return httpx.Response(503, json={"reason": "retry"})
+        return httpx.Response(200, json={"ok": True})
+
+    settings = Settings(open_meteo_retry_attempts=3)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(transport_handler)) as client:
+        service = OpenMeteoService(settings, client=client)
+        response = await service.forecast(ForecastRequest(latitude=21, longitude=105))
+
+    assert response == {"ok": True}
+    assert attempts == 3
+
+
+@pytest.mark.asyncio
+async def test_geocoding_uses_country_code_alias() -> None:
+    def transport_handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.params["countryCode"] == "VN"
+        assert "country_code" not in request.url.params
+        return httpx.Response(200, json={"results": []})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(transport_handler)) as client:
+        service = OpenMeteoService(Settings(), client=client)
+        await service.geocoding(GeocodingRequest(name="Dien Bien", countryCode="VN"))
+
+
+@pytest.mark.asyncio
+async def test_service_rejects_non_object_json() -> None:
+    def transport_handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=[])
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(transport_handler)) as client:
+        service = OpenMeteoService(Settings(), client=client)
+        with pytest.raises(OpenMeteoPayloadError):
+            await service.forecast(ForecastRequest(latitude=21, longitude=105))

@@ -7,7 +7,6 @@ from .exceptions import (
     OpenMeteoTransportError,
 )
 from .models import (
-    BaseOpenMeteoWeatherRequest,
     ElevationRequest,
     EnsembleRequest,
     FloodRequest,
@@ -20,7 +19,6 @@ from .models import (
 from .service import OpenMeteoService
 
 __all__ = [
-    "BaseOpenMeteoWeatherRequest",
     "EnsembleRequest",
     "ElevationRequest",
     "FloodRequest",

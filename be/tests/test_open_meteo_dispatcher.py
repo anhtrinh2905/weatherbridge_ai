@@ -124,7 +124,15 @@ def test_tool_definitions_expose_all_registered_tools() -> None:
         ("forecast", {"latitude": 21.0, "longitude": 103.0}),
         ("elevation", {"latitude": [21.0], "longitude": [105.0]}),
         ("geocoding", {"name": "Hanoi"}),
-        ("ensemble", {"latitude": 21.0, "longitude": 103.0}),
+        (
+            "ensemble",
+            {
+                "latitude": 21.0,
+                "longitude": 103.0,
+                "models": ["icon_seamless"],
+                "hourly": ["temperature_2m"],
+            },
+        ),
         (
             "historical_weather",
             {
@@ -134,7 +142,14 @@ def test_tool_definitions_expose_all_registered_tools() -> None:
                 "end_date": "2025-01-03",
             },
         ),
-        ("previous_runs", {"latitude": 21.0, "longitude": 103.0}),
+        (
+            "previous_runs",
+            {
+                "latitude": 21.0,
+                "longitude": 103.0,
+                "hourly": ["temperature_2m_previous_day1"],
+            },
+        ),
         (
             "historical_forecast",
             {

@@ -98,13 +98,13 @@ TOOL_REGISTRY: dict[str, ToolSpec[Any]] = {
     ),
     "ensemble": ToolSpec(
         name="ensemble",
-        description="Get deterministic or mean ensemble weather by location and mode.",
+        description="Get member-level ensemble weather for selected ensemble models.",
         arguments=EnsembleRequest,
         handler=_ensemble_tool,
     ),
     "historical_weather": ToolSpec(
         name="historical_weather",
-        description="Read archived historical forecast-like weather variables for a time range.",
+        description="Read archived observed/reanalysis weather variables for a time range.",
         arguments=HistoricalWeatherRequest,
         handler=_historical_weather_tool,
     ),
@@ -116,13 +116,13 @@ TOOL_REGISTRY: dict[str, ToolSpec[Any]] = {
     ),
     "historical_forecast": ToolSpec(
         name="historical_forecast",
-        description="Read re-forecast outputs for past model cycles.",
+        description="Read archived operational forecast outputs for a historical time range.",
         arguments=HistoricalForecastRequest,
         handler=_historical_forecast_tool,
     ),
     "flood": ToolSpec(
         name="flood",
-        description="Fetch flood risk forecast layers near the requested point.",
+        description="Fetch river-discharge forecasts for the largest represented river nearby.",
         arguments=FloodRequest,
         handler=_flood_tool,
     ),

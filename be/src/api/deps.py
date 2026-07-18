@@ -6,6 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ai.forecast import OpenMeteoService
 from auth.authorization import AppRole, authorize_role, authorize_village_scope
 from auth.keycloak import CurrentUser, KeycloakVerifier
 from core.config import Settings, get_settings
@@ -19,6 +20,10 @@ from services.forecast_service import ForecastService
 @lru_cache
 def get_keycloak_verifier() -> KeycloakVerifier:
     return KeycloakVerifier(get_settings())
+
+
+def get_open_meteo_service(settings: Settings = Depends(get_settings)) -> OpenMeteoService:
+    return OpenMeteoService(settings)
 
 
 bearer_scheme = HTTPBearer(

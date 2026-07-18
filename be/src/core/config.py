@@ -22,6 +22,17 @@ class Settings(BaseSettings):
     litellm_model: str = "mock-model"
     open_meteo_api_key: str | None = None
     open_meteo_timeout_seconds: int = Field(default=15, ge=1, le=120)
+    open_meteo_retry_attempts: int = Field(default=3, ge=1, le=5)
+    open_meteo_forecast_url: str = "https://api.open-meteo.com/v1/forecast"
+    open_meteo_elevation_url: str = "https://api.open-meteo.com/v1/elevation"
+    open_meteo_geocoding_url: str = "https://geocoding-api.open-meteo.com/v1/search"
+    open_meteo_ensemble_url: str = "https://ensemble-api.open-meteo.com/v1/ensemble"
+    open_meteo_historical_weather_url: str = "https://archive-api.open-meteo.com/v1/archive"
+    open_meteo_previous_runs_url: str = "https://previous-runs-api.open-meteo.com/v1/forecast"
+    open_meteo_historical_forecast_url: str = (
+        "https://historical-forecast-api.open-meteo.com/v1/forecast"
+    )
+    open_meteo_flood_url: str = "https://flood-api.open-meteo.com/v1/flood"
     langfuse_enabled: bool = False
     langfuse_public_key: str | None = None
     langfuse_secret_key: str | None = None
