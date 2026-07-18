@@ -21,7 +21,7 @@ export function SignalPanel({ compact = false }: { compact?: boolean }) {
         <div>
           <p className="signal-label">Sương muối / rét hại</p>
           <p className="mt-2 text-6xl font-semibold tracking-[-0.09em] text-fg-strong">
-            2<span className="text-2xl text-accent">°C</span>
+            2<sup className="align-super text-2xl text-accent">°</sup><span className="text-5xl">C</span>
           </p>
           <p className="mt-2 text-xs text-positive">Dự kiến 03:00 · độ tin cậy cao</p>
         </div>
