@@ -32,7 +32,6 @@ import { VillageHeadMapPage } from "../pages/village-head/MapPage";
 
 import { ResidentShell } from "../pages/resident/ResidentShell";
 import { ResidentHomePage } from "../pages/resident/HomePage";
-import { ResidentDetailsPage } from "../pages/resident/DetailsPage";
 
 export function App() {
   return (
@@ -81,7 +80,7 @@ export function App() {
         <Route element={<RoleRoute allow={["resident"]} />}>
           <Route path="/resident" element={<ResidentShell />}>
             <Route index element={<ResidentHomePage />} />
-            <Route path="details" element={<ResidentDetailsPage />} />
+            <Route path="details" element={<Navigate to="/resident" replace />} />
           </Route>
         </Route>
       </Route>

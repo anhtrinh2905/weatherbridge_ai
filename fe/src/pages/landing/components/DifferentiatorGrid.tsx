@@ -5,7 +5,7 @@ export function DifferentiatorGrid() {
   return (
     <section className="landing-section relative z-10">
       <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="landing-section__meta"><span>04 / VÌ SAO KHÁC BIỆT</span><i /></div>
+        <div className="landing-section__meta"><span>03 / VÌ SAO KHÁC BIỆT</span><i /></div>
         <p className="section-kicker">Sáu điều tạo nên khác biệt</p>
         <h2 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight tracking-[-0.045em] text-fg-strong sm:text-6xl">Không phải công nghệ để trình diễn, mà để dùng thật.</h2>
         <div className="differentiator-grid mt-12">

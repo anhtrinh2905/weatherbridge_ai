@@ -5,7 +5,6 @@ import { Logo } from "../../../shared/ui/Logo";
 
 const navLinks = [
   { href: "#why", label: "Bài toán" },
-  { href: "#how", label: "Cách hoạt động" },
   { href: "#scenarios", label: "Kịch bản" },
   { href: "#roles", label: "Vai trò" },
 ];
@@ -13,13 +12,11 @@ const navLinks = [
 export function SiteHeader({
   menuOpen,
   onToggleMenu,
-  onLogin,
   onRegister,
   disabled,
 }: {
   menuOpen: boolean;
   onToggleMenu: () => void;
-  onLogin: () => void;
   onRegister: () => void;
   disabled: boolean;
 }) {
@@ -68,9 +65,8 @@ export function SiteHeader({
           {navLinks.map(({ href, label }) => (
             <a key={href} href={href} className="site-nav-link">{label}</a>
           ))}
-          <button type="button" className="site-nav-link" onClick={onLogin}>Đăng nhập</button>
           <Button className="min-h-10 px-4" onClick={onRegister} disabled={disabled}>
-            Bắt đầu <ArrowRight size={15} />
+            Đăng nhập <ArrowRight size={15} />
           </Button>
         </nav>
         <Button
@@ -100,12 +96,9 @@ export function SiteHeader({
                 {label}
               </a>
             ))}
-            <button type="button" className="mobile-drawer__link" style={{ animationDelay: `${navLinks.length * 40}ms` }} onClick={onLogin}>
-              Đăng nhập
-            </button>
           </nav>
           <Button className="mobile-drawer__cta" onClick={onRegister} disabled={disabled}>
-            Bắt đầu <ArrowRight size={16} />
+            Đăng nhập <ArrowRight size={16} />
           </Button>
         </div>
       )}

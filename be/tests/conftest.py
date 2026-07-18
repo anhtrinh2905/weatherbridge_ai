@@ -47,8 +47,19 @@ async def db_session() -> AsyncIterator[AsyncSession]:
         yield session
 
 
-@pytest.fixture
-async def client() -> AsyncIterator[AsyncClient]:
+def _make_user(roles: frozenset[str]) -> CurrentUser:
+    return CurrentUser(
+        id="test-user",
+        email="test@example.com",
+        display_name="Test User",
+        username="test-user",
+        email_verified=True,
+        roles=roles,
+        claims={"sub": "test-user"},
+    )
+
+
+async def _make_client(roles: frozenset[str]) -> AsyncIterator[AsyncClient]:
     async with test_engine.begin() as connection:
         await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
@@ -63,15 +74,7 @@ async def client() -> AsyncIterator[AsyncClient]:
         yield FakeJobQueue()
 
     async def override_current_user() -> CurrentUser:
-        return CurrentUser(
-            id="test-user",
-            email="test@example.com",
-            display_name="Test User",
-            username="test-user",
-            email_verified=True,
-            roles=frozenset({"user"}),
-            claims={"sub": "test-user"},
-        )
+        return _make_user(roles)
 
     app.dependency_overrides[get_db] = override_db
     app.dependency_overrides[get_current_user] = override_current_user
@@ -81,3 +84,15 @@ async def client() -> AsyncIterator[AsyncClient]:
     ) as http_client:
         yield http_client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def client() -> AsyncIterator[AsyncClient]:
+    async for http_client in _make_client(frozenset({"user"})):
+        yield http_client
+
+
+@pytest.fixture
+async def admin_client() -> AsyncIterator[AsyncClient]:
+    async for http_client in _make_client(frozenset({"admin"})):
+        yield http_client

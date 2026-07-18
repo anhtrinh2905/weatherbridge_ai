@@ -9,6 +9,8 @@ import type {
   Threshold,
   Village,
 } from "./types";
+import { getOccupationRecommendation } from "../../shared/domain/recommendations";
+import type { HazardType as SharedHazardType, Occupation, Tier } from "../../shared/domain/types";
 
 /**
  * Simulated, fully deterministic demo dataset for the WeatherBridge AI commune
@@ -17,6 +19,21 @@ import type {
  * explainable (NFR7). This mirrors the online scoring contract that Epic 2
  * lands for real; here it runs client-side purely to demo the experience.
  */
+
+const DEMO_OCCUPATION_TO_SHARED: Record<string, Occupation> = {
+  "Nông dân": "nong_dan",
+  "Người chăn nuôi": "chan_nuoi",
+  "Tài xế": "tai_xe",
+  "Giáo viên": "giao_vien",
+};
+
+function toSharedHazard(type: HazardType): SharedHazardType {
+  return type === "flood" ? "flash_flood" : "landslide";
+}
+
+function toSharedTier(label: ResidentLabel): Tier {
+  return label === "go-now" ? "go_now" : "prepare";
+}
 
 export const GRID_COLS = 12;
 export const GRID_ROWS = 9;
@@ -292,7 +309,7 @@ export function getBulletin(type: HazardType, level: HazardLevel): Bulletin {
   };
 }
 
-/** Occupation × Type × Level recommendation (FR11). Wording only — no scoring. */
+/** Occupation × Type × Level recommendation (FR11). Delegates shared occupations to domain matrix. */
 export function getRecommendation(
   resident: Resident,
   type: HazardType,
@@ -300,17 +317,13 @@ export function getRecommendation(
 ): { action: string; deadlineHours: number } {
   const label = residentLabel(level);
   const hazard = HAZARD_META[type].label.toLowerCase();
-  const deadlineHours = level >= 5 ? 1 : level >= 4 ? 3 : level >= 3 ? 8 : 18;
+  const sharedOcc = DEMO_OCCUPATION_TO_SHARED[resident.occupation];
+  if (sharedOcc) {
+    const rec = getOccupationRecommendation(sharedOcc, toSharedHazard(type), toSharedTier(label));
+    return { action: rec.whatToDo, deadlineHours: rec.deadlineHours };
+  }
 
   const byOccupation: Record<string, Record<ResidentLabel, string>> = {
-    "Người chăn nuôi": {
-      prepare: `Lùa gia súc về chuồng cao ráo, dự trữ thức ăn tránh ${hazard}.`,
-      "go-now": "Thả gia súc lên đồi cao, ưu tiên đưa người rời đi trước.",
-    },
-    "Nông dân": {
-      prepare: "Thu hoạch sớm phần có thể, khơi thông rãnh thoát nước quanh nhà.",
-      "go-now": "Dừng mọi việc đồng áng, di dời cả nhà đến điểm tập kết của bản.",
-    },
     "Người cao tuổi": {
       prepare: "Nhờ hàng xóm/ trưởng bản hỗ trợ, chuẩn bị thuốc men mang theo.",
       "go-now": "Được hộ ưu tiên hỗ trợ đưa đi trước; báo trưởng bản nếu cần khiêng cáng.",
@@ -334,6 +347,7 @@ export function getRecommendation(
     "go-now": "Di dời ngay đến điểm cao an toàn theo hướng dẫn của bản.",
   };
 
+  const deadlineHours = level >= 5 ? 1 : level >= 4 ? 3 : level >= 3 ? 8 : 18;
   const action = (byOccupation[resident.occupation] ?? fallback)[label];
   return { action, deadlineHours };
 }
