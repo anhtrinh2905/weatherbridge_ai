@@ -7,6 +7,7 @@ import { ForgotPasswordPage } from "../pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "../pages/auth/ResetPasswordPage";
 import { RoleHomeRedirect } from "../pages/RoleHomeRedirect";
 import { ForbiddenPage } from "../pages/ForbiddenPage";
+import { DemoPage } from "../pages/demo/DemoPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { RoleRoute } from "./RoleRoute";
 
@@ -41,7 +42,7 @@ export function App() {
       <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
-
+      <Route path="/demo" element={<DemoPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/workspace" element={<RoleHomeRedirect />} />
         <Route path="/forbidden" element={<ForbiddenPage />} />

@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Base manifests shared by all overlays. Each overlay sets its own namespace
+# via the namespace transformer and patches configmap/ingress with env-specific
+# values (subdomain, Keycloak URLs, CORS).
+#
+# Images are intentionally NOT pinned here: each overlay owns its own `images:`
+# block so the deploy workflow can `kustomize edit set image` in the overlay
+# directory without competing with a base entry.
+namespace: weather-bridge
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres.yaml
+  - redis.yaml
+  - keycloak.yaml
+  - be.yaml
+  - worker.yaml
+  - fe.yaml
+  - ingress.yaml
+
+# secret-template.yaml is intentionally NOT listed here: real secrets are
+# applied from GitHub Actions secrets, never committed.

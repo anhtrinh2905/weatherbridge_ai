@@ -8,6 +8,7 @@ from services.ai_inference_service import AiInferenceService
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from forecast_ingest import FORECAST_INGEST_TASK, ingest_forecast
 from job_queue import next_job
 from job_store import ai_jobs, set_status
 from settings import Settings
@@ -15,7 +16,9 @@ from settings import Settings
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-async def process_job(job_id, session_factory: async_sessionmaker[AsyncSession]) -> None:
+async def process_job(
+    job_id, session_factory: async_sessionmaker[AsyncSession], settings: Settings
+) -> None:
     async with session_factory() as session:
         row = (
             (await session.execute(select(ai_jobs).where(ai_jobs.c.id == job_id)))
@@ -27,9 +30,16 @@ async def process_job(job_id, session_factory: async_sessionmaker[AsyncSession])
             return
         await set_status(session, job_id, "running")
         try:
-            request = InferenceRequest(task=row["task"], text=row["payload"]["text"])
-            result = await AiInferenceService(BackendSettings()).infer(request)
-            await set_status(session, job_id, "succeeded", result=result.model_dump())
+            if row["task"] == FORECAST_INGEST_TASK:
+                # a failure here keeps the previous snapshot — the map never blanks
+                result = await ingest_forecast(
+                    session, row["payload"], settings.open_meteo_base_url
+                )
+                await set_status(session, job_id, "succeeded", result=result)
+            else:
+                request = InferenceRequest(task=row["task"], text=row["payload"]["text"])
+                inference = await AiInferenceService(BackendSettings()).infer(request)
+                await set_status(session, job_id, "succeeded", result=inference.model_dump())
         except Exception as exc:
             logging.exception("job_failed job_id=%s", job_id)
             await set_status(session, job_id, "failed", error=str(exc))
@@ -45,7 +55,7 @@ async def run() -> None:
         while True:
             job_id = await next_job(redis)
             if job_id:
-                await process_job(job_id, session_factory)
+                await process_job(job_id, session_factory, settings)
     finally:
         await redis.aclose()
         await engine.dispose()

@@ -1,0 +1,44 @@
+# Example dataset manifest — landslide susceptibility, Mường Pồn (Điện Biên).
+#
+# Copy to `muong_pon_landslide.yaml` (drop `.example`) and fill in real values
+# once the DEM tile and digitised inventory are in place. Only non-example
+# `*.yaml` manifests are picked up by `prepare`. Record the same sources in
+# `docs/compliance/oss-register.yaml` before use (AGENTS.md Compliance).
+
+name: muong_pon_landslide
+
+# --- Provenance (required before use) ---
+source: >-
+  DEM: Copernicus GLO-30 (ESA, via OpenTopography).
+  Labels: NASA COOLR/Global Landslide Catalog (VN subset) + digitised
+  25/07/2024 Mường Pồn flash-flood/landslide event (official district report).
+license: >-
+  DEM: Copernicus (free, attribution). Labels: COOLR CC-BY; digitised event
+  points are our own annotation of public reporting.
+
+# --- DEM ---
+# Raw rasters are NOT committed to Git. Download the GLO-30 tile covering
+# Mường Pồn and place it here locally; keep only this manifest in version
+# control. A `.npy` array is also accepted for offline pipeline tests.
+dem_path: data/raw/muong_pon_glo30.tif
+dem_cellsize_m: 30.0
+
+# --- Labels ---
+# Inventoried landslide cells as DEM pixel (row, col). The values below are
+# ILLUSTRATIVE placeholders — replace with the real digitised inventory
+# (four affected villages: Mường Pồn 1, Mường Pồn 2, Lĩnh, Tin Tốc).
+labels:
+  - { row: 120, col: 210 }
+  - { row: 118, col: 214 }
+  - { row: 205, col: 160 }
+  - { row: 260, col: 175 }
+
+# --- Sampling ---
+negative_ratio: 2.0        # stable pseudo-negatives per positive
+exclusion_radius_px: 2     # keep negatives away from the failure surroundings
+seed: 42
+
+notes: >-
+  PoC (M1). Real training requires (a) the GLO-30 tile, (b) a complete
+  digitised inventory or the VIGMR/SFLP inventory for Điện Biên. See
+  ai/README.md "Landslide-susceptibility PoC".

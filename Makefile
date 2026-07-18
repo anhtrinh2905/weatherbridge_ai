@@ -1,4 +1,4 @@
-.PHONY: install dev dev-infra dev-ai ai-prepare ai-train ai-evaluate api worker check test build format migrate generate-contracts
+.PHONY: install dev dev-infra dev-ai ai-prepare ai-train ai-evaluate api worker check test build format migrate generate-contracts k8s-render-prod k8s-render-dev k8s-apply-prod k8s-apply-dev deploy-k3s
 
 install:
 	uv sync --project be
@@ -68,3 +68,29 @@ generate-contracts:
 	@mkdir -p fe/src/shared/api
 	uv run --project be python scripts/export_openapi.py
 	pnpm --dir fe exec openapi-typescript src/shared/api/openapi.json -o src/shared/api/generated.ts
+
+k8s-render-prod:
+	kustomize build infra/k8s/overlays/dienbien > /tmp/wb-prod.yaml
+	@echo "Rendered prod to /tmp/wb-prod.yaml"
+
+k8s-render-dev:
+	kustomize build infra/k8s/overlays/dev > /tmp/wb-dev.yaml
+	@echo "Rendered dev to /tmp/wb-dev.yaml"
+
+k8s-apply-prod:
+	kustomize build infra/k8s/overlays/dienbien | kubectl apply -f -
+	kubectl -n weather-bridge-prod rollout status deploy/be --timeout=300s
+	kubectl -n weather-bridge-prod rollout status deploy/fe --timeout=180s
+	kubectl -n weather-bridge-prod rollout status deploy/keycloak --timeout=300s
+	kubectl -n weather-bridge-prod rollout status deploy/worker --timeout=180s
+
+k8s-apply-dev:
+	kustomize build infra/k8s/overlays/dev | kubectl apply -f -
+	kubectl -n weather-bridge-dev rollout status deploy/be --timeout=300s
+	kubectl -n weather-bridge-dev rollout status deploy/fe --timeout=180s
+	kubectl -n weather-bridge-dev rollout status deploy/keycloak --timeout=300s
+	kubectl -n weather-bridge-dev rollout status deploy/worker --timeout=180s
+
+deploy-k3s:
+	@echo "CI/CD: push to main (prod) or dev (dev), or run the Deploy workflow manually."
+	@echo "See infra/k8s/README.md for required GitHub secrets and environments."

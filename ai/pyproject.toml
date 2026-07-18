@@ -4,8 +4,12 @@ version = "0.1.0"
 description = "Offline data, training, pretraining, evaluation, and model registry workspace"
 requires-python = ">=3.12,<3.15"
 dependencies = [
+  "joblib>=1.5.3",
+  "numpy>=2.5.1",
   "pydantic>=2.10.0,<3",
-  "pyyaml>=6.0.0,<7"
+  "pyyaml>=6.0.0,<7",
+  "rasterio>=1.5.0",
+  "scikit-learn>=1.9.0",
 ]
 
 [dependency-groups]
@@ -13,6 +17,9 @@ dev = ["pytest>=8.3.0,<9", "ruff>=0.9.0,<1"]
 
 [tool.uv]
 package = false
+
+[[tool.uv.index]]
+url = "https://gitlab.gitguardian.ovh/api/v4/projects/435/packages/pypi/simple"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
