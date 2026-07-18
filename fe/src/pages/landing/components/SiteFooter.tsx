@@ -3,7 +3,6 @@ import { Logo } from "../../../shared/ui/Logo";
 
 const systemLinks = [
   { href: "#why", label: "Bài toán" },
-  { href: "#how", label: "Cách hoạt động" },
   { href: "#scenarios", label: "Kịch bản theo địa điểm" },
   { href: "#roles", label: "Vai trò & giao diện" },
 ];

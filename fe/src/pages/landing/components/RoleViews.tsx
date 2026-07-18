@@ -5,7 +5,7 @@ export function RoleViews() {
   return (
     <section id="roles" className="landing-section relative z-10">
       <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="landing-section__meta"><span>06 / VAI TRÒ &amp; GIAO DIỆN</span><i /></div>
+        <div className="landing-section__meta"><span>05 / VAI TRÒ &amp; GIAO DIỆN</span><i /></div>
         <p className="section-kicker">Ba vai trò, một chuỗi trách nhiệm</p>
         <h2 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight tracking-[-0.045em] text-fg-strong sm:text-6xl">Mỗi vai trò một việc, không chồng chéo.</h2>
 

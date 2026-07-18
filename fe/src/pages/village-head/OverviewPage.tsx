@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { AlertTriangle, CheckCircle2, Clock3, HelpCircle, MapPinned, ShieldCheck, UsersRound, type LucideIcon } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock3, HelpCircle, MapPinned, UsersRound, type LucideIcon } from "lucide-react";
 import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { useAuth } from "../../features/auth/hooks";
 import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";

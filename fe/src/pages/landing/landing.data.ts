@@ -1,12 +1,10 @@
 import {
   AlertTriangle,
   ClipboardList,
-  Database,
   FileWarning,
   GitBranch,
   Mountain,
   Radio,
-  ShieldCheck,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -26,16 +24,6 @@ export type ProblemPoint = {
   icon: LucideIcon;
   title: string;
   text: string;
-};
-
-export type DnaChapter = {
-  index: string;
-  icon: LucideIcon;
-  kicker: string;
-  title: string;
-  metric: string;
-  metricLabel: string;
-  proofPoints: string[];
 };
 
 export type Differentiator = {
@@ -100,48 +88,6 @@ export const problemPoints: ProblemPoint[] = [
     icon: Users,
     title: "Hộ yếu thế dễ bị bỏ sót",
     text: "Một thông báo đẩy không đảm bảo người già, neo đơn, không điện thoại nhận được và hành động kịp.",
-  },
-];
-
-export const dnaChapters: DnaChapter[] = [
-  {
-    index: "01",
-    icon: Database,
-    kicker: "Thu thập & hiệu chỉnh",
-    title: "Hai nguồn dữ liệu, một schema, không có điểm mù",
-    metric: "5",
-    metricLabel: "địa điểm dự báo",
-    proofPoints: [
-      "Open-Meteo là nguồn chính, OpenWeatherMap dự phòng; chuẩn hóa về một schema nội bộ, cache có TTL.",
-      "Hiệu chỉnh tuyến tính theo độ cao cho từng bản dựa trên địa điểm dự báo gần nhất.",
-      "Nguồn lỗi → dùng cache còn hạn, gắn nhãn “dữ liệu cũ lúc HH:MM”, không hiển thị trắng.",
-    ],
-  },
-  {
-    index: "02",
-    icon: ShieldCheck,
-    kicker: "Ra quyết định & viết bản tin",
-    title: "Rule quyết mức, AI chỉ viết chữ",
-    metric: "2",
-    metricLabel: "mức cảnh báo",
-    proofPoints: [
-      "Ngưỡng tĩnh theo loại thiên tai và bản quyết định Mức: Chuẩn bị (vàng/cam) hoặc Đi ngay (đỏ).",
-      "AI chỉ soạn Bản tin 4 phần bằng ngôn ngữ dễ hiểu; validator kiểm lại mọi con số trước khi gửi.",
-      "Mức Đi ngay kích hoạt Âm thanh đỏ và Tầng con người, không chờ người dùng tự mở app.",
-    ],
-  },
-  {
-    index: "03",
-    icon: Radio,
-    kicker: "Phân phối & xác nhận",
-    title: "Không dừng lại ở một thông báo đã gửi",
-    metric: "15/30′",
-    metricLabel: "mốc leo thang",
-    proofPoints: [
-      "Web push là kênh bắt buộc, tức thời; Zalo OA/SMS là kênh best-effort, không chặn luồng chính.",
-      "Mức Đi ngay sinh Danh sách đến nhắc cho hộ trong Sổ hộ dễ tổn thương.",
-      "Thiếu xác nhận trước mốc quy định sẽ leo thang Hộ → Trưởng bản → Cán bộ xã, ghi vào Nhật ký trách nhiệm.",
-    ],
   },
 ];
 
@@ -238,8 +184,6 @@ export const roleViews: RoleView[] = [
     specs: ["Duyệt lệnh sơ tán", "Nhận leo thang", "Nhật ký trách nhiệm toàn xã"],
   },
 ];
-
-export const foundationStack = ["Open-Meteo", "OpenWeatherMap", "Keycloak", "Web Push (W3C)"];
 
 export const coverageLocations = [
   { name: "TP. Điện Biên Phủ", elevation: "~490m" },
