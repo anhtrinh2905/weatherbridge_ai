@@ -10,6 +10,8 @@ export interface AuthUser {
   username?: string;
   emailVerified: boolean;
   roles: string[];
+  /** Assigned village scope for village_head/resident roles (from the village_id token claim). */
+  villageId?: string;
 }
 
 interface AuthContextValue {
@@ -17,7 +19,7 @@ interface AuthContextValue {
   initialized: boolean;
   authenticated: boolean;
   user: AuthUser | null;
-  login: () => Promise<void>;
+  login: (loginHint?: string) => Promise<void>;
   register: () => Promise<void>;
   recoverPassword: () => Promise<void>;
   logout: () => Promise<void>;
@@ -58,6 +60,7 @@ function mapUser(): AuthUser | null {
     username: claims.preferred_username as string | undefined,
     emailVerified: Boolean(claims.email_verified),
     roles: [...new Set([...realmRoles, ...clientRoles])],
+    villageId: claims.village_id as string | undefined,
   };
 }
 
@@ -104,9 +107,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initialized,
     authenticated,
     user,
-    login: async () => {
+    login: async (loginHint?: string) => {
       await initializeKeycloak();
-      await keycloak.login({ redirectUri: `${window.location.origin}/workspace` });
+      await keycloak.login({ redirectUri: `${window.location.origin}/workspace`, loginHint });
     },
     register: async () => {
       await initializeKeycloak();

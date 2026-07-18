@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { App } from "./app/App";
 import { AuthProvider } from "./features/auth/keycloak";
+import { ResidentStatusProvider } from "./shared/domain/residentStatusStore";
 import "./shared/styles/globals.css";
 
 const queryClient = new QueryClient({
@@ -20,7 +21,9 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <ResidentStatusProvider>
+            <App />
+          </ResidentStatusProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

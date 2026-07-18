@@ -29,15 +29,91 @@
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost/*##http://localhost:5173/*"
-      }
+      },
+      "protocolMappers": [
+        {
+          "name": "village_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "village_id",
+            "claim.name": "village_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "false"
+          }
+        }
+      ]
     }
   ],
-  "roles": {
-    "realm": [
-      { "name": "user", "description": "Default application user" },
-      { "name": "admin", "description": "Application administrator" }
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "config": {
+          "kc.user.profile.config": [
+            "{\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]}},{\"name\":\"email\",\"displayName\":\"${email}\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]}},{\"name\":\"firstName\",\"displayName\":\"${firstName}\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]}},{\"name\":\"lastName\",\"displayName\":\"${lastName}\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]}},{\"name\":\"village_id\",\"displayName\":\"Village ID\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]}}],\"unmanagedAttributePolicy\":\"ENABLED\"}"
+          ]
+        }
+      }
     ]
   },
+  "roles": {
+    "realm": [
+      { "name": "user", "description": "Default application user (no dashboard access until an admin assigns one of the 4 domain roles)" },
+      { "name": "admin", "description": "Van hanh he thong, cau hinh nguong, kiem dinh mo hinh" },
+      { "name": "commune_officer", "description": "Can bo PCTT xa - xem heatmap toan xa, ra quyet dinh canh bao" },
+      { "name": "village_head", "description": "Truong thon/ban - xem va xac nhan cho ban minh" },
+      { "name": "resident", "description": "Nguoi dan - xem the canh bao va tu xac nhan an toan" }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin@weather-bridge.local",
+      "email": "admin@weather-bridge.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "Demo",
+      "credentials": [{ "type": "password", "value": "Demo@12345", "temporary": false }],
+      "realmRoles": ["user", "admin"]
+    },
+    {
+      "username": "canbo@weather-bridge.local",
+      "email": "canbo@weather-bridge.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Can Bo",
+      "lastName": "PCTT Demo",
+      "credentials": [{ "type": "password", "value": "Demo@12345", "temporary": false }],
+      "realmRoles": ["user", "commune_officer"]
+    },
+    {
+      "username": "truongban@weather-bridge.local",
+      "email": "truongban@weather-bridge.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Truong Ban",
+      "lastName": "Muong Pon 1 Demo",
+      "credentials": [{ "type": "password", "value": "Demo@12345", "temporary": false }],
+      "realmRoles": ["user", "village_head"],
+      "attributes": { "village_id": ["muong-pon-1"] }
+    },
+    {
+      "username": "dan@weather-bridge.local",
+      "email": "dan@weather-bridge.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Nguoi Dan",
+      "lastName": "Demo",
+      "credentials": [{ "type": "password", "value": "Demo@12345", "temporary": false }],
+      "realmRoles": ["user", "resident"],
+      "attributes": { "village_id": ["muong-pon-1"] }
+    }
+  ],
   "smtpServer": {
     "host": "mailpit",
     "port": "1025",
