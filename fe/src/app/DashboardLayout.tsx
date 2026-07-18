@@ -34,9 +34,8 @@ function initialsOf(name: string | undefined): string {
 }
 
 /**
- * Shared chrome for the 3 dashboard-style roles (admin/commune_officer/village_head) per
- * docs/design/ui-ux-role-spec.md §2b. `resident` intentionally does NOT use this layout — see
- * pages/resident/ResidentShell.tsx for the minimal, sidebar-free navigation for that role.
+ * Shared chrome for role dashboards. Resident uses the same shell with only two primary
+ * destinations so alerts stay first while the area map remains one click away.
  *
  * Pass `sections` for grouped navigation (with section headers) or `items` for a flat list.
  */

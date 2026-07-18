@@ -1,7 +1,8 @@
-import { AlertTriangle, ChevronDown, ChevronUp, Clock, CloudRain, ShieldCheck, Siren } from "lucide-react";
+import { AlertTriangle, ChevronDown, ChevronUp, Clock, CloudRain, ShieldCheck, Siren, Volume2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
 import { useLocalizedLabels } from "../i18n/useLocalizedLabels";
+import { useMmsSpeech } from "../../features/speech/useMmsSpeech";
 import { useDynamicTranslation } from "../../features/translation/useDynamicTranslation";
 import type { Alert, HazardType } from "../domain/types";
 import { cn } from "../lib/cn";
@@ -23,8 +24,9 @@ export function AlertCard({
   /** Day tab (0..2) so expanded rainfall matches the map */
   forecastDay?: number;
 }) {
-  const { t } = useTranslation();
+  const { locale, t } = useTranslation();
   const labels = useLocalizedLabels();
+  const speech = useMmsSpeech();
   const [expanded, setExpanded] = useState(false);
   const isGoNow = alert.tier === "go_now";
   const dayLevel = getHazardLevel(alert.villageId, alert.hazardType, forecastDay);
@@ -39,6 +41,8 @@ export function AlertCard({
     alert.whatToDo,
     alert.what,
   ]);
+  const shouldOfferHmongSpeech = locale === "hmn";
+  const speechText = `${translatedWhatToDo}. ${translatedWhat}`;
 
   return (
     <article
@@ -74,6 +78,20 @@ export function AlertCard({
         >
           {translatedWhatToDo}
         </h2>
+        {shouldOfferHmongSpeech && (
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => speech.play(speechText)}
+              disabled={speech.isLoading}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-accent/35 bg-accent/10 px-4 text-sm font-semibold text-accent transition hover:bg-accent/15 disabled:cursor-wait disabled:opacity-60"
+            >
+              <Volume2 size={17} aria-hidden />
+              {speech.isLoading ? t("alert.ttsLoading") : speech.isPlaying ? t("alert.ttsPlaying") : t("alert.ttsPlayHmong")}
+            </button>
+            {speech.error && <p className="mt-2 text-xs text-danger">{speech.error}</p>}
+          </div>
+        )}
 
         <div
           className={cn(

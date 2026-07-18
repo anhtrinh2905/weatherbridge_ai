@@ -1,7 +1,8 @@
 import { AlertTriangle, CheckCircle2, MapPinned, ShieldAlert } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { useAuth } from "../../features/auth/hooks";
-import { VillageMap } from "../../shared/ui/VillageMap";
+import { SimpleRasterMap } from "../../shared/ui/SimpleRasterMap";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { DataFreshnessBadge } from "../../shared/ui/DataFreshnessBadge";
 import { getDominantLevel, getResidentsByVillage, getVillage, HAZARD_RUN_MOCK } from "../../shared/domain/mockData";
@@ -10,10 +11,12 @@ import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
 
 export function VillageHeadMapPage() {
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { t } = useTranslation();
   const labels = useLocalizedLabels();
   const villageId = user?.villageId ?? "muong-pon-1";
+  const selectedResidentId = searchParams.get("resident");
   const village = getVillage(villageId);
   const dominant = getDominantLevel(villageId, 0);
   const residents = getResidentsByVillage(villageId);
@@ -32,7 +35,12 @@ export function VillageHeadMapPage() {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <section className="space-y-4">
-          <VillageMap layer="dominant" day={0} detailLevel="simple" focusVillageId={villageId} className="min-h-[520px] rounded-lg" />
+          <SimpleRasterMap
+            villageId={villageId}
+            day={0}
+            selectedResidentId={selectedResidentId}
+            className="min-h-[520px] rounded-lg"
+          />
           <SafetyDisclaimer />
         </section>
 

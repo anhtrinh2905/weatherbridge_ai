@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     google_translate_credentials_path: str | None = None
     vertex_location: str = "us-central1"
     vertex_gemini_model: str = "gemini-2.5-flash"
+    # MMS TTS model location. The upstream MMS repository stores many languages under
+    # subfolders; override these when pinning a converted/local model.
+    mms_tts_repo_id: str = "facebook/mms-tts"
+    mms_tts_hmong_subfolder: str = "models/hmn"
     langfuse_enabled: bool = False
     langfuse_public_key: str | None = None
     langfuse_secret_key: str | None = None

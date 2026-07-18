@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { ShieldCheck, HandHelping } from "lucide-react";
+import { HandHelping, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../features/auth/hooks";
 import { useTranslation } from "../../shared/i18n/I18nProvider";
 import { WebPushPanel } from "../../features/notifications/WebPushPanel";
 import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
-import { VillageMap } from "../../shared/ui/VillageMap";
 import { Button } from "../../shared/ui/Button";
 import type { Occupation } from "../../shared/domain/types";
 import {
@@ -60,7 +59,7 @@ export function ResidentHomePage() {
       </div>
 
       <div className="grid items-start gap-4 lg:grid-cols-12 lg:gap-6">
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-8">
           {alert ? (
             <AlertCard alert={alert} size="hero" forecastDay={day} />
           ) : (
@@ -68,7 +67,7 @@ export function ResidentHomePage() {
           )}
         </div>
 
-        <aside className="space-y-4 px-4 sm:px-0 lg:col-span-5">
+        <aside className="space-y-4 px-4 sm:px-0 lg:col-span-4">
           <div className="flex gap-2" role="tablist" aria-label={t("resident.dayTabsAriaLabel")}>
             {dayTabs.map((tab) => (
               <button
@@ -87,19 +86,6 @@ export function ResidentHomePage() {
                 {tab.label}
               </button>
             ))}
-          </div>
-
-          <div className="overflow-hidden rounded-2xl border border-border bg-surface-2 sm:rounded-3xl">
-            <p className="border-b border-border-soft px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
-              {t("resident.mapTitle")}
-            </p>
-            <VillageMap
-              layer="dominant"
-              day={day}
-              detailLevel="simple"
-              focusVillageId={villageId}
-              className="min-h-[240px] lg:min-h-[320px]"
-            />
           </div>
 
           {self && (
@@ -142,6 +128,7 @@ export function ResidentHomePage() {
           )}
         </aside>
       </div>
+
     </div>
   );
 }
