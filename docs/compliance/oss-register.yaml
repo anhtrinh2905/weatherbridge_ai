@@ -107,10 +107,10 @@ components:
     notice: THIRD_PARTY_NOTICES.md
   # --- external datasets (provenance also in ai/data/manifests) ---
   - name: copernicus-glo-30-dem
-    source: https://portal.opentopography.org/raster?opentopoID=OTSDEM.032021.4326.3
+    source: https://copernicus-dem-30m.s3.amazonaws.com (AWS Open Data mirror of ESA Copernicus GLO-30; tiles N21/E102 + N21/E103, windowed by ai/scripts/fetch_dem.py)
     commit: ESA-Copernicus-GLO-30-2023_1
     license: Copernicus-free-with-attribution
-    use: digital elevation model for terrain conditioning factors
+    use: digital elevation model for terrain conditioning factors (Mường Pồn susceptibility AOI)
     modified: true
     notice: THIRD_PARTY_NOTICES.md
   - name: nasa-coolr-global-landslide-catalog

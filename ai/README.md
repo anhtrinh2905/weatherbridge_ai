@@ -78,6 +78,34 @@ inventory (COOLR VN subset + the 25/07/2024 Mường Pồn event), then run
 `prepare` → `train` → `evaluate`. Record every source in
 `docs/compliance/oss-register.yaml` first.
 
+### M2-terrain status (2026-07-18)
+
+The DEM and the geographic-label pipeline are in place; the training run is
+gated on a real landslide inventory.
+
+- **DEM — done.** `scripts/fetch_dem.py` pulls the Copernicus GLO-30 window for
+  the Mường Pồn AOI from the AWS Open Data mirror (`copernicus-dem-30m`, no API
+  key), merging the tiles it spans. Output: `data/raw/muong_pon_glo30.tif`
+  (900×900 px, EPSG:4326; git-ignored).
+
+  ```bash
+  PYTHONPATH=ai/src uv run --project ai python ai/scripts/fetch_dem.py
+  ```
+
+- **Labels — pipeline ready, inventory pending.** Manifests now accept
+  geographic points via `labels_lonlat: [{lat, lon}]`; `data.lonlat_to_rowcol`
+  converts them to DEM pixels using the raster's own georeferencing (no
+  hand-computed indices). `scripts/geocode_labels.py` attempts OSM geocoding of
+  the affected hamlets, but **OSM does not cover them** (only the commune
+  centroid resolves), and NASA COOLR's data.nasa.gov endpoint is retired. So
+  `data/manifests/muong_pon_landslide.yaml` ships with an empty inventory and
+  `prepare` returns `awaiting_labels` until real points are added — digitised
+  scarps from the district report / satellite imagery, or the VIGMR/SFLP
+  inventory via data request.
+
+- **To finish training:** add `labels_lonlat` points to the manifest, then
+  `prepare` → `train` → `evaluate`.
+
 Extra dependencies: `numpy`, `scikit-learn`, `joblib` (pipeline + model),
 `rasterio` (GeoTIFF I/O, imported lazily).
 

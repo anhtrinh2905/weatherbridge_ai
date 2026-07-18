@@ -9,7 +9,15 @@ from bias_correction import (
     temporal_split,
 )
 from config import Config
-from data import LabelPoint, sample_dataset, spatial_split, split
+from data import (
+    GeoLabelPoint,
+    LabelPoint,
+    geographic_labels_to_pixels,
+    lonlat_to_rowcol,
+    sample_dataset,
+    spatial_split,
+    split,
+)
 from evaluate import evaluate, evaluate_predictions
 from pretrain import pretrain
 from terrain import FEATURE_NAMES, feature_stack, terrain_features
@@ -69,6 +77,29 @@ def test_fit_model_learns_separable_signal() -> None:
     model = fit_model(ds["X"], ds["y"], Config(n_estimators=50))
     metrics = evaluate_predictions(ds["y"], model.predict_proba(ds["X"])[:, 1])
     assert metrics["auc"] > 0.8
+
+
+def test_lonlat_to_rowcol_maps_corners_and_centre() -> None:
+    bounds = (100.0, 20.0, 101.0, 21.0)  # west, south, east, north
+    shape = (100, 100)
+    assert lonlat_to_rowcol(bounds, shape, 100.0, 21.0) == (0, 0)  # NW corner
+    assert lonlat_to_rowcol(bounds, shape, 100.5, 20.5) == (50, 50)  # centre
+    assert lonlat_to_rowcol(bounds, shape, 101.0, 20.0) == (99, 99)  # SE clamped
+
+
+def test_lonlat_to_rowcol_rejects_out_of_extent() -> None:
+    with pytest.raises(ValueError):
+        lonlat_to_rowcol((100.0, 20.0, 101.0, 21.0), (100, 100), 105.0, 20.5)
+
+
+def test_geographic_labels_to_pixels_roundtrips() -> None:
+    bounds = (100.0, 20.0, 101.0, 21.0)
+    pixels = geographic_labels_to_pixels(
+        [GeoLabelPoint(lat=21.0, lon=100.0), GeoLabelPoint(lat=20.5, lon=100.5)],
+        bounds,
+        (100, 100),
+    )
+    assert pixels == [LabelPoint(row=0, col=0), LabelPoint(row=50, col=50)]
 
 
 def test_temporal_split_holds_out_latest_slice() -> None:
