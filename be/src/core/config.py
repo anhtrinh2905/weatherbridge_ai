@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     keycloak_issuer: str | None = None
     keycloak_audience: str | None = None
     keycloak_jwks_cache_seconds: int = Field(default=300, ge=30, le=3600)
+    # Confidential service-account client for the Keycloak Admin API (user/role admin).
+    # The default secret matches the DEV realm seed — override via env in real deployments.
+    keycloak_admin_client_id: str = "weather-bridge-be"
+    keycloak_admin_client_secret: str = "dev-weather-bridge-be-secret"
     litellm_enabled: bool = False
     litellm_base_url: str = "http://localhost:4000"
     litellm_api_key: str | None = None
