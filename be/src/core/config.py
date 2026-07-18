@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     litellm_base_url: str = "http://localhost:4000"
     litellm_api_key: str | None = None
     litellm_model: str = "mock-model"
+    open_meteo_api_key: str | None = None
+    open_meteo_timeout_seconds: int = Field(default=15, ge=1, le=120)
     langfuse_enabled: bool = False
     langfuse_public_key: str | None = None
     langfuse_secret_key: str | None = None

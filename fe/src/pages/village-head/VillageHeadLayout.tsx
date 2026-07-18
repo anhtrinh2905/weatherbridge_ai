@@ -2,7 +2,7 @@ import { LayoutDashboard, Map, Users } from "lucide-react";
 import { DashboardLayout, type SidebarItem } from "../../app/DashboardLayout";
 import { useAuth } from "../../features/auth/hooks";
 import { getResidentsByVillage } from "../../shared/domain/mockData";
-import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
+import { useResidentStatusStore } from "../../shared/domain/residentStatusContext";
 
 export function VillageHeadLayout() {
   const { user } = useAuth();

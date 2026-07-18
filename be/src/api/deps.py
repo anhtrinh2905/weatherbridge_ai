@@ -1,10 +1,12 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from functools import lru_cache
 
-from fastapi import Depends, Request
+from fastapi import Depends, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.authorization import AppRole, authorize_role, authorize_village_scope
 from auth.keycloak import CurrentUser, KeycloakVerifier
 from core.config import Settings, get_settings
 from core.errors import AppError
@@ -19,13 +21,38 @@ def get_keycloak_verifier() -> KeycloakVerifier:
     return KeycloakVerifier(get_settings())
 
 
+bearer_scheme = HTTPBearer(
+    auto_error=False,
+    scheme_name="KeycloakBearer",
+    description="Keycloak access token using the Bearer scheme",
+)
+
+
 async def get_current_user(
-    request: Request, verifier: KeycloakVerifier = Depends(get_keycloak_verifier)
+    credentials: HTTPAuthorizationCredentials | None = Security(bearer_scheme),
+    verifier: KeycloakVerifier = Depends(get_keycloak_verifier),
 ) -> CurrentUser:
-    authorization = request.headers.get("Authorization")
-    if not authorization or not authorization.lower().startswith("bearer "):
+    if credentials is None or credentials.scheme.lower() != "bearer" or not credentials.credentials:
         raise AppError(401, "Authentication is required", "authentication_required")
-    return await verifier.verify(authorization[7:])
+    return await verifier.verify(credentials.credentials)
+
+
+def require_roles(*allowed_roles: AppRole) -> Callable[[CurrentUser], CurrentUser]:
+    allowed = frozenset(allowed_roles)
+
+    def dependency(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
+        authorize_role(user.effective_role, allowed)
+        return user
+
+    return dependency
+
+
+def get_village_scoped_user(
+    village_id: str,
+    user: CurrentUser = Depends(get_current_user),
+) -> CurrentUser:
+    authorize_village_scope(user.effective_role, user.village_id, village_id)
+    return user
 
 
 async def get_redis(settings: Settings = Depends(get_settings)) -> AsyncIterator[Redis]:

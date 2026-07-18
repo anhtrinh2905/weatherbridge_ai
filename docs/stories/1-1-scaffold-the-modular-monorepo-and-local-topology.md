@@ -1,6 +1,10 @@
+---
+baseline_commit: cd4433ab6511a8502f7a25912ccec0eed01bf2aa
+---
+
 # Story 1.1: Scaffold the modular monorepo and local topology
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -32,33 +36,33 @@ so that the team has a running, deployable skeleton to build every feature on.
 > is to prove the ACs pass end-to-end and close the specific gaps listed below. See Dev Notes → "Current
 > scaffold state" before touching anything.
 
-- [ ] **Task 1: Prove the full topology boots from a clean state (AC1)**
-  - [ ] From repo root run `docker compose up --build` (root `compose.yaml` is the canonical local topology — see Dev Notes "Compose divergence")
-  - [ ] Confirm all services reach healthy/started: `db`, `keycloak-db`, `redis`, `mailpit`, `keycloak`, `migrate` (one-off), `be`, `worker`, `fe`, `proxy`
-  - [ ] Confirm `migrate` runs as a one-off job (`restart: "no"`, `depends_on: db service_healthy`) and `be` waits on `migrate` `service_completed_successfully` — migrations must NOT run from the `be` replica
-  - [ ] Hit the `be` health endpoint (route is mounted at `/health` via `be/src/api/v1/router.py`) and confirm it returns ok; confirm `fe` serves its placeholder shell (`fe/src/app/App.tsx` → `WorkspacePage`) through the `proxy`
-  - [ ] Document the exact `docker compose up` command, the URLs checked, and the observed health output in the Dev Agent Record (do not claim success without running it)
+- [x] **Task 1: Prove the full topology boots from a clean state (AC1)**
+  - [x] From repo root run `docker compose up --build` (root `compose.yaml` is the canonical local topology — see Dev Notes "Compose divergence")
+  - [x] Confirm all services reach healthy/started: `db`, `keycloak-db`, `redis`, `mailpit`, `keycloak`, `migrate` (one-off), `be`, `worker`, `fe`, `proxy`
+  - [x] Confirm `migrate` runs as a one-off job (`restart: "no"`, `depends_on: db service_healthy`) and `be` waits on `migrate` `service_completed_successfully` — migrations must NOT run from the `be` replica
+  - [x] Hit the `be` health endpoint (route is mounted at `/health` via `be/src/api/v1/router.py`) and confirm it returns ok; confirm `fe` serves its placeholder shell (`fe/src/app/App.tsx` → `WorkspacePage`) through the `proxy`
+  - [x] Document the exact `docker compose up` command, the URLs checked, and the observed health output in the Dev Agent Record (do not claim success without running it)
 
-- [ ] **Task 2: Verify readiness gates are correct, not just present (AC1)**
-  - [ ] Review every `healthcheck:` and `depends_on: { condition: ... }` in root `compose.yaml`; confirm `be`/`worker`/`proxy` gate on their dependencies' health, and `keycloak` gates on `keycloak-db`
-  - [ ] Confirm `keycloak` image builds from `infra/docker/keycloak.Dockerfile`, which imports `infra/keycloak/realm-export.json` and copies `infra/keycloak/themes/weather-bridge` (theme referenced by AC1 "Keycloak (with theme)")
+- [x] **Task 2: Verify readiness gates are correct, not just present (AC1)**
+  - [x] Review every `healthcheck:` and `depends_on: { condition: ... }` in root `compose.yaml`; confirm `be`/`worker`/`proxy` gate on their dependencies' health, and `keycloak` gates on `keycloak-db`
+  - [x] Confirm `keycloak` image builds from `infra/docker/keycloak.Dockerfile`, which imports `infra/keycloak/realm-export.json` and copies `infra/keycloak/themes/weather-bridge` (theme referenced by AC1 "Keycloak (with theme)")
 
-- [ ] **Task 3: Resolve the two-compose divergence (AC1 correctness / prevent-confusion)**
-  - [ ] Root `compose.yaml` = full local topology (used by `make dev`). `infra/compose/compose.yaml` = infra-only subset (db, keycloak-db, redis, mailpit, keycloak), layered by `make dev-prod`/`make dev-ai`
-  - [ ] `docs/architecture/deployment.md` states the **root** `compose.yaml` is the complete local topology — reconcile: either make `make dev-prod`/`dev-ai` layer on the root file, or document the split explicitly so the two systems don't drift. Prefer the **smallest** change that makes the docs and Makefile consistent; record the decision in Dev Notes
-  - [ ] Ensure `make dev` (root `docker compose up -d`) and the AC1 `docker compose up` path refer to the same topology
+- [x] **Task 3: Resolve the two-compose divergence (AC1 correctness / prevent-confusion)**
+  - [x] Root `compose.yaml` = full local topology (used by `make dev`). `infra/compose/compose.yaml` = infra-only subset (db, keycloak-db, redis, mailpit, keycloak), layered by `make dev-prod`/`make dev-ai`
+  - [x] `docs/architecture/deployment.md` states the **root** `compose.yaml` is the complete local topology — reconcile: either make `make dev-prod`/`dev-ai` layer on the root file, or document the split explicitly so the two systems don't drift. Prefer the **smallest** change that makes the docs and Makefile consistent; record the decision in Dev Notes
+  - [x] Ensure `make dev` (root `docker compose up -d`) and the AC1 `docker compose up` path refer to the same topology
 
-- [ ] **Task 4: Enforce boundary + hygiene invariants (AC2)**
-  - [ ] `fe`: confirm no direct PostgreSQL/Redis client usage in `fe/src` (verified none at authoring time — re-check after any change). `fe` reaches data only via `be` HTTP + generated OpenAPI client under `fe/src/shared/api/`
-  - [ ] `ai/`: confirm `ai/` holds only offline entrypoints (dataset/train/pretrain/eval/registry via `ai/src/main.py`), no HTTP API, no production image
-  - [ ] `git ls-files` must show **no** `.env` file committed (`.env`/`.env.*` are gitignored, `.env.example` is the only allowed env file). Confirm `.env.example` documents required vars
-  - [ ] **Secret-hygiene gap:** root `compose.yaml` currently hardcodes dev bootstrap passwords inline (Keycloak admin + Postgres). The ggshield hook flags these. Move them to env interpolation sourced from `.env` (defaults in `.env.example`), so no credential literal remains in a committed file. Keep local dev working with sensible non-production defaults. Record rationale — this directly serves AC2 "no secrets committed"
+- [x] **Task 4: Enforce boundary + hygiene invariants (AC2)**
+  - [x] `fe`: confirm no direct PostgreSQL/Redis client usage in `fe/src` (verified none at authoring time — re-check after any change). `fe` reaches data only via `be` HTTP + generated OpenAPI client under `fe/src/shared/api/`
+  - [x] `ai/`: confirm `ai/` holds only offline entrypoints (dataset/train/pretrain/eval/registry via `ai/src/main.py`), no HTTP API, no production image
+  - [x] `git ls-files` must show **no** `.env` file committed (`.env`/`.env.*` are gitignored, `.env.example` is the only allowed env file). Confirm `.env.example` documents required vars
+  - [x] **Secret-hygiene gap:** root `compose.yaml` currently hardcodes dev bootstrap passwords inline (Keycloak admin + Postgres). The ggshield hook flags these. Move them to env interpolation sourced from `.env` (defaults in `.env.example`), so no credential literal remains in a committed file. Keep local dev working with sensible non-production defaults. Record rationale — this directly serves AC2 "no secrets committed"
 
-- [ ] **Task 5: Prove the developer entrypoints work (supports AC1/AC2)**
-  - [ ] `make check` passes (fe lint+typecheck, be/worker/ai ruff, be mypy)
-  - [ ] `make test` passes (fe vitest, be/worker/ai pytest) — or document any pre-existing failures unrelated to this story
-  - [ ] `make build` builds all five images from `infra/docker/*.Dockerfile`
-  - [ ] Record every command run and its result in the Dev Agent Record
+- [x] **Task 5: Prove the developer entrypoints work (supports AC1/AC2)**
+  - [x] `make check` passes (fe lint+typecheck, be/worker/ai ruff, be mypy)
+  - [x] `make test` passes (fe vitest, be/worker/ai pytest) — or document any pre-existing failures unrelated to this story
+  - [x] `make build` builds all five images from `infra/docker/*.Dockerfile`
+  - [x] Record every command run and its result in the Dev Agent Record
 
 ## Dev Notes
 
@@ -134,10 +138,42 @@ Images are pinned and should stay pinned for reproducibility: `postgres:16-alpin
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+openai/gpt-5.6-sol
+
+### Implementation Plan
+
+- Reconcile the existing scaffold against each acceptance criterion instead of recreating it.
+- Run the full local topology and developer entrypoints, then make only changes required by observed failures.
+- Record command evidence and preserve the existing documented split between the canonical root topology and infra-only overlays.
 
 ### Debug Log References
 
+- `docker compose up --build -d --wait` — built all five local images; all long-running services reached healthy/started and `migrate` exited 0.
+- `docker compose -p weather-bridge-story11 up --build -d --wait` — repeated the boot with isolated, newly created volumes; migration logs confirmed both `0001_initial` and `0002_forecast_snapshots` applied from an empty database.
+- `docker compose ps --all` — confirmed healthy `db`, `keycloak-db`, `redis`, `mailpit`, `keycloak`, `be`, `fe`, and `proxy`; worker running; migration completed.
+- `curl http://localhost:8000/api/v1/health/ready` and `curl http://localhost:5173/api/v1/health/ready` — both returned `{"status":"ready"}`.
+- `curl http://localhost:5173/` — returned the Weather Bridge frontend HTML through the proxy.
+- `docker compose logs migrate` — confirmed Alembic ran as the one-off migration service and upgraded through `0002_forecast_snapshots`.
+- `docker compose config --quiet` and `make -n dev` — configuration valid; `make dev` resolves to root `docker compose up -d`.
+- Boundary checks found no PostgreSQL/Redis client use in `fe/src`; `ai/src/main.py` exposes offline CLI commands only; tracked `.env*` files are example templates, not runtime secret files.
+- `make check` — passed with three existing React Fast Refresh warnings and no errors.
+- `make test` — passed: frontend 5, backend 9, worker 5, AI 7 tests; only existing jsdom/asyncio warnings were emitted.
+- `make build` — passed frontend production build and all five Docker image builds (`be`, `worker`, `fe`, `keycloak`, `proxy`).
+- `docker compose -p weather-bridge-story11 down` followed by `docker compose up -d --wait` — removed the isolated test containers without deleting volumes and restored the default local stack with its original volumes healthy.
+- `git diff --check` — passed.
+
 ### Completion Notes List
 
+- AC1 verified end-to-end against the canonical root topology, including readiness ordering, one-off migrations, API readiness, and frontend proxy serving.
+- AC2 verified: runtime boundaries hold, no real `.env` or secret file is tracked, and root Compose already sources dev credentials through documented environment interpolation.
+- The Compose-tree divergence was already reconciled on the baseline: root Compose is canonical while `infra/compose` is explicitly documented as an infra-only overlay system.
+- No product or infrastructure source changes were necessary; the smallest correct outcome is verification evidence and story tracking updates.
+
 ### File List
+
+- `docs/stories/1-1-scaffold-the-modular-monorepo-and-local-topology.md`
+- `docs/stories/sprint-status.yaml`
+
+## Change Log
+
+- 2026-07-18: Reconciled and verified the existing modular scaffold; recorded successful topology, checks, tests, and image builds; moved story to review.

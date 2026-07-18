@@ -1,27 +1,11 @@
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 
 from api.deps import get_current_user
 from auth.keycloak import CurrentUser
+from auth.schemas import CurrentUserResponse, IdentityConfigResponse
 from core.config import Settings, get_settings
 
 router = APIRouter()
-
-
-class IdentityConfigResponse(BaseModel):
-    url: str
-    realm: str
-    client_id: str
-    issuer: str
-
-
-class CurrentUserResponse(BaseModel):
-    id: str
-    email: str | None
-    display_name: str
-    username: str | None
-    email_verified: bool
-    roles: list[str]
 
 
 @router.get("/config", response_model=IdentityConfigResponse)
@@ -43,4 +27,6 @@ async def me(user: CurrentUser = Depends(get_current_user)) -> CurrentUserRespon
         username=user.username,
         email_verified=user.email_verified,
         roles=sorted(user.roles),
+        effective_role=user.effective_role,
+        village_id=user.village_id,
     )

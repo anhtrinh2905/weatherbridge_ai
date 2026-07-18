@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from ai.contracts import InferenceRequest
+from ai.contracts import InferenceRequest, ToolInvocation
 from core.config import Settings as BackendSettings
 from redis.asyncio import Redis
 from services.ai_inference_service import AiInferenceService
@@ -36,6 +36,21 @@ async def process_job(
                     session, row["payload"], settings.open_meteo_base_url
                 )
                 await set_status(session, job_id, "succeeded", result=result)
+            elif row["task"] == "open_meteo_tool":
+                if not isinstance(row["payload"], dict):
+                    raise ValueError("tool job payload must be a JSON object")
+                tool_call_raw = row["payload"].get("tool_call")
+                if not isinstance(tool_call_raw, dict):
+                    raise ValueError("tool_call missing in job payload")
+                tool_call = ToolInvocation.model_validate(tool_call_raw)
+                inference = await AiInferenceService(BackendSettings()).infer(
+                    InferenceRequest(
+                        task="open_meteo_tool",
+                        text=str(row["payload"].get("text", "")),
+                        tool_call=tool_call,
+                    )
+                )
+                await set_status(session, job_id, "succeeded", result=inference.model_dump())
             else:
                 request = InferenceRequest(task=row["task"], text=row["payload"]["text"])
                 inference = await AiInferenceService(BackendSettings()).infer(request)

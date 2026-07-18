@@ -4,7 +4,7 @@ import { Button } from "../../shared/ui/Button";
 import { useAuth } from "../../features/auth/hooks";
 import { getResidentsByVillage, triageScore } from "../../shared/domain/mockData";
 import { OCCUPATION_LABELS, VULNERABILITY_LABELS } from "../../shared/domain/labels";
-import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
+import { useResidentStatusStore } from "../../shared/domain/residentStatusContext";
 import { cn } from "../../shared/lib/cn";
 
 export function VillageHeadResidentsPage() {

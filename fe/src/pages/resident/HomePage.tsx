@@ -6,7 +6,7 @@ import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { VillageMap } from "../../shared/ui/VillageMap";
 import { Button } from "../../shared/ui/Button";
 import { getHighestTierAlert, getSelfResident, getVillage } from "../../shared/domain/mockData";
-import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
+import { useResidentStatusStore } from "../../shared/domain/residentStatusContext";
 import { cn } from "../../shared/lib/cn";
 
 export function ResidentHomePage() {

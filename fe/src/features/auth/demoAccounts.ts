@@ -1,11 +1,11 @@
 import type { Role } from "../../shared/domain/types";
 
 /**
- * Demo-only shortcut for the 4 seeded accounts in infra/keycloak/realm-export.json. All 4 share
- * the same password so the login screen can pre-fill the username via Keycloak's `login_hint`
- * and the user only has to type the password once. This intentionally does NOT bypass OIDC
- * Authorization Code + PKCE (the client keeps directAccessGrantsEnabled: false) — it is a UX
- * shortcut on top of the same redirect flow, not a second auth path.
+ * Seeded demo accounts shown on the login page as hints. Clicking one redirects to
+ * Keycloak's Authorization Code + PKCE login with the username prefilled via `login_hint`;
+ * the user still types the password themselves on the Keycloak form. No password grant
+ * and no browser-side token exchange is involved — `DEMO_PASSWORD` is displayed only so
+ * reviewers can copy it into the Keycloak form during local demos.
  */
 export interface DemoAccount {
   role: Role;

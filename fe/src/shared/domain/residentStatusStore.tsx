@@ -1,29 +1,7 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { RESIDENTS } from "./mockData";
 import type { SafetyStatus } from "./types";
-
-/**
- * Client-side mock for resident_sim.safety_status / visited_by_head_at (see docs/design/
- * ui-ux-role-spec.md §7). No backend field exists yet for these two flows ("đã đến nhắc" /
- * "tự xác nhận an toàn") — until that schema change is approved, this in-memory store is the
- * ONLY place that state lives, and it resets on page reload. It is intentionally shaped like
- * the eventual API (`markVisited(residentId)`, `setSafetyStatus(residentId, status)`) so
- * swapping this provider for a TanStack Query mutation later does not change any consumer.
- */
-
-interface ResidentStatus {
-  safetyStatus: SafetyStatus;
-  safetyStatusUpdatedAt: string | null;
-  visitedByHeadAt: string | null;
-}
-
-interface StatusStoreValue {
-  getStatus: (residentId: string) => ResidentStatus;
-  setSafetyStatus: (residentId: string, status: SafetyStatus) => void;
-  markVisited: (residentId: string) => void;
-}
-
-const StatusStoreContext = createContext<StatusStoreValue | null>(null);
+import { StatusStoreContext, type ResidentStatus, type StatusStoreValue } from "./residentStatusContext";
 
 export function ResidentStatusProvider({ children }: { children: ReactNode }) {
   const [statuses, setStatuses] = useState<Record<string, ResidentStatus>>(() =>
@@ -54,10 +32,4 @@ export function ResidentStatusProvider({ children }: { children: ReactNode }) {
   );
 
   return <StatusStoreContext.Provider value={value}>{children}</StatusStoreContext.Provider>;
-}
-
-export function useResidentStatusStore() {
-  const ctx = useContext(StatusStoreContext);
-  if (!ctx) throw new Error("useResidentStatusStore must be used inside ResidentStatusProvider");
-  return ctx;
 }

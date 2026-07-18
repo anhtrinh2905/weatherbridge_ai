@@ -3,9 +3,15 @@ from typing import Any, Protocol
 from pydantic import BaseModel, Field
 
 
+class ToolInvocation(BaseModel):
+    tool: str = Field(min_length=1, max_length=80)
+    arguments: dict[str, Any] = Field(default_factory=dict)
+
+
 class InferenceRequest(BaseModel):
     task: str = Field(min_length=1, max_length=80)
     text: str = Field(min_length=1, max_length=20_000)
+    tool_call: ToolInvocation | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

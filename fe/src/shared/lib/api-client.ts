@@ -1,4 +1,4 @@
-import { keycloak } from "../../features/auth/keycloak";
+import { keycloak } from "../../features/auth/auth-context";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
 

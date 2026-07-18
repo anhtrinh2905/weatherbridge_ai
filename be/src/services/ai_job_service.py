@@ -17,11 +17,17 @@ class AiJobService:
 
     async def create(self, payload: CreateAiJobRequest, user_id: str) -> AiJobResponse:
         now = utc_now()
+        stored_payload: dict[str, object] = {"text": payload.text}
+        if payload.tool_call is not None:
+            stored_payload["tool_call"] = payload.tool_call.model_dump()
+        if payload.metadata:
+            stored_payload["metadata"] = payload.metadata
+
         job = AiJob(
             user_id=user_id,
             task=payload.task,
             status=JobStatus.QUEUED.value,
-            payload={"text": payload.text},
+            payload=stored_payload,
             created_at=now,
             updated_at=now,
         )

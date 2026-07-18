@@ -54,7 +54,7 @@ Keycloak, separate PVCs. Dev cannot break prod data.
 | db         | StatefulSet   | PostgreSQL 16, 10Gi PVC, app database                        |
 | keycloak-db| StatefulSet   | PostgreSQL 16, 5Gi PVC, Keycloak database                    |
 | redis      | Deployment    | Redis 7, 2Gi PVC                                             |
-| keycloak   | Deployment    | `weather-bridge/keycloak`, env-specific `KC_HOSTNAME`        |
+| keycloak   | Deployment    | `weather-bridge/keycloak`, env-specific hostname and versioned realm sync |
 | be         | Deployment    | `weather-bridge/be`, runs Alembic migrations as initContainer |
 | worker     | Deployment    | `weather-bridge/worker`                                      |
 | fe         | Deployment    | `weather-bridge/fe`, nginx serving built Vite assets         |
@@ -162,6 +162,21 @@ Migrations run as an `initContainer` of the `be` Deployment, so every rollout
 runs `alembic upgrade head` before the new `be` pod serves traffic. Alembic is
 idempotent, so re-runs are safe; keep `be` at one replica until you add an
 Alembic advisory-lock guard for concurrent migrators.
+
+Keycloak's startup import only creates a missing realm; it never overwrites an
+existing realm database. The Keycloak Deployment therefore runs
+`sync-weather-bridge-realm.sh` as a `postStart` hook on every rollout. The sync
+uses `keycloak-secret` admin credentials to reconcile the frontend client,
+domain roles, protocol mapper, and seeded demo identities without deleting the
+realm. Destructive profile changes are versioned with the
+`weatherBridgeMigrationVersion` realm attribute. If the sync fails, the new pod
+does not become ready and the previous Keycloak replica remains available.
+
+Treat changes under `infra/keycloak/` like database migrations: make the sync
+idempotent, increment the migration version when a one-time transformation is
+needed, and validate in dev before promoting the same image to prod. The admin
+credentials in `keycloak-secret` must continue to match an enabled admin in the
+master realm; bootstrap environment variables do not reset an existing admin.
 
 ## Keycloak hostname and email
 

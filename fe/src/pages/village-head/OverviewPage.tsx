@@ -4,7 +4,7 @@ import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { DataFreshnessBadge } from "../../shared/ui/DataFreshnessBadge";
 import { getHighestTierAlert, getResidentsByVillage, getVillage, HAZARD_RUN_MOCK } from "../../shared/domain/mockData";
-import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
+import { useResidentStatusStore } from "../../shared/domain/residentStatusContext";
 
 export function VillageHeadOverviewPage() {
   const { user } = useAuth();

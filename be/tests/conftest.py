@@ -11,10 +11,12 @@ os.environ.setdefault("KEYCLOAK_CLIENT_ID", "weather-bridge-fe")
 os.environ.setdefault("CORS_ORIGINS", "http://testserver")
 
 import pytest
+from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from api.deps import get_current_user, get_job_queue
+from auth.authorization import AppRole
 from auth.keycloak import CurrentUser
 from core.config import get_settings
 from database import Base
@@ -48,12 +50,8 @@ async def db_session() -> AsyncIterator[AsyncSession]:
 
 
 @pytest.fixture
-async def client() -> AsyncIterator[AsyncClient]:
-    async with test_engine.begin() as connection:
-        await connection.run_sync(Base.metadata.drop_all)
-        await connection.run_sync(Base.metadata.create_all)
-
-    app = create_app(get_settings())
+def app() -> FastAPI:
+    application = create_app(get_settings())
 
     async def override_db() -> AsyncIterator[AsyncSession]:
         async with test_session_factory() as session:
@@ -69,13 +67,24 @@ async def client() -> AsyncIterator[AsyncClient]:
             display_name="Test User",
             username="test-user",
             email_verified=True,
-            roles=frozenset({"user"}),
+            roles=frozenset({AppRole.ADMIN}),
+            effective_role=AppRole.ADMIN,
+            village_id=None,
             claims={"sub": "test-user"},
         )
 
-    app.dependency_overrides[get_db] = override_db
-    app.dependency_overrides[get_current_user] = override_current_user
-    app.dependency_overrides[get_job_queue] = override_job_queue
+    application.dependency_overrides[get_db] = override_db
+    application.dependency_overrides[get_current_user] = override_current_user
+    application.dependency_overrides[get_job_queue] = override_job_queue
+    return application
+
+
+@pytest.fixture
+async def client(app: FastAPI) -> AsyncIterator[AsyncClient]:
+    async with test_engine.begin() as connection:
+        await connection.run_sync(Base.metadata.drop_all)
+        await connection.run_sync(Base.metadata.create_all)
+
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://testserver"
     ) as http_client:

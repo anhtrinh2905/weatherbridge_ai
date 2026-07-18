@@ -1,1 +1,1 @@
-export { useAuth } from "./keycloak";
+export { useAuth } from "./auth-context";

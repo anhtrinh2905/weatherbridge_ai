@@ -50,7 +50,7 @@ story_location: docs/stories
 development_status:
   # Epic 1: Platform Foundation & Role-Based Access
   epic-1: in-progress
-  1-1-scaffold-the-modular-monorepo-and-local-topology: ready-for-dev
+  1-1-scaffold-the-modular-monorepo-and-local-topology: review
   1-2-sign-in-with-keycloak-using-authorization-code-pkce: backlog
   1-3-validate-access-tokens-at-the-api: backlog
   1-4-enforce-four-role-access-control: backlog

@@ -136,6 +136,10 @@ spec:
               value: "true"
             - name: KC_HTTP_ENABLED
               value: "true"
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/opt/keycloak/bin/sync-weather-bridge-realm.sh"]
           readinessProbe:
             httpGet:
               path: /realms/weather-bridge
