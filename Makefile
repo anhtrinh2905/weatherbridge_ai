@@ -28,7 +28,7 @@ ai-evaluate:
 	PYTHONPATH=ai/src uv run --project ai python ai/src/main.py evaluate
 
 api:
-	uv run --project be uvicorn --app-dir be/src main:app --reload --host 0.0.0.0 --port 8000
+	uv run --project be --extra speech uvicorn --app-dir be/src main:app --reload --host 0.0.0.0 --port 8000
 
 worker:
 	PYTHONPATH=worker/src:be/src uv run --project worker python worker/src/main.py
@@ -60,14 +60,14 @@ research-db-backup:
 check:
 	pnpm --dir fe lint
 	pnpm --dir fe typecheck
-	uv run --project be ruff check be/src be/tests
-	uv run --project be mypy be/src
+	uv run --project be --extra speech ruff check be/src be/tests
+	uv run --project be --extra speech mypy be/src
 	uv run --project worker ruff check worker/src worker/tests
 	uv run --project ai ruff check ai/src ai/tests
 
 test:
 	pnpm --dir fe test
-	uv run --project be pytest be/tests
+	uv run --project be --extra speech pytest be/tests
 	uv run --project worker pytest worker/tests
 	uv run --project ai pytest ai/tests
 
@@ -80,17 +80,17 @@ build:
 	docker build -f infra/docker/proxy.Dockerfile -t weather-bridge-proxy .
 
 format:
-	uv run --project be ruff format be/src be/tests
+	uv run --project be --extra speech ruff format be/src be/tests
 	uv run --project worker ruff format worker/src worker/tests
 	uv run --project ai ruff format ai/src ai/tests
 	pnpm --dir fe exec prettier --write src
 
 migrate:
-	uv run --project be alembic -c be/alembic.ini upgrade head
+	uv run --project be --extra speech alembic -c be/alembic.ini upgrade head
 
 generate-contracts:
 	@mkdir -p fe/src/shared/api
-	uv run --project be python scripts/export_openapi.py
+	uv run --project be --extra speech python scripts/export_openapi.py
 	pnpm --dir fe exec openapi-typescript src/shared/api/openapi.json -o src/shared/api/generated.ts
 
 k8s-render-prod:
