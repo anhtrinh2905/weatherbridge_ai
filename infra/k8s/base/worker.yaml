@@ -33,6 +33,36 @@ spec:
                   name: web-push-secret
                   key: WEB_PUSH_VAPID_PRIVATE_KEY
                   optional: true
+            - name: SMS_TWILIO_ACCOUNT_SID
+              valueFrom:
+                secretKeyRef:
+                  name: notification-providers-secret
+                  key: SMS_TWILIO_ACCOUNT_SID
+                  optional: true
+            - name: SMS_TWILIO_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: notification-providers-secret
+                  key: SMS_TWILIO_AUTH_TOKEN
+                  optional: true
+            - name: SMS_TWILIO_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: notification-providers-secret
+                  key: SMS_TWILIO_FROM
+                  optional: true
+            - name: SMS_TWILIO_MESSAGING_SERVICE_SID
+              valueFrom:
+                secretKeyRef:
+                  name: notification-providers-secret
+                  key: SMS_TWILIO_MESSAGING_SERVICE_SID
+                  optional: true
+            - name: ZALO_OA_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: notification-providers-secret
+                  key: ZALO_OA_ACCESS_TOKEN
+                  optional: true
           resources:
             requests:
               cpu: 100m

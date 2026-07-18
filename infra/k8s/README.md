@@ -141,8 +141,11 @@ does not receive K3s, SSH, database, or Keycloak secrets.
 Application secrets remain native Kubernetes Secrets (`app-secret`,
 `db-secret`, `keycloak-secret`) in each namespace. Enable Web Push only after
 creating `web-push-secret` with `WEB_PUSH_VAPID_PRIVATE_KEY`; it is mounted only
-by the worker. The pull agent refuses a
-deployment when any required Secret is missing.
+by the worker. To enable SMS or Zalo OA, create `notification-providers-secret`
+from `notification-providers-secret-template.yaml`; it is also mounted only by
+the worker. Set `NOTIFICATION_DELIVERY_MODE=configured` and the selected
+`SMS_PROVIDER` or `ZALO_PROVIDER` in the environment config. The pull agent
+refuses a deployment when any required Secret is missing.
 
 ## Deploy flow
 

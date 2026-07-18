@@ -21,5 +21,6 @@ resources:
   - fe.yaml
   - ingress.yaml
 
-# secret-template.yaml and web-push-secret-template.yaml are intentionally NOT
-# listed here: real secrets are applied from GitHub Actions secrets, never committed.
+# secret-template.yaml, web-push-secret-template.yaml, and
+# notification-providers-secret-template.yaml are intentionally NOT listed here:
+# real secrets are applied from GitHub Actions secrets, never committed.

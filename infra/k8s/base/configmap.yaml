@@ -23,3 +23,6 @@ data:
   OBJECT_STORAGE_URL_TTL_SECONDS: "300"
   NOTIFICATION_DELIVERY_MODE: "disabled"
   WEB_PUSH_SUBJECT: "mailto:dev@weatherbridge.local"
+  SMS_PROVIDER: "disabled"
+  ZALO_PROVIDER: "disabled"
+  ZALO_OA_API_BASE_URL: "https://openapi.zalo.me"

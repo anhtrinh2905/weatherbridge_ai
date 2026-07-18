@@ -79,8 +79,15 @@ class Settings(BaseSettings):
             raise ValueError("PII_MODE must be either simulated or live")
         if self.pii_mode == "live" and (not self.pii_encryption_key or not self.pii_hash_key):
             raise ValueError("PII live mode requires encryption and hash keys")
-        if self.notification_delivery_mode not in {"disabled", "simulate", "web_push"}:
-            raise ValueError("NOTIFICATION_DELIVERY_MODE must be disabled, simulate, or web_push")
+        if self.notification_delivery_mode not in {
+            "disabled",
+            "simulate",
+            "web_push",
+            "configured",
+        }:
+            raise ValueError(
+                "NOTIFICATION_DELIVERY_MODE must be disabled, simulate, web_push, or configured"
+            )
         if self.notification_delivery_mode == "web_push" and not self.web_push_vapid_public_key:
             raise ValueError("Web Push requires a persistent VAPID public key")
         return self

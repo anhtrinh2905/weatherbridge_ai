@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Protocol
 from uuid import UUID
 
+import httpx
 from core.pii import PiiProtector
 from pywebpush import WebPushException, webpush  # type: ignore[import-untyped]
 from sqlalchemy import (
@@ -117,6 +118,115 @@ class SimulatedNotificationProvider:
         return DeliveryResult(status="simulated", metadata={"channel": channel})
 
 
+def render_plain_text(content: dict[str, str]) -> str:
+    return "\n".join(
+        value.strip()
+        for value in (
+            content["what_happened"],
+            content["danger_description"],
+            content["action_instruction"],
+            content["deadline_instruction"],
+        )
+        if value.strip()
+    )
+
+
+class TwilioSmsNotificationProvider:
+    name = "twilio_sms"
+
+    def __init__(self, settings: Settings, client: httpx.AsyncClient | None = None) -> None:
+        self.account_sid = settings.sms_twilio_account_sid
+        self.auth_token = settings.sms_twilio_auth_token
+        self.sender = settings.sms_twilio_from
+        self.messaging_service_sid = settings.sms_twilio_messaging_service_sid
+        self._client = client
+
+    async def send(
+        self,
+        *,
+        channel: str,
+        destination: str,
+        content: dict[str, str],
+        idempotency_key: str,
+    ) -> DeliveryResult:
+        if channel != "sms" or not self.account_sid or not self.auth_token:
+            raise ValueError("Twilio provider received an invalid delivery request")
+        data = {"To": destination, "Body": render_plain_text(content)}
+        if self.messaging_service_sid:
+            data["MessagingServiceSid"] = self.messaging_service_sid
+        elif self.sender:
+            data["From"] = self.sender
+        else:
+            raise ValueError("Twilio provider requires a sender or messaging service")
+        response = await self._post(
+            f"https://api.twilio.com/2010-04-01/Accounts/{self.account_sid}/Messages.json",
+            data=data,
+            auth=(self.account_sid, self.auth_token),
+            headers={"Idempotency-Key": idempotency_key},
+        )
+        response.raise_for_status()
+        payload = response.json()
+        return DeliveryResult(
+            status="sent",
+            provider_message_id=payload.get("sid"),
+            response_status_code=response.status_code,
+            metadata={"provider_status": payload.get("status", "accepted")},
+        )
+
+    async def _post(self, url: str, **kwargs: object) -> httpx.Response:
+        if self._client:
+            return await self._client.post(url, **kwargs)
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            return await client.post(url, **kwargs)
+
+
+class ZaloOANotificationProvider:
+    name = "zalo_oa"
+
+    def __init__(self, settings: Settings, client: httpx.AsyncClient | None = None) -> None:
+        self.access_token = settings.zalo_oa_access_token
+        self.api_base_url = settings.zalo_oa_api_base_url.rstrip("/")
+        self._client = client
+
+    async def send(
+        self,
+        *,
+        channel: str,
+        destination: str,
+        content: dict[str, str],
+        idempotency_key: str,
+    ) -> DeliveryResult:
+        if channel != "zalo" or not self.access_token:
+            raise ValueError("Zalo OA provider received an invalid delivery request")
+        response = await self._post(
+            f"{self.api_base_url}/v3.0/oa/message/cs",
+            json={
+                "recipient": {"user_id": destination},
+                "message": {"text": render_plain_text(content)},
+            },
+            headers={
+                "access_token": self.access_token,
+                "X-Idempotency-Key": idempotency_key,
+            },
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if payload.get("error", 0) != 0:
+            raise RuntimeError(f"ZaloOAError{payload['error']}")
+        return DeliveryResult(
+            status="sent",
+            provider_message_id=str(payload.get("data", {}).get("message_id") or "") or None,
+            response_status_code=response.status_code,
+            metadata={"provider_status": "accepted"},
+        )
+
+    async def _post(self, url: str, **kwargs: object) -> httpx.Response:
+        if self._client:
+            return await self._client.post(url, **kwargs)
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            return await client.post(url, **kwargs)
+
+
 class WebPushNotificationProvider:
     name = "web_push"
 
@@ -165,6 +275,17 @@ class WebPushNotificationProvider:
             raise
 
 
+def configured_providers(settings: Settings) -> dict[str, NotificationProvider]:
+    providers: dict[str, NotificationProvider] = {}
+    if settings.sms_provider == "twilio":
+        providers["sms"] = TwilioSmsNotificationProvider(settings)
+    if settings.zalo_provider == "oa":
+        providers["zalo"] = ZaloOANotificationProvider(settings)
+    if settings.web_push_vapid_private_key and settings.web_push_vapid_public_key:
+        providers["web_push"] = WebPushNotificationProvider(settings)
+    return providers
+
+
 async def process_outbox_batch(
     session: AsyncSession,
     settings: Settings,
@@ -182,6 +303,10 @@ async def process_outbox_batch(
         }
     elif providers is None and settings.notification_delivery_mode == "web_push":
         resolved_providers = {"web_push": WebPushNotificationProvider(settings)}
+    elif providers is None and settings.notification_delivery_mode == "configured":
+        resolved_providers = configured_providers(settings)
+    if not resolved_providers:
+        return 0
     now = datetime.now(UTC)
     rows = (
         await session.execute(
@@ -205,6 +330,7 @@ async def process_outbox_batch(
             .where(
                 notification_outbox.c.status.in_(("pending", "retry")),
                 notification_outbox.c.next_attempt_at <= now,
+                notification_outbox.c.channel.in_(tuple(resolved_providers)),
                 resident_contacts.c.is_active.is_(True),
             )
             .order_by(notification_outbox.c.next_attempt_at)
