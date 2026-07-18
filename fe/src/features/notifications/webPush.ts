@@ -13,6 +13,15 @@ type PushSubscriptionResponse = {
   subscription_count: number;
 };
 
+export type WebPushEnvironment = {
+  isIos: boolean;
+  isAndroid: boolean;
+  isStandalone: boolean;
+  isSecureContext: boolean;
+  canAttempt: boolean;
+  guidance: string;
+};
+
 function base64UrlToArrayBuffer(value: string): ArrayBuffer {
   const padding = "=".repeat((4 - (value.length % 4)) % 4);
   const base64 = `${value}${padding}`.replace(/-/g, "+").replace(/_/g, "/");
@@ -24,7 +33,57 @@ function base64UrlToArrayBuffer(value: string): ArrayBuffer {
   return output.buffer;
 }
 
+function isIos() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+function isStandaloneWebApp() {
+  return Boolean(window.matchMedia?.("(display-mode: standalone)").matches)
+    || Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
+}
+
+export function getWebPushEnvironment(): WebPushEnvironment {
+  const ios = isIos();
+  const android = isAndroid();
+  const standalone = isStandaloneWebApp();
+  const hasApis = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  const canAttempt = window.isSecureContext && hasApis && (!ios || standalone);
+  let guidance = "Bật thông báo để nhận cảnh báo ngay cả khi không mở trang.";
+
+  if (!window.isSecureContext) {
+    guidance = "Thông báo cần HTTPS. Trên điện thoại hãy mở bằng link HTTPS, không dùng IP LAN hoặc http.";
+  } else if (ios && !standalone) {
+    guidance = "iPhone/iPad: mở bằng Safari, bấm Chia sẻ > Thêm vào Màn hình chính, rồi mở icon Weather Bridge AI để bật thông báo.";
+  } else if (!hasApis) {
+    guidance = android
+      ? "Trình duyệt Android này chưa hỗ trợ Web Push. Hãy thử Chrome bản mới hoặc mở link bằng Chrome đầy đủ."
+      : "Trình duyệt này chưa hỗ trợ Web Push.";
+  } else if (android) {
+    guidance = "Android Chrome/Google: có thể bật thông báo trực tiếp trên link HTTPS này.";
+  } else if (ios) {
+    guidance = "iPhone/iPad PWA: có thể bật thông báo sau khi mở từ icon trên màn hình chính.";
+  }
+
+  return {
+    isIos: ios,
+    isAndroid: android,
+    isStandalone: standalone,
+    isSecureContext: window.isSecureContext,
+    canAttempt,
+    guidance,
+  };
+}
+
 function assertWebPushSupport() {
+  const environment = getWebPushEnvironment();
+  if (!environment.isSecureContext) throw new Error("Thông báo cần HTTPS. Hãy mở bằng link HTTPS, không dùng IP LAN hoặc http.");
+  if (environment.isIos && !environment.isStandalone) {
+    throw new Error("iPhone/iPad chỉ nhận Web Push khi mở app từ màn hình chính. Trong Safari bấm Chia sẻ > Thêm vào Màn hình chính, rồi mở icon Weather Bridge AI.");
+  }
   if (!("serviceWorker" in navigator)) throw new Error("Trình duyệt chưa hỗ trợ service worker.");
   if (!("PushManager" in window)) throw new Error("Trình duyệt chưa hỗ trợ Web Push.");
   if (!("Notification" in window)) throw new Error("Trình duyệt chưa hỗ trợ thông báo.");
