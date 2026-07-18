@@ -12,12 +12,24 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 import httpx
-from modules.forecasts.locations import LOCATIONS
+from modules.forecasts.locations import LOCATIONS, ForecastLocation
 from sqlalchemy import JSON, Column, DateTime, Float, MetaData, String, Table, Uuid, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from risk_scoring import (
+    BIAS_CORRECTION_HOURLY_VARS,
+    bias_correct_hourly,
+    daily_max_exceedance,
+    daily_sums,
+    risk_level,
+    trigger_level,
+)
+
 FORECAST_INGEST_TASK = "forecast_ingest"
 SOURCE = "open-meteo:best_match"
+# Hourly variables requested from Open-Meteo: precipitation drives the trigger;
+# the rest feed the optional bias-correction model.
+HOURLY_VARS = ",".join(BIAS_CORRECTION_HOURLY_VARS)
 
 metadata = MetaData()
 forecast_snapshots = Table(
@@ -57,11 +69,45 @@ def build_days(data: dict) -> list[dict]:
     ]
 
 
+def enrich_days(
+    days: list[dict],
+    data: dict,
+    location: ForecastLocation,
+    model_path: str | None = None,
+) -> list[dict]:
+    """Add the rainfall trigger + composite risk to each forecast day.
+
+    The trigger runs on raw hourly precipitation (robust for extremes); the
+    optional bias-correction model only supplies the displayed corrected
+    rainfall. ``bias_corrected`` records whether the model actually ran.
+    """
+    hourly = data.get("hourly", {})
+    times = hourly.get("time", [])
+    precip = [p or 0.0 for p in hourly.get("precipitation", [])]
+
+    daily_ratio = daily_max_exceedance(times, precip, location.trigger_alpha, location.trigger_beta)
+    corrected_hourly = bias_correct_hourly(hourly, model_path)
+    corrected_daily = daily_sums(times, corrected_hourly) if corrected_hourly else None
+
+    for day in days:
+        date = day["date"]
+        ratio = daily_ratio.get(date, 0.0)
+        day["id_exceedance"] = round(ratio, 3)
+        day["trigger_level"] = trigger_level(ratio)
+        day["risk_level"] = risk_level(ratio, location.terrain_factor)
+        day["bias_corrected"] = corrected_daily is not None
+        day["corrected_rainfall_mm"] = (
+            round(corrected_daily.get(date, 0.0), 2) if corrected_daily else day["rainfall_mm"]
+        )
+    return days
+
+
 async def ingest_forecast(
     session: AsyncSession,
     payload: dict,
     base_url: str,
     client: httpx.AsyncClient | None = None,
+    model_path: str | None = None,
 ) -> dict:
     location_code = payload.get("location_code", "")
     location = LOCATIONS.get(location_code)
@@ -72,7 +118,7 @@ async def ingest_forecast(
         "latitude": location.latitude,
         "longitude": location.longitude,
         "daily": "precipitation_sum",
-        "hourly": "precipitation",
+        "hourly": HOURLY_VARS,
         "forecast_days": 7,
         "timezone": "Asia/Bangkok",
     }
@@ -87,6 +133,7 @@ async def ingest_forecast(
     days = build_days(data)
     if not days:
         raise ValueError("Open-Meteo returned an empty forecast")
+    days = enrich_days(days, data, location, model_path)
 
     fetched_at = datetime.now(UTC)
     await session.execute(
