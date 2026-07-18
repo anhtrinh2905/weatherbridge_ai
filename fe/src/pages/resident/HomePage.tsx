@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ShieldCheck, HandHelping } from "lucide-react";
 import { useAuth } from "../../features/auth/hooks";
 import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
@@ -30,11 +30,8 @@ export function ResidentHomePage() {
   const status = self ? getStatus(self.id) : undefined;
   const [day, setDay] = useState(0);
 
-  const alert = useMemo(() => {
-    const base = getAlertForVillageDay(villageId, day);
-    if (!base || !self) return base;
-    return personalizeAlert(base, self.occupation);
-  }, [villageId, day, self]);
+  const baseAlert = getAlertForVillageDay(villageId, day);
+  const alert = baseAlert && self ? personalizeAlert(baseAlert, self.occupation) : baseAlert;
 
   return (
     <div className="space-y-4 sm:space-y-6">
