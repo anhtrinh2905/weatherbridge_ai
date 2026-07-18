@@ -38,8 +38,8 @@ class MmsTtsService:
 @lru_cache(maxsize=2)
 def _load_synthesizer(repo_id: str, subfolder: str | None):
     try:
-        import torch
-        from transformers import AutoTokenizer, VitsModel
+        import torch  # type: ignore[import-not-found]
+        from transformers import AutoTokenizer, VitsModel  # type: ignore[import-not-found]
     except ImportError as exc:
         raise SpeechConfigError(
             "MMS TTS dependencies are not installed. Install transformers, torch, and scipy "
@@ -63,7 +63,7 @@ def _load_synthesizer(repo_id: str, subfolder: str | None):
 
 def _to_wav(audio: object, sample_rate: int) -> bytes:
     try:
-        from scipy.io.wavfile import write as wav_write
+        from scipy.io.wavfile import write as wav_write  # type: ignore[import-untyped]
     except ImportError as exc:
         raise SpeechConfigError(
             "MMS TTS audio encoding requires scipy in the backend image."
