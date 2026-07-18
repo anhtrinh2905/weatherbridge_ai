@@ -7,5 +7,5 @@ import { LandingPage } from "./LandingPage";
 test("renders the primary landing page call to action", () => {
   render(<MemoryRouter><AuthProvider><LandingPage /></AuthProvider></MemoryRouter>);
   expect(screen.getByRole("heading", { name: /từ dấu hiệu đầu tiên đến hành động kịp thời/i })).toBeInTheDocument();
-  expect(screen.getAllByRole("button", { name: /bắt đầu/i }).length).toBeGreaterThan(0);
+  expect(screen.getAllByRole("button", { name: /đăng nhập/i }).length).toBeGreaterThan(0);
 });
