@@ -282,7 +282,10 @@ def run_pipeline(
 
     counts = np.bincount(levels, minlength=len(LEVEL_NAMES))
     distribution = {
-        LEVEL_NAMES[i]: {"hours": int(counts[i]), "pct": round(float(counts[i]) / levels.size * 100, 2)}
+        LEVEL_NAMES[i]: {
+            "hours": int(counts[i]),
+            "pct": round(float(counts[i]) / levels.size * 100, 2),
+        }
         for i in range(len(LEVEL_NAMES))
     }
 
