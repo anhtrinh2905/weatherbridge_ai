@@ -47,6 +47,18 @@
             "userinfo.token.claim": "true",
             "multivalued": "false"
           }
+        },
+        {
+          "name": "weather-bridge-fe-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "weather-bridge-fe",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
         }
       ]
     },

@@ -43,16 +43,17 @@ upsert_role() {
 }
 
 find_mapper_id() {
-  local client_id="$1" row mapper_id mapper_name
+  local client_id="$1" target_name="$2" row mapper_id mapper_name
   while IFS= read -r row; do
     IFS=, read -r mapper_id mapper_name <<< "$row"
-    [ "$mapper_name" = "village_id" ] && { printf '%s' "$mapper_id"; return 0; }
+    [ "$mapper_name" = "$target_name" ] && { printf '%s' "$mapper_id"; return 0; }
   done < <("$KCADM" get "clients/$client_id/protocol-mappers/models" -r "$REALM" --fields id,name --format csv --noquotes)
+  return 0
 }
 
 upsert_village_mapper() {
   local client_id="$1" mapper_id
-  mapper_id="$(find_mapper_id "$client_id")"
+  mapper_id="$(find_mapper_id "$client_id" village_id)"
   if [ -z "$mapper_id" ]; then
     mapper_id="$("$KCADM" create "clients/$client_id/protocol-mappers/models" -r "$REALM" -i \
       -s name=village_id -s protocol=openid-connect \
@@ -65,6 +66,22 @@ upsert_village_mapper() {
     -s 'config."jsonType.label"=String' -s 'config."id.token.claim"=true' \
     -s 'config."access.token.claim"=true' -s 'config."userinfo.token.claim"=true' \
     -s 'config."multivalued"=false' >/dev/null
+}
+
+upsert_frontend_audience_mapper() {
+  local client_id="$1" mapper_id
+  mapper_id="$(find_mapper_id "$client_id" weather-bridge-fe-audience)"
+  if [ -z "$mapper_id" ]; then
+    mapper_id="$("$KCADM" create "clients/$client_id/protocol-mappers/models" -r "$REALM" -i \
+      -s name=weather-bridge-fe-audience -s protocol=openid-connect \
+      -s protocolMapper=oidc-audience-mapper -s consentRequired=false)"
+  fi
+  "$KCADM" update "clients/$client_id/protocol-mappers/models/$mapper_id" -r "$REALM" \
+    -s name=weather-bridge-fe-audience -s protocol=openid-connect \
+    -s protocolMapper=oidc-audience-mapper -s consentRequired=false \
+    -s 'config."included.client.audience"=weather-bridge-fe' \
+    -s 'config."id.token.claim"=false' -s 'config."access.token.claim"=true' \
+    -s 'config."introspection.token.claim"=true' >/dev/null
 }
 
 upsert_demo_user() {
@@ -115,6 +132,7 @@ client_id="$("$KCADM" get clients -r "$REALM" -q clientId=weather-bridge-fe --fi
   -s 'attributes."post.logout.redirect.uris"=http://localhost/*##http://localhost:5173/*##https://dev.weatherbridge.online/*##https://dienbien.weatherbridge.online/*' >/dev/null
 
 upsert_village_mapper "$client_id"
+upsert_frontend_audience_mapper "$client_id"
 upsert_demo_user admin@weather-bridge.local Admin Demo admin
 upsert_demo_user canbo@weather-bridge.local "Can Bo" "PCTT Demo" commune_officer
 upsert_demo_user truongban@weather-bridge.local "Truong Ban" "Muong Pon 1 Demo" village_head muong-pon-1
