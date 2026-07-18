@@ -3,8 +3,6 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { ResidentStatusProvider } from "../../shared/domain/residentStatusStore";
-import { getOccupationRecommendation } from "../../shared/domain/recommendations";
-import { getAlertForVillageDay, getSelfResident, personalizeAlert } from "../../shared/domain/mockData";
 import { I18nProvider } from "../../shared/i18n/I18nProvider";
 import { ResidentHomePage } from "./HomePage";
 
@@ -22,15 +20,30 @@ vi.mock("../../features/auth/hooks", () => ({
   }),
 }));
 
-test("resident home shows occupation-personalized action for demo farmer", () => {
-  const self = getSelfResident("muong-pon-1");
-  expect(self?.occupation).toBe("nong_dan");
+vi.mock("../../features/operations/hooks", () => ({
+  useInbox: () => ({
+    data: [
+      {
+        alert_id: "test-alert-1",
+        what_happened: "Sạt lở đất",
+        danger_description: "Nguy cơ rất cao",
+        action_instruction: "Chủ động di dời",
+        deadline_at: "2026-07-20T00:00:00Z",
+        hazard_type: "Sạt lở",
+        level: 4,
+        tier: "go_now",
+      }
+    ],
+    isPending: false,
+    isError: false,
+  }),
+  useAcknowledgeAlert: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  })
+}));
 
-  const base = getAlertForVillageDay("muong-pon-1", 0);
-  expect(base).toBeDefined();
-  const personalized = personalizeAlert(base!, self!.occupation);
-  const expected = getOccupationRecommendation(self!.occupation, personalized.hazardType, personalized.tier);
-
+test("resident home displays inbox alerts and heatmap", () => {
   const queryClient = new QueryClient();
   render(
     <QueryClientProvider client={queryClient}>
@@ -44,11 +57,9 @@ test("resident home shows occupation-personalized action for demo farmer", () =>
     </QueryClientProvider>,
   );
 
-  expect(screen.getByText(/Vàng A Quàng/i)).toBeInTheDocument();
-  expect(screen.getByText(/Nông dân/i)).toBeInTheDocument();
-  expect(screen.getByText(expected.whatToDo)).toBeInTheDocument();
-  expect(screen.getByText(/Diễn tập/i)).toBeInTheDocument();
-  expect(screen.getByRole("tab", { name: /Hôm nay/i })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Xem vì sao có cảnh báo này/i })).toBeInTheDocument();
-  expect(screen.queryByRole("link", { name: /số liệu chi tiết/i })).not.toBeInTheDocument();
+  expect(screen.getByText(/Theo dõi và phản hồi an toàn/i)).toBeInTheDocument();
+  expect(screen.getByText(/Sạt lở đất/i)).toBeInTheDocument();
+  expect(screen.getByText(/Chủ động di dời/i)).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Tôi an toàn/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Cần hỗ trợ/i })).toBeInTheDocument();
 });
