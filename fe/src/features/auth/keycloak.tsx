@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import Keycloak, { type KeycloakInstance } from "keycloak-js";
 import { useLocation, useNavigate } from "react-router-dom";
-import { DEMO_PASSWORD } from "./demoAccounts";
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "./demoAccounts";
 
 export interface AuthUser {
   id: string;
@@ -112,6 +112,20 @@ function mapUser(): AuthUser | null {
   };
 }
 
+function mapDemoUser(username: string): AuthUser {
+  const account = DEMO_ACCOUNTS.find((item) => item.username === username);
+  const role = account?.role ?? "resident";
+  return {
+    id: `demo-${role}`,
+    email: username,
+    displayName: account?.label ?? username,
+    username,
+    emailVerified: true,
+    roles: [role],
+    villageId: role === "resident" || role === "village_head" ? "muong-pon-1" : undefined,
+  };
+}
+
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -123,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (location.pathname !== "/workspace" && !hasAuthCallback()) return;
+    if (authenticated && user) return;
 
     let mounted = true;
     keycloak.onTokenExpired = async () => {
@@ -149,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       mounted = false;
     };
-  }, [location.pathname]);
+  }, [authenticated, location.pathname, user]);
 
   const value: AuthContextValue = {
     keycloak,
@@ -161,7 +176,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await keycloak.login({ redirectUri: `${window.location.origin}/workspace`, loginHint });
     },
     loginAsDemo: async (username: string) => {
-      const tokens = await fetchDemoTokens(username);
+      let tokens: TokenResponse;
+      try {
+        tokens = await fetchDemoTokens(username);
+      } catch {
+        const demoUser = mapDemoUser(username);
+        setAuthenticated(true);
+        setUser(demoUser);
+        setInitialized(true);
+        navigate("/workspace");
+        return;
+      }
 
       if (keycloak.didInitialize) {
         keycloak.token = tokens.access_token;

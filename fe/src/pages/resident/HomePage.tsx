@@ -5,6 +5,7 @@ import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { VillageMap } from "../../shared/ui/VillageMap";
 import { Button } from "../../shared/ui/Button";
+import { WebPushPanel } from "../../features/notifications/WebPushPanel";
 import { getHighestTierAlert, getSelfResident, getVillage } from "../../shared/domain/mockData";
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
 import { cn } from "../../shared/lib/cn";
@@ -21,6 +22,7 @@ export function ResidentHomePage() {
   return (
     <div className="space-y-4">
       <SafetyDisclaimer />
+      <WebPushPanel />
 
       <div>
         <p className="text-xs uppercase tracking-wide text-muted">Bản {village?.name}</p>

@@ -32,6 +32,12 @@ and attribution obligations.
 - Langfuse Python SDK/service: MIT; enabled only when tracing credentials and
   endpoint are configured.
 
+## Backend
+
+- pywebpush: MPL-2.0; used to send W3C Web Push notifications from the API.
+- py-vapid: MPL-2.0; used by pywebpush for VAPID authentication.
+- http-ece: MIT; used by pywebpush for encrypted content encoding.
+
 Transitive dependencies must be checked by CI before release.
 
 ## Vendored source
