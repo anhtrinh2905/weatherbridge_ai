@@ -11,7 +11,7 @@ import type { SafetyStatus } from "./types";
  * swapping this provider for a TanStack Query mutation later does not change any consumer.
  */
 
-interface ResidentStatus {
+export interface ResidentStatus {
   safetyStatus: SafetyStatus;
   safetyStatusUpdatedAt: string | null;
   visitedByHeadAt: string | null;
