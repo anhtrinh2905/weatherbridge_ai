@@ -20,7 +20,7 @@ export function AlertCard({ alert, confidence }: { alert: Alert; confidence?: nu
   return (
     <div
       className={cn(
-        "rounded-2xl border-2 p-5 shadow-lg",
+        "rounded-lg border-2 p-5 shadow-lg",
         isGoNow ? "border-danger bg-danger/10 shadow-danger/20" : "border-accent bg-accent/10 shadow-accent/10",
       )}
     >
@@ -68,7 +68,7 @@ export function AlertCard({ alert, confidence }: { alert: Alert; confidence?: nu
 
 export function SafeStatusCard() {
   return (
-    <div className="rounded-2xl border-2 border-positive bg-positive/10 p-5 text-center">
+    <div className="rounded-lg border-2 border-positive bg-positive/10 p-5 text-center">
       <ShieldCheck className="mx-auto text-positive" size={28} />
       <p className="mt-2 text-lg font-bold text-fg-strong">An toàn</p>
       <p className="mt-1 text-sm leading-6 text-muted">

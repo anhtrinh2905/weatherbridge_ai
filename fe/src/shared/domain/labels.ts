@@ -13,11 +13,11 @@ export const HAZARD_LEVEL_COLORS: Record<1 | 2 | 3 | 4 | 5, string> = {
 };
 
 export const HAZARD_LEVEL_LABELS: Record<1 | 2 | 3 | 4 | 5, string> = {
-  1: "Cấp 1 — Thấp",
-  2: "Cấp 2 — Trung bình",
-  3: "Cấp 3 — Cao",
-  4: "Cấp 4 — Rất cao",
-  5: "Cấp 5 — Thảm hoạ",
+  1: "Cấp 1 - Thấp",
+  2: "Cấp 2 - Trung bình",
+  3: "Cấp 3 - Cao",
+  4: "Cấp 4 - Rất cao",
+  5: "Cấp 5 - Thảm họa",
 };
 
 export const TIER_COLORS: Record<Tier, string> = {
