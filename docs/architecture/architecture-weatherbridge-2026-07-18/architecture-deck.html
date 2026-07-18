@@ -1,0 +1,539 @@
+<title>WeatherBridge AI — Kiến trúc MVP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#e7ebe8; --surface:#f5f7f4; --surface-2:#ecefec; --ink:#101917; --muted:#57655f;
+    --line:#ccd4cf; --line-strong:#b3bdb7;
+    --amber:#c9691a; --amber-ink:#8a4610;
+    --h1:#2f9e6b; --h2:#b7b62f; --h3:#e0a233; --h4:#dc6d2b; --h5:#bd3a2c;
+    --shadow:0 1px 2px rgba(16,25,23,.05),0 8px 28px -12px rgba(16,25,23,.18);
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,sans-serif;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0b110f; --surface:#111917; --surface-2:#15201d; --ink:#e7ede9; --muted:#8fa09a;
+      --line:#233029; --line-strong:#33423b;
+      --amber:#e08a3c; --amber-ink:#f0a862;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#e7ebe8; --surface:#f5f7f4; --surface-2:#ecefec; --ink:#101917; --muted:#57655f;
+    --line:#ccd4cf; --line-strong:#b3bdb7; --amber:#c9691a; --amber-ink:#8a4610;
+    --shadow:0 1px 2px rgba(16,25,23,.05),0 8px 28px -12px rgba(16,25,23,.18);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b110f; --surface:#111917; --surface-2:#15201d; --ink:#e7ede9; --muted:#8fa09a;
+    --line:#233029; --line-strong:#33423b; --amber:#e08a3c; --amber-ink:#f0a862;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -14px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;font-size:16px}
+  #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:.5;pointer-events:none}
+  .wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  section{padding:88px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--amber);font-weight:600;display:flex;align-items:center;gap:10px;margin:0 0 18px}
+  .eyebrow::before{content:"";width:22px;height:1.5px;background:var(--amber);display:inline-block}
+  h1,h2,h3{text-wrap:balance;line-height:1.1;letter-spacing:-.02em;margin:0}
+  h1{font-size:clamp(2.5rem,6vw,4.4rem);font-weight:800}
+  h2{font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:750;margin-bottom:14px}
+  h3{font-size:1.12rem;font-weight:700;letter-spacing:-.01em}
+  p{margin:0 0 16px;max-width:64ch;color:var(--ink)}
+  .lead{font-size:clamp(1.05rem,1.6vw,1.32rem);color:var(--muted);max-width:60ch}
+  .muted{color:var(--muted)}
+  strong{font-weight:680}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .4em;
+    border-radius:5px;border:1px solid var(--line)}
+
+  /* top bar */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;
+    align-items:center;padding:14px 28px;backdrop-filter:blur(10px);
+    background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid var(--line)}
+  .brand{font-family:var(--mono);font-size:13px;letter-spacing:.06em;font-weight:600;display:flex;gap:9px;align-items:center}
+  .brand .ramp{display:inline-flex;border-radius:3px;overflow:hidden;border:1px solid var(--line-strong)}
+  .brand .ramp i{width:9px;height:14px;display:block}
+  .tgl{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--muted);background:var(--surface);
+    border:1px solid var(--line);border-radius:20px;padding:6px 13px;cursor:pointer}
+  .tgl:hover{color:var(--ink);border-color:var(--line-strong)}
+  .tgl:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+  /* hero */
+  .hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding-top:120px}
+  .hero .coord{font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.05em;margin-top:26px}
+  .hero-ramp{display:flex;gap:0;margin:34px 0 0;border-radius:8px;overflow:hidden;max-width:560px;
+    box-shadow:var(--shadow);border:1px solid var(--line-strong)}
+  .hero-ramp div{flex:1;height:56px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;
+    font-family:var(--mono);font-size:11px;font-weight:600;color:rgba(0,0,0,.55)}
+  .pill-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .pill{font-family:var(--mono);font-size:12px;letter-spacing:.03em;background:var(--surface);
+    border:1px solid var(--line);border-radius:20px;padding:7px 14px;color:var(--muted)}
+  .pill b{color:var(--ink);font-weight:650}
+
+  /* generic grids */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:var(--shadow)}
+  .card .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);font-weight:600}
+  .card h3{margin:9px 0 8px}
+  .card p{font-size:.95rem;margin:0;color:var(--muted)}
+
+  /* tension split */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  @media(max-width:820px){.split{grid-template-columns:1fr}}
+  .split>div{padding:30px}
+  .split .was{background:var(--surface-2)}
+  .split .now{background:var(--surface);border-left:1px solid var(--line)}
+  @media(max-width:820px){.split .now{border-left:0;border-top:1px solid var(--line)}}
+  .split .tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:12px}
+  .split .was .tag{color:var(--muted)}
+  .split .now .tag{color:var(--amber)}
+  .split ul{margin:0;padding-left:18px;color:var(--muted);font-size:.95rem}
+  .split li{margin:7px 0}
+
+  /* AD cards */
+  .ad-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(max-width:820px){.ad-grid{grid-template-columns:1fr}}
+  .ad{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;
+    display:flex;gap:16px;transition:border-color .18s,transform .18s}
+  .ad:hover{border-color:var(--amber);transform:translateY(-2px)}
+  .ad .id{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--amber);min-width:44px;padding-top:2px}
+  .ad h3{font-size:1rem;margin:0 0 5px}
+  .ad p{font-size:.86rem;margin:0;color:var(--muted)}
+  .ad .prevents{display:block;margin-top:7px;font-size:.8rem}
+  .ad .prevents b{color:var(--h5);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+
+  /* pipeline */
+  .pipe{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-top:8px}
+  .stage{flex:1;min-width:130px;background:var(--surface);border:1px solid var(--line);border-radius:11px;
+    padding:14px;position:relative;box-shadow:var(--shadow)}
+  .stage .n{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em}
+  .stage .t{font-weight:650;font-size:.92rem;margin-top:4px}
+  .stage .z{font-size:.78rem;color:var(--muted);margin-top:4px}
+  .stage.off{border-left:3px solid var(--h1)}
+  .stage.on{border-left:3px solid var(--amber)}
+  .lane-key{display:flex;gap:20px;margin:22px 0 6px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .lane-key i{width:22px;height:3px;display:inline-block;border-radius:2px;margin-right:7px;vertical-align:middle}
+
+  /* interactive heatmap demo */
+  .demo{display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:center}
+  @media(max-width:820px){.demo{grid-template-columns:1fr}}
+  #hm{border-radius:12px;border:1px solid var(--line-strong);box-shadow:var(--shadow);display:block;image-rendering:pixelated;width:300px;height:300px;background:var(--surface)}
+  .ctrl{display:flex;flex-direction:column;gap:18px}
+  .ctrl .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;width:fit-content}
+  .ctrl .seg button{font-family:var(--mono);font-size:12.5px;padding:8px 15px;background:var(--surface);
+    border:0;color:var(--muted);cursor:pointer;border-right:1px solid var(--line)}
+  .ctrl .seg button:last-child{border-right:0}
+  .ctrl .seg button[aria-pressed="true"]{background:var(--amber);color:#fff}
+  .ctrl label{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px}
+  input[type=range]{width:230px;accent-color:var(--amber)}
+  .legend{display:flex;gap:0;border-radius:6px;overflow:hidden;border:1px solid var(--line-strong);width:fit-content}
+  .legend i{width:34px;height:16px;display:block}
+  .day-read{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:600}
+
+  /* data flow steps */
+  .steps{counter-reset:s;display:grid;gap:2px}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:18px;padding:16px 4px;border-top:1px solid var(--line)}
+  .step:first-child{border-top:0}
+  .step .num{counter-increment:s;font-family:var(--mono);font-weight:700;color:var(--amber);font-size:14px}
+  .step .num::before{content:counter(s,decimal-leading-zero)}
+  .step .b{font-weight:600;font-size:.96rem}
+  .step .d{color:var(--muted);font-size:.88rem}
+
+  /* stack table */
+  .tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+  .tbl th,.tbl td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+  .tbl th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .tbl td:first-child{font-weight:600}
+  .tbl code{background:none;border:0;padding:0;color:var(--muted)}
+  .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:2px 8px;border-radius:20px;font-weight:600}
+  .badge.new{background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber-ink)}
+  .badge.rat{background:color-mix(in srgb,var(--h1) 16%,transparent);color:var(--h1)}
+  .tbl-scroll{overflow-x:auto}
+
+  /* deferred / risks */
+  .chip{display:inline-block;font-size:.85rem;background:var(--surface);border:1px dashed var(--line-strong);
+    border-radius:8px;padding:8px 13px;margin:0 8px 8px 0;color:var(--muted)}
+  .risk{border-left:3px solid var(--h4);padding:4px 0 4px 16px;margin:0 0 16px}
+  .risk .r{font-weight:600;font-size:.94rem}
+  .risk .m{color:var(--muted);font-size:.87rem}
+
+  /* nav dots */
+  .dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:11px}
+  @media(max-width:900px){.dots{display:none}}
+  .dots a{width:9px;height:9px;border-radius:50%;background:var(--line-strong);transition:all .2s;display:block}
+  .dots a:hover{background:var(--muted)}
+  .dots a.active{background:var(--amber);transform:scale(1.35)}
+  .dots a:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+  footer{padding:40px 0 60px;color:var(--muted);font-family:var(--mono);font-size:12px;letter-spacing:.03em}
+  .disclaimer{margin-top:26px;padding:16px 18px;border:1px solid var(--h4);border-radius:11px;
+    background:color-mix(in srgb,var(--h4) 8%,transparent);font-size:.9rem}
+  .disclaimer b{color:var(--h4);font-family:var(--mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase}
+</style>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="ramp"><i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><i style="background:var(--h5)"></i></span>
+    WeatherBridge&nbsp;AI
+  </div>
+  <button class="tgl" id="themeBtn" aria-label="Đổi giao diện sáng/tối">◐ theme</button>
+</div>
+
+<nav class="dots" aria-label="Điều hướng phần">
+  <a href="#top" class="active" aria-label="Mở đầu"></a>
+  <a href="#tension" aria-label="Nghịch lý"></a>
+  <a href="#paradigm" aria-label="Paradigm"></a>
+  <a href="#heatmap" aria-label="Heatmap contract"></a>
+  <a href="#decisions" aria-label="Quyết định"></a>
+  <a href="#pipeline" aria-label="Pipeline"></a>
+  <a href="#flow" aria-label="Luồng dữ liệu"></a>
+  <a href="#stack" aria-label="Stack"></a>
+  <a href="#safety" aria-label="An toàn"></a>
+  <a href="#boundary" aria-label="Ranh giới"></a>
+</nav>
+
+<div class="wrap">
+
+  <section class="hero" id="top">
+    <p class="eyebrow">Kiến trúc MVP · VAIC 2026 · docs/architecture</p>
+    <h1>Bản đồ nguy hiểm theo địa hình,<br>biến ngưỡng thành hành động.</h1>
+    <p class="lead" style="margin-top:20px">Heatmap lũ quét &amp; sạt lở phân giải ≤100m cho xã Mường Pồn, 3–7 ngày tới —
+      khi vượt ngưỡng thì sinh bản tin hành động 2 mức dễ hiểu. Mô hình <b>giải thích được, lệch về an toàn</b>;
+      LLM chỉ dịch số thành câu chữ.</p>
+    <div class="hero-ramp" aria-hidden="true">
+      <div style="background:var(--h1)">1</div><div style="background:var(--h2)">2</div>
+      <div style="background:var(--h3)">3</div><div style="background:var(--h4)">4</div>
+      <div style="background:var(--h5);color:rgba(255,255,255,.85)">5</div>
+    </div>
+    <p class="coord">GRID · EPSG:32648 (UTM 48N) · cell ≤100m · ~21.5°N 103.1°E · forecast: Open-Meteo/GFS (KHÔNG ERA5)</p>
+    <div class="pill-row">
+      <span class="pill"><b>2</b> loại hazard · trigger riêng</span>
+      <span class="pill"><b>11</b> quyết định kiến trúc</span>
+      <span class="pill"><b>4</b> vai RBAC</span>
+      <span class="pill"><b>offline</b> / online tách bạch</span>
+    </div>
+  </section>
+
+  <section id="tension">
+    <p class="eyebrow">Điểm xuất phát</p>
+    <h2>Một scaffold tốt — nhưng dựng cho bài toán khác</h2>
+    <p class="lead">Repo đã có tầng hạ tầng hoàn chỉnh và mạch lạc, nhưng nó được thiết kế cho luồng
+      <em>“text vào → JSON tóm tắt ra”</em>. Miền hazard/heatmap chưa có một dòng code nào.
+      Spine này <b>phê chuẩn</b> cái đã tốt và <b>chốt các invariant mới</b> cho miền hazard.</p>
+    <div class="split" style="margin-top:26px">
+      <div class="was">
+        <div class="tag">Đã có (ratify)</div>
+        <ul>
+          <li>Keycloak PKCE + JWKS, token in-memory</li>
+          <li>FastAPI async · SQLAlchemy 2 · asyncpg · Alembic</li>
+          <li>Hàng đợi Redis → worker BLPOP</li>
+          <li>Tách offline <code>ai/</code> khỏi online <code>be/src/ai</code></li>
+          <li>LiteLLM + Langfuse</li>
+        </ul>
+      </div>
+      <div class="now">
+        <div class="tag">Chốt mới (miền hazard)</div>
+        <ul>
+          <li>Contract raster heatmap (COG + PNG + metadata)</li>
+          <li>Pipeline tất định, giải thích được</li>
+          <li>Trigger riêng theo từng loại hazard</li>
+          <li>Scheduler → refresh job → worker chạy</li>
+          <li>Bảng dữ liệu miền + RBAC scoping theo bản</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="paradigm">
+    <p class="eyebrow">Paradigm</p>
+    <h2>Ba ý tưởng, ánh xạ vào thư mục sẵn có</h2>
+    <div class="grid g3" style="margin-top:26px">
+      <div class="card">
+        <div class="k">Layer</div>
+        <h3>Ports &amp; Adapters phân tầng</h3>
+        <p>Route mỏng → service → cổng <code>Protocol</code> → adapter. Đúng pattern đã có ở
+          <code>be/</code>. Không thay, chỉ mở rộng.</p>
+      </div>
+      <div class="card">
+        <div class="k">Pipeline</div>
+        <h3>Pipes-and-filters tất định</h3>
+        <p>DEM+land cover → đặc trưng → trigger → điểm → 5 cấp → 2 mức → cảnh báo.
+          Cùng input → cùng output.</p>
+      </div>
+      <div class="card">
+        <div class="k">Split</div>
+        <h3>Offline (batch) / Online (serving)</h3>
+        <p>Việc geospatial nặng chạy 1 lần ở <code>ai/</code>, xuất artifact có version.
+          Online chỉ <em>áp dụng</em> lên dự báo mới.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="heatmap">
+    <p class="eyebrow">AD-4 · Contract trung tâm</p>
+    <h2>Heatmap là raster — không phải JSON lưới</h2>
+    <p class="lead">Mỗi <code>(loại hazard, ngày)</code> sinh một cặp raster + một dòng metadata. FE nhận
+      manifest + URL đã ký, không bao giờ nhận mảng lưới thô qua API. Thử đổi loại &amp; ngày:</p>
+    <div class="demo" style="margin-top:30px">
+      <canvas id="hm" width="120" height="120" role="img" aria-label="Bản đồ nguy hiểm mô phỏng"></canvas>
+      <div class="ctrl">
+        <div>
+          <label>Loại hazard</label>
+          <div class="seg" role="group" aria-label="Loại hazard">
+            <button data-type="flash_flood" aria-pressed="true">flash_flood</button>
+            <button data-type="landslide" aria-pressed="false">landslide</button>
+          </div>
+        </div>
+        <div>
+          <label>forecast_day — <span class="day-read" id="dayR">D+1</span></label>
+          <input type="range" id="daySl" min="1" max="7" value="1" step="1" aria-label="Ngày dự báo">
+        </div>
+        <div>
+          <label>Thang 5 cấp (level_bins)</label>
+          <div class="legend" aria-hidden="true">
+            <i style="background:var(--h1)"></i><i style="background:var(--h2)"></i>
+            <i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><i style="background:var(--h5)"></i>
+          </div>
+        </div>
+        <p class="muted" style="font-size:.82rem;margin:0;max-width:34ch">
+          Canonical: float32 COG, EPSG:32648, nodata=NaN. Web: PNG RGBA reproject sang Web Mercator cho MapLibre.
+          Colormap do <code>be</code> sở hữu.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisions">
+    <p class="eyebrow">Invariants</p>
+    <h2>11 quyết định kiến trúc</h2>
+    <p class="lead">Mỗi AD chặn một kiểu “lệch nhau” mà hai đội build song song có thể vướng.</p>
+    <div class="ad-grid" style="margin-top:26px">
+      <div class="ad"><div class="id">AD-1</div><div><h3>Ranh giới offline/online</h3><p>Đặc trưng địa hình + land cover tính ở <code>ai/</code>, xuất feature-stack tự mô tả (band theo tên). Online chỉ nhân mảng.</p><span class="prevents"><b>chặn</b> lib geospatial nặng lọt vào serving</span></div></div>
+      <div class="ad"><div class="id">AD-2</div><div><h3>Điểm tất định, LLM ngoài đường tính</h3><p>Hàm điểm thuần + bảng đóng góp đặc trưng theo ô. LLM chỉ dựng câu chữ từ số đã có.</p><span class="prevents"><b>chặn</b> điểm không giải thích được / LLM đổi rủi ro</span></div></div>
+      <div class="ad"><div class="id">AD-3</div><div><h3>Trigger riêng từng loại</h3><p>Lũ quét = mưa tích hợp lưu vực (FFG); sạt lở = I–D Guzzetti + tiền đề. Không dùng chung.</p><span class="prevents"><b>chặn</b> rủi ro sai vật lý</span></div></div>
+      <div class="ad"><div class="id">AD-4</div><div><h3>Contract raster heatmap</h3><p>COG + PNG + dòng metadata; hình học lưới định 1 lần trong header artifact; con trỏ <code>current</code>.</p><span class="prevents"><b>chặn</b> lệch lưới/định dạng · payload khổng lồ</span></div></div>
+      <div class="ad"><div class="id">AD-5</div><div><h3>Scheduler enqueue → worker chạy</h3><p>APScheduler đẩy job <code>refresh_hazard</code>; worker chạy toàn chuỗi. API không tính toán. Mục tiêu ≤15′.</p><span class="prevents"><b>chặn</b> tính nặng trên request · 2 đường thực thi</span></div></div>
+      <div class="ad"><div class="id">AD-6</div><div><h3>Bảng miền riêng · 1 chủ mỗi thực thể</h3><p>6 bảng hazard; <code>be</code> sở hữu schema; worker tạo <code>hazard_run</code> + ghi status. Alert idempotent.</p><span class="prevents"><b>chặn</b> 2 chủ 1 thực thể · alert trùng</span></div></div>
+      <div class="ad"><div class="id">AD-7</div><div><h3>Tách config · fail closed</h3><p>Calibration = artifact có version, bất biến/lần chạy. Ngưỡng vận hành = bảng DB có audit. Thiếu artifact → từ chối chạy.</p><span class="prevents"><b>chặn</b> chạy sai “khoa học” · ngưỡng hardcode</span></div></div>
+      <div class="ad"><div class="id">AD-8</div><div><h3>RBAC scoping ở tầng service</h3><p>4 vai Keycloak, lọc theo vai+bản. Dữ liệu dân <code>simulated=true</code>, không PII thật. Token in-memory.</p><span class="prevents"><b>chặn</b> rò dữ liệu chéo bản · thu PII thật</span></div></div>
+      <div class="ad"><div class="id">AD-9</div><div><h3>Toàn vẹn cảnh báo · 5→2 một nguồn</h3><p>Đủ 4 phần + đếm ngược mới hợp lệ. <code>tier</code> tính 1 lần ở <code>be</code>; FE không tự suy. Icon+màu+câu ngắn.</p><span class="prevents"><b>chặn</b> cảnh báo thiếu · FE/BE lệch cách quy 2 mức</span></div></div>
+      <div class="ad"><div class="id">AD-10</div><div><h3>Backtest offline · không train</h3><p>Sự kiện 25/7/2024 chỉ để kiểm định (recall@τ + FPR). Không đưa nhãn về trọng số. Ghi sai số vị trí COOLR.</p><span class="prevents"><b>chặn</b> rò rỉ train/eval · thổi phồng</span></div></div>
+      <div class="ad" style="grid-column:1/-1"><div class="id">AD-11</div><div><h3>An toàn là invariant kiến trúc</h3><p>Disclaimer bắt buộc trên mọi màn hình · lệch về recall (giảm bỏ sót) · luôn hiện độ tin cậy · không quảng bá “cá nhân hoá tới hộ” từ thời tiết (độ phân giải trong xã đến từ địa hình).</p><span class="prevents"><b>chặn</b> bị hiểu là cảnh báo chính thức · overclaim</span></div></div>
+    </div>
+  </section>
+
+  <section id="pipeline">
+    <p class="eyebrow">AD-1 · AD-2 · AD-3</p>
+    <h2>Đường đi của một điểm nguy hiểm</h2>
+    <div class="lane-key">
+      <span><i style="background:var(--h1)"></i>offline · <code>ai/</code></span>
+      <span><i style="background:var(--amber)"></i>online · <code>be/src/ai</code> + worker</span>
+    </div>
+    <div class="pipe">
+      <div class="stage off"><div class="n">01 · ai/terrain</div><div class="t">DEM + land cover</div><div class="z">slope · HAND · TWI · SPI · flow-accum · dist-road</div></div>
+      <div class="stage off"><div class="n">02 · ai/calibration</div><div class="t">Feature stack + trọng số</div><div class="z">artifact có version + provenance</div></div>
+      <div class="stage on"><div class="n">03 · forecast</div><div class="t">Mưa dự báo/giờ</div><div class="z">Open-Meteo/GFS · mm/h · ≥7 ngày</div></div>
+      <div class="stage on"><div class="n">04 · trigger</div><div class="t">Theo từng loại</div><div class="z">FFG (lũ) · I–D (sạt)</div></div>
+      <div class="stage on"><div class="n">05 · scorer</div><div class="t">Điểm tất định</div><div class="z">sensitivity × trigger → bin 1–5</div></div>
+      <div class="stage on"><div class="n">06 · raster</div><div class="t">COG + PNG + layer</div><div class="z">set <code>current</code></div></div>
+      <div class="stage on"><div class="n">07 · alert</div><div class="t">Ngưỡng → 4 phần</div><div class="z">what/how/do/by-when</div></div>
+      <div class="stage on"><div class="n">08 · alert_text</div><div class="t">LLM dựng câu</div><div class="z">ngoài đường tính điểm</div></div>
+    </div>
+  </section>
+
+  <section id="flow">
+    <p class="eyebrow">AD-5 · Một chu kỳ refresh</p>
+    <h2>Luồng dữ liệu</h2>
+    <div class="steps" style="margin-top:20px">
+      <div class="step"><div class="num"></div><div><div class="b">Scheduler enqueue</div><div class="d">APScheduler đẩy <code>refresh_hazard</code> lên Redis khi có dự báo mới.</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="b">Worker nhận job, tạo hazard_run</div><div class="d">Lifecycle <code>queued → running</code>; ghim <code>feature_stack_version</code> + <code>calibration_version</code>.</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="b">Lấy dự báo + áp trigger</div><div class="d">Chuỗi mưa theo ô/lưu vực; mỗi loại hazard tự tổng hợp theo cơ chế của nó.</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="b">Chấm điểm + bin 5 cấp</div><div class="d">sensitivity tĩnh × trigger → điểm liên tục → 5 cấp (bins đã hiệu chỉnh).</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="b">Ghi raster + set current</div><div class="d">COG (32648) + PNG (Web Mercator) + dòng <code>hazard_layer</code>; con trỏ <code>current</code>.</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="b">Đánh giá ngưỡng → tạo alert</div><div class="d">Vượt ngưỡng → alert đủ 4 phần; idempotent theo (bản, loại, ngày, tier).</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="b">Enqueue LLM render</div><div class="d"><code>render_alert_text</code>: số → câu chữ 2 mức, action-first.</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="b">FE hiển thị</div><div class="d">MapLibre đọc manifest + URL đã ký → heatmap + thẻ cảnh báo + disclaimer.</div></div></div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <p class="eyebrow">Seed · xác minh 2026-07-18</p>
+    <h2>Stack</h2>
+    <div class="tbl-scroll">
+    <table class="tbl">
+      <thead><tr><th>Thành phần</th><th>Version</th><th>Trạng thái</th></tr></thead>
+      <tbody>
+        <tr><td>FastAPI · SQLAlchemy async · Redis · Keycloak</td><td><code>đã có trong repo</code></td><td><span class="badge rat">ratified</span></td></tr>
+        <tr><td>React 19 · Vite 8 · TanStack Query · Tailwind 4</td><td><code>đã có trong repo</code></td><td><span class="badge rat">ratified</span></td></tr>
+        <tr><td>LiteLLM + Langfuse</td><td><code>chỉ dựng câu cảnh báo</code></td><td><span class="badge rat">ratified</span></td></tr>
+        <tr><td>rasterio + pyproj (chỉ <code>ai/</code>)</td><td><code>latest</code></td><td><span class="badge new">new</span></td></tr>
+        <tr><td>pysheds / richdem — flow routing (HAND/TWI/flow-accum)</td><td><code>latest</code></td><td><span class="badge new">new</span></td></tr>
+        <tr><td>APScheduler</td><td><code>&gt;=3.11,&lt;4</code> (4.x còn alpha)</td><td><span class="badge new">new</span></td></tr>
+        <tr><td>MapLibre GL JS</td><td><code>5.x</code> (PNG Web Mercator)</td><td><span class="badge new">new</span></td></tr>
+        <tr><td>Object storage S3-compatible</td><td><code>Garage / SeaweedFS</code> (MinIO community archived)</td><td><span class="badge new">new</span></td></tr>
+        <tr><td>Open-Meteo / GFS / IFS (mưa, ≥7 ngày)</td><td><code>NOT ERA5 · free tier non-commercial</code></td><td><span class="badge new">new</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="safety">
+    <p class="eyebrow">AD-8 · AD-11 · Tuân thủ</p>
+    <h2>An toàn &amp; riêng tư đặt trước</h2>
+    <div class="grid g2" style="margin-top:24px">
+      <div class="card">
+        <div class="k">Riêng tư</div>
+        <h3>Chỉ dữ liệu giả lập</h3>
+        <p>Hồ sơ dân/hộ đều <code>simulated=true</code> — không thu, không lưu PII thật (Nghị định 13/2023).
+          Thuật ngữ trung tính “hộ ưu tiên hỗ trợ”. Token luôn in-memory, không localStorage.</p>
+      </div>
+      <div class="card">
+        <div class="k">Minh bạch</div>
+        <h3>Tất định · có provenance</h3>
+        <p>Điểm nguy hiểm giải thích được, LLM ngoài đường tính. Calibration &amp; feature-stack có version +
+          provenance; scoring <b>fail closed</b> nếu thiếu artifact được ghim.</p>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <b>Disclaimer bắt buộc (AD-11)</b><br>
+      “Công cụ hỗ trợ, <b>không thay</b> cảnh báo chính thức của cơ quan KTTV/PCTT.” — hiện trên mọi màn hình hazard/cảnh báo,
+      kèm độ tin cậy; lệch về recall (giảm bỏ sót).
+    </div>
+  </section>
+
+  <section id="boundary">
+    <p class="eyebrow">Deferred · Rủi ro</p>
+    <h2>Ranh giới MVP &amp; rủi ro đã biết</h2>
+    <h3 style="margin-bottom:14px">Để Roadmap</h3>
+    <div style="margin-bottom:30px">
+      <span class="chip">ML mức B/C (cần inventory vùng)</span>
+      <span class="chip">Đa kênh · TTS Mông–Thái · loa bản</span>
+      <span class="chip">Định tuyến sơ tán</span>
+      <span class="chip">Lớp rét/sương muối (cần trigger nhiệt)</span>
+      <span class="chip">PII thật + đồng thuận</span>
+      <span class="chip">Cloud target + Terraform</span>
+    </div>
+    <h3 style="margin-bottom:16px">Rủi ro kỹ thuật</h3>
+    <div class="risk"><div class="r">Guzzetti toàn cầu hay báo thừa</div><div class="m">MVP dùng α/β toàn cầu, gắn cờ over-warning; hiệu chỉnh địa phương khi có inventory.</div></div>
+    <div class="risk"><div class="r">Backtest small-n · nhãn COOLR ≫30m</div><div class="m">Đọc recall kèm FPR; ghi rõ sai số vị trí; không lên slide như thành tích tuyệt đối.</div></div>
+    <div class="risk"><div class="r">Thời tiết ~9–25km</div><div class="m">Độ phân giải trong xã đến từ địa hình — không quảng bá “cá nhân hoá tới hộ” ở phần thời tiết.</div></div>
+    <div class="risk"><div class="r">Open-Meteo ToS non-commercial</div><div class="m">Free tier phi thương mại; forecast để sau cổng <code>Protocol</code> nên đổi được sang GFS/IFS/self-host.</div></div>
+  </section>
+
+  <footer>
+    ARCHITECTURE-SPINE.md · SOLUTION-DESIGN.md · docs/architecture/architecture-weatherbridge-2026-07-18 · WeatherBridge AI © VAIC 2026
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+  /* theme toggle */
+  var root=document.documentElement, btn=document.getElementById("themeBtn");
+  btn.addEventListener("click",function(){
+    var cur=root.getAttribute("data-theme");
+    if(!cur){cur=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";}
+    root.setAttribute("data-theme", cur==="dark"?"light":"dark");
+    drawBg(); drawHeat();
+  });
+
+  /* nav dots via IntersectionObserver */
+  var dots=[].slice.call(document.querySelectorAll(".dots a"));
+  var map={};
+  dots.forEach(function(a){map[a.getAttribute("href").slice(1)]=a;});
+  var secs=[].slice.call(document.querySelectorAll("section[id]"));
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          dots.forEach(function(d){d.classList.remove("active");});
+          if(map[e.target.id])map[e.target.id].classList.add("active");
+        }
+      });
+    },{rootMargin:"-45% 0px -45% 0px"});
+    secs.forEach(function(s){io.observe(s);});
+  }
+
+  /* ---- contour background (canvas) ---- */
+  var bg=document.getElementById("bg-canvas"), bx=bg.getContext("2d"), W,H;
+  function css(v){return getComputedStyle(root).getPropertyValue(v).trim();}
+  function drawBg(){
+    W=bg.width=innerWidth; H=bg.height=innerHeight;
+    bx.clearRect(0,0,W,H);
+    var line=css("--line-strong");
+    bx.strokeStyle=line; bx.lineWidth=1; bx.globalAlpha=.55;
+    // pseudo-topographic contour rings from two peaks
+    var peaks=[{x:W*0.22,y:H*0.32},{x:W*0.8,y:H*0.7}];
+    for(var r=24;r<Math.max(W,H);r+=34){
+      bx.beginPath();
+      for(var a=0;a<=Math.PI*2+0.1;a+=0.09){
+        var wob=Math.sin(a*3+r*0.03)*10 + Math.cos(a*5-r*0.02)*7;
+        var p=peaks[(r/34|0)%2];
+        var x=p.x+Math.cos(a)*(r+wob)*1.15;
+        var y=p.y+Math.sin(a)*(r+wob)*0.7;
+        if(a===0)bx.moveTo(x,y); else bx.lineTo(x,y);
+      }
+      bx.stroke();
+    }
+    bx.globalAlpha=1;
+  }
+  drawBg();
+  addEventListener("resize",function(){drawBg();});
+
+  /* ---- interactive mini heatmap ---- */
+  var hm=document.getElementById("hm"), hx=hm.getContext("2d");
+  var N=120, type="flash_flood", day=1;
+  // deterministic pseudo-field: static "terrain sensitivity" per cell, seeded by type
+  function hash(x,y,s){var v=Math.sin((x*12.98+y*78.23+s*3.7))*43758.5453; return v-Math.floor(v);}
+  function field(x,y){
+    var nx=x/N, ny=y/N;
+    if(type==="flash_flood"){
+      // valleys / low HAND near a diagonal "stream"
+      var stream=Math.abs((ny)-(0.35+0.25*Math.sin(nx*3.4)));
+      var base=1-Math.min(1,stream*2.6);
+      return base*0.85 + hash(x,y,1)*0.15;
+    } else {
+      // steep slopes on the flanks
+      var slope=Math.abs(nx-0.5)*1.7 + 0.3*Math.sin(ny*5+nx*3);
+      var base=Math.min(1,slope);
+      return base*0.8 + hash(x,y,2)*0.2;
+    }
+  }
+  function ramp(v){
+    // 5-level bins
+    if(v<0.2)return css("--h1"); if(v<0.4)return css("--h2");
+    if(v<0.6)return css("--h3"); if(v<0.8)return css("--h4"); return css("--h5");
+  }
+  function drawHeat(){
+    var cell=hm.width/N;
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+      // trigger scales with forecast day (more rain accumulated → higher)
+      var trig=0.55+0.06*day + 0.04*Math.sin(day*1.3);
+      var v=Math.min(1, field(x,y)*trig);
+      hx.fillStyle=ramp(v);
+      hx.fillRect(x*cell,y*cell,cell+0.6,cell+0.6);
+    }
+  }
+  drawHeat();
+  document.querySelectorAll(".seg button").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".seg button").forEach(function(o){o.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true"); type=b.dataset.type; drawHeat();
+    });
+  });
+  var sl=document.getElementById("daySl"), dr=document.getElementById("dayR");
+  sl.addEventListener("input",function(){day=+sl.value; dr.textContent="D+"+day; drawHeat();});
+})();
+</script>

@@ -7,10 +7,10 @@ install:
 	pnpm install
 
 dev-infra:
-	docker compose -f infra/compose/compose.yaml -f infra/compose/compose.dev.yaml up -d
+	docker compose up -d db redis mailpit keycloak
 
 dev:
-	docker compose -f infra/compose/compose.yaml -f infra/compose/compose.dev.yaml up -d
+	docker compose up -d
 
 dev-prod:
 	docker compose -f infra/compose/compose.yaml -f infra/compose/compose.prod.yaml up -d --build

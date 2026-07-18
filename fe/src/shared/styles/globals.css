@@ -73,6 +73,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -277,7 +278,7 @@ button {
   display: grid;
   place-items: center;
   overflow: hidden;
-  padding: clamp(1rem, 3vw, 3rem);
+  padding: 1rem;
   background:
     radial-gradient(40rem 30rem at 50% -12%, rgba(242, 169, 59, 0.12), transparent 60%),
     radial-gradient(44rem 34rem at 50% 115%, rgba(61, 214, 164, 0.12), transparent 60%),
@@ -302,7 +303,7 @@ button {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(26rem, 0.92fr);
-  width: min(74rem, calc(100vw - 2rem));
+  width: min(74rem, 100%);
   max-width: 74rem;
   height: min(53rem, calc(100dvh - 2rem));
   min-height: min(46rem, calc(100dvh - 2rem));
@@ -366,7 +367,6 @@ button {
 }
 
 .auth-handoff__brand-copy p,
-.auth-handoff__required,
 .auth-handoff__field span {
   font-family: var(--font-mono);
   text-transform: uppercase;
@@ -396,6 +396,12 @@ button {
   background:
     radial-gradient(26rem 20rem at 100% 0%, rgba(242, 169, 59, 0.12), transparent 68%),
     var(--color-surface);
+  scrollbar-width: none;
+}
+
+.auth-handoff__form::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .auth-handoff--register .auth-handoff__form {
@@ -405,7 +411,7 @@ button {
 .auth-handoff__form-inner {
   width: min(100%, 31rem);
   margin-inline: auto;
-  padding: 4.25rem clamp(1.5rem, 4vw, 3rem) 2rem;
+  padding: calc(clamp(2rem, 5vw, 4rem) + 0.25rem) clamp(1.5rem, 4vw, 3rem) 2rem;
 }
 
 .auth-handoff__form h2 {
@@ -418,20 +424,6 @@ button {
   text-align: center;
 }
 
-.auth-handoff__required {
-  margin: 1rem 0 0;
-  color: var(--color-muted-2);
-  font-size: 0.72rem;
-}
-
-.auth-handoff--register .auth-handoff__required {
-  margin-top: 1.29rem;
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.5;
-  text-transform: none;
-}
-
 .auth-handoff__fields {
   display: grid;
   gap: 1rem;
@@ -440,7 +432,7 @@ button {
 
 .auth-handoff--register .auth-handoff__fields {
   gap: 1.46rem;
-  margin-top: 1.59rem;
+  margin-top: 2.84rem;
 }
 
 .auth-handoff__field span {
@@ -481,11 +473,23 @@ button {
 }
 
 .auth-handoff__switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  max-width: 100%;
   margin-top: 3.24rem;
   color: var(--color-muted);
   font-size: 0.875rem;
   line-height: 1.5;
   text-align: center;
+}
+
+.auth-handoff__switch-action {
+  color: var(--color-accent);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .auth-handoff--register .auth-handoff__switch {
@@ -502,6 +506,24 @@ button {
 
 @keyframes auth-handoff-shell {
   to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 1080px) and (min-width: 821px) {
+  .auth-handoff__shell {
+    grid-template-columns: minmax(0, 0.82fr) minmax(25rem, 1.18fr);
+  }
+
+  .auth-handoff--register .auth-handoff__shell {
+    grid-template-columns: minmax(25rem, 1.18fr) minmax(0, 0.82fr);
+  }
+
+  .auth-handoff__brand {
+    padding: 2.5rem;
+  }
+
+  .auth-handoff__brand-copy h2 {
+    font-size: clamp(2.3rem, 4.5vw, 3.8rem);
+  }
 }
 
 @media (max-width: 820px) {
@@ -524,7 +546,7 @@ button {
   }
 
   .auth-handoff--register .auth-handoff__shell {
-    min-height: max(100dvh, 55.37rem);
+    min-height: max(100dvh, calc(50.133rem + 69px));
   }
 
   .auth-handoff__brand,
@@ -550,16 +572,43 @@ button {
   .auth-handoff--register .auth-handoff__form {
     order: 1;
     width: 100%;
-    min-height: calc(100dvh - 69px);
+    min-height: max(calc(100dvh - 69px), 33.77rem);
     border-radius: 0;
   }
 
   .auth-handoff--register .auth-handoff__form {
-    min-height: max(calc(100dvh - 69px), 49.58rem);
+    min-height: max(calc(100dvh - 69px), 50.133rem);
   }
 
   .auth-handoff__form-inner {
+    width: min(100%, 34rem);
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
     padding-top: 2rem;
+  }
+
+  .auth-handoff__form h2 {
+    margin-top: 0.25rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .auth-handoff--register .auth-handoff__shell {
+    min-height: max(100dvh, calc(49.832rem + 69px));
+  }
+
+  .auth-handoff--register .auth-handoff__form {
+    min-height: max(calc(100dvh - 69px), 49.832rem);
+  }
+
+  .auth-handoff__form h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 340px) {
+  .auth-handoff__form {
+    min-height: max(calc(100dvh - 69px), 36.45rem);
   }
 }
 
