@@ -1,0 +1,71 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: weather-bridge-prod
+
+resources:
+  - ../../base
+
+patches:
+  # Rename the base Namespace to the env-specific name.
+  - target:
+      kind: Namespace
+      name: weather-bridge
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: weather-bridge-prod
+  # Point the app at the dienbien auth subdomain and lock CORS to the prod FE.
+  # Uses 1-level subdomain `dienbien-auth.` instead of multi-level `auth.dienbien.`
+  # so Cloudflare Universal SSL (*.weatherbridge.online) covers it for free.
+  - target:
+      kind: ConfigMap
+      name: app-config
+    patch: |-
+      - op: replace
+        path: /data/KEYCLOAK_URL
+        value: https://dienbien-auth.weatherbridge.online
+      - op: replace
+        path: /data/KEYCLOAK_ISSUER
+        value: https://dienbien-auth.weatherbridge.online/realms/weather-bridge
+      - op: replace
+        path: /data/CORS_ORIGINS
+        value: https://dienbien.weatherbridge.online
+  # Point Keycloak at the dienbien auth subdomain.
+  - target:
+      kind: Deployment
+      name: keycloak
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/9/value
+        value: https://dienbien-auth.weatherbridge.online
+  # Replace the base ingress hosts with the dienbien subdomains.
+  - target:
+      kind: Ingress
+      name: weather-bridge
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: dienbien.weatherbridge.online
+  - target:
+      kind: Ingress
+      name: keycloak
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: dienbien-auth.weatherbridge.online
+
+# Pinned by the deploy workflow via `kustomize edit set image` at render time.
+images:
+  - name: weather-bridge/be
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-be
+    newTag: placeholder
+  - name: weather-bridge/worker
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-worker
+    newTag: placeholder
+  - name: weather-bridge/fe
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-fe
+    newTag: placeholder
+  - name: weather-bridge/keycloak
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-keycloak
+    newTag: placeholder

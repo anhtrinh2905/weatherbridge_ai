@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: weather-bridge
+data:
+  APP_ENV: "production"
+  REDIS_URL: "redis://redis:6379/0"
+  KEYCLOAK_REALM: "weather-bridge"
+  KEYCLOAK_CLIENT_ID: "weather-bridge-fe"
+  KEYCLOAK_URL: "https://auth.weatherbridge.online"
+  KEYCLOAK_INTERNAL_URL: "http://keycloak:8080"
+  KEYCLOAK_ISSUER: "https://auth.weatherbridge.online/realms/weather-bridge"
+  CORS_ORIGINS: "https://weatherbridge.online"
+  LITELLM_ENABLED: "false"
+  LITELLM_BASE_URL: "http://litellm:4000"
+  LITELLM_MODEL: "mock-model"
+  LANGFUSE_ENABLED: "false"
+  LANGFUSE_HOST: "https://cloud.langfuse.com"
+  LANGFUSE_ENVIRONMENT: "production"

@@ -1,0 +1,77 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: weather-bridge-dev
+
+resources:
+  - ../../base
+
+patches:
+  # Rename the base Namespace to the env-specific name.
+  - target:
+      kind: Namespace
+      name: weather-bridge
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: weather-bridge-dev
+  # Dev env values + point the app at the dev auth subdomain.
+  # Uses 1-level subdomain `dev-auth.` instead of multi-level `auth.dev.` so
+  # Cloudflare Universal SSL (*.weatherbridge.online) covers it for free.
+  - target:
+      kind: ConfigMap
+      name: app-config
+    patch: |-
+      - op: replace
+        path: /data/APP_ENV
+        value: development
+      - op: replace
+        path: /data/KEYCLOAK_URL
+        value: https://dev-auth.weatherbridge.online
+      - op: replace
+        path: /data/KEYCLOAK_ISSUER
+        value: https://dev-auth.weatherbridge.online/realms/weather-bridge
+      - op: replace
+        path: /data/CORS_ORIGINS
+        value: https://dev.weatherbridge.online
+      - op: replace
+        path: /data/LANGFUSE_ENVIRONMENT
+        value: development
+  # Point Keycloak at the dev auth subdomain.
+  - target:
+      kind: Deployment
+      name: keycloak
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/9/value
+        value: https://dev-auth.weatherbridge.online
+  # Replace the base ingress hosts with the dev subdomains.
+  - target:
+      kind: Ingress
+      name: weather-bridge
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: dev.weatherbridge.online
+  - target:
+      kind: Ingress
+      name: keycloak
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: dev-auth.weatherbridge.online
+
+# Pinned by the deploy workflow via `kustomize edit set image` at render time.
+images:
+  - name: weather-bridge/be
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-be
+    newTag: placeholder
+  - name: weather-bridge/worker
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-worker
+    newTag: placeholder
+  - name: weather-bridge/fe
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-fe
+    newTag: placeholder
+  - name: weather-bridge/keycloak
+    newName: ghcr.io/REPLACE_OWNER/weather-bridge-keycloak
+    newTag: placeholder
