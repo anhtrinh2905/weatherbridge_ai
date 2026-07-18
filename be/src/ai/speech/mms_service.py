@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import io
 from functools import lru_cache
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 from ai.speech.models import SpeechSynthesisRequest, SpeechSynthesisResult
 from core.config import Settings
@@ -38,8 +42,8 @@ class MmsTtsService:
 @lru_cache(maxsize=2)
 def _load_synthesizer(repo_id: str, subfolder: str | None):
     try:
-        import torch  # type: ignore[import-not-found]
-        from transformers import AutoTokenizer, VitsModel  # type: ignore[import-not-found]
+        import torch
+        from transformers import AutoTokenizer, VitsModel
     except ImportError as exc:
         raise SpeechConfigError(
             "MMS TTS dependencies are not installed. Install transformers, torch, and scipy "
@@ -51,7 +55,7 @@ def _load_synthesizer(repo_id: str, subfolder: str | None):
     model = VitsModel.from_pretrained(repo_id, **kwargs)
     model.eval()
 
-    def _synthesize(text: str) -> tuple[object, int]:
+    def _synthesize(text: str) -> tuple[NDArray[Any], int]:
         inputs = tokenizer(text, return_tensors="pt")
         with torch.no_grad():
             output = model(**inputs).waveform
@@ -61,9 +65,9 @@ def _load_synthesizer(repo_id: str, subfolder: str | None):
     return _synthesize
 
 
-def _to_wav(audio: object, sample_rate: int) -> bytes:
+def _to_wav(audio: NDArray[Any], sample_rate: int) -> bytes:
     try:
-        from scipy.io.wavfile import write as wav_write  # type: ignore[import-untyped]
+        from scipy.io.wavfile import write as wav_write
     except ImportError as exc:
         raise SpeechConfigError(
             "MMS TTS audio encoding requires scipy in the backend image."

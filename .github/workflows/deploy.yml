@@ -63,7 +63,7 @@ jobs:
           python-version: "3.12"
 
       - run: pnpm install --frozen-lockfile
-      - run: uv sync --project be
+      - run: uv sync --project be --extra speech
       - run: uv sync --project worker
       - run: uv sync --project ai
       - run: make check

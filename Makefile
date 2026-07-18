@@ -1,7 +1,7 @@
 .PHONY: install dev dev-infra dev-ai ai-prepare ai-train ai-evaluate api worker hazard-seed hazard-catalog-csv weather-backfill weather-quality training-csv research-db-sync research-db-collect research-db-backup check test build format migrate generate-contracts k8s-render-prod k8s-render-dev k8s-apply-prod k8s-apply-dev deploy-k3s
 
 install:
-	uv sync --project be
+	uv sync --project be --extra speech
 	uv sync --project worker
 	uv sync --project ai
 	pnpm install

@@ -4,7 +4,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.28 /uv /uvx /bin/
 
 WORKDIR /app
 COPY be/pyproject.toml be/uv.lock /app/be/
-RUN uv sync --project /app/be --frozen --no-dev
+RUN uv sync --project /app/be --frozen --no-dev --extra speech
 
 COPY be/src /app/be/src
 COPY be/migrations /app/be/migrations

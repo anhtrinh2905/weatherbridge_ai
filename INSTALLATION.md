@@ -210,7 +210,7 @@ make install
 Equivalent commands:
 
 ```bash
-uv sync --project be
+uv sync --project be --extra speech
 uv sync --project worker
 uv sync --project ai
 pnpm install

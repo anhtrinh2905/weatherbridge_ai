@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: uv sync --project be
+      - run: uv sync --project be --extra speech
       - run: uv sync --project ai
       - run: uv sync --project worker
       - run: uv run --project be ruff check be/src be/tests
