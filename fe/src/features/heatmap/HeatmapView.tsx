@@ -6,6 +6,8 @@ import type { RasterLayer, RasterPoint } from "../../shared/hazard-raster";
 import { useTranslation } from "../../shared/i18n/I18nProvider";
 import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { cn } from "../../shared/lib/cn";
+import { useLiveForecast } from "../demo/useLiveForecast";
+import { useLiveRisk } from "../demo/useLiveRisk";
 import { DataFreshnessBadge } from "../../shared/ui/DataFreshnessBadge";
 import { RasterHazardMap } from "../../shared/ui/RasterHazardMap";
 import { RasterInspectionPanel } from "../../shared/ui/RasterInspectionPanel";
@@ -22,6 +24,12 @@ export function HeatmapView() {
   const [selectedPoint, setSelectedPoint] = useState<RasterPoint | null>(null);
   const [selectedVillageId, setSelectedVillageId] = useState<string | null>(null);
   const [focusRequest, setFocusRequest] = useState(0);
+  // Real rainfall from Open-Meteo + online risk from the backend /hazards
+  // endpoint (authenticated). Both feed the shared raster store; the terrain
+  // raster itself is always rendered client-side.
+  useLiveForecast();
+  const riskStatus = useLiveRisk();
+  const backendLive = riskStatus.source === "backend";
   const forecastDays = activeHazardDataSource?.forecastDays() ?? [];
   const selectedVillage = RASTER_VILLAGES.find((entry) => entry.village.id === selectedVillageId) ?? null;
   const inspection = useMemo(
@@ -48,7 +56,10 @@ export function HeatmapView() {
             <h2 className="mt-1 text-xl font-semibold text-fg-strong">{t("heatmap.panelTitle")}</h2>
           </div>
           <div className="flex items-center gap-3">
-            <DataFreshnessBadge status="fresh" timestamp={HAZARD_RUN_MOCK.forecastIssued} />
+            <DataFreshnessBadge
+              status="fresh"
+              timestamp={backendLive && riskStatus.computedAt ? riskStatus.computedAt : HAZARD_RUN_MOCK.forecastIssued}
+            />
             <div className="flex rounded-xl border border-border bg-surface-2 p-1" role="tablist" aria-label={t("heatmap.layerTabsAria")}>
               {layers.map((item) => (
                 <button
@@ -91,7 +102,11 @@ export function HeatmapView() {
             <RasterInspectionPanel inspection={inspection} selectedVillage={selectedVillage} />
           </div>
         </div>
-        <p className="mt-4 text-xs text-muted">{t("heatmap.simulationFootnote")}</p>
+        <p className="mt-4 text-xs text-muted">
+          {backendLive
+            ? "Nguy cơ tính từ backend (hiệu chỉnh sai số mưa + ngưỡng I–D); raster địa hình dựng phía trình duyệt."
+            : t("heatmap.simulationFootnote")}
+        </p>
       </section>
 
       <div className="mt-4">

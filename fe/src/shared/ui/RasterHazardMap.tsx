@@ -4,7 +4,7 @@ import { RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { BOUNDARY } from "../../features/demo/boundary";
 import { EVENT_MARKER } from "../../features/demo/terrain";
 import { cn } from "../lib/cn";
-import { isInsideBoundary, RASTER_H, RASTER_W, renderHazardRaster } from "../hazard-raster";
+import { getBackendRisk, getForecastDays, isInsideBoundary, RASTER_H, RASTER_W, renderHazardRaster } from "../hazard-raster";
 import { RASTER_VILLAGES, nearestRasterVillage } from "../hazard-raster/villages";
 import type { RasterLayer, RasterPoint } from "../hazard-raster";
 
@@ -97,6 +97,10 @@ export function RasterHazardMap({
     });
   };
 
+  // reference changes when live forecast / backend risk arrive, forcing a repaint
+  const forecastDays = getForecastDays();
+  const backendRisk = getBackendRisk();
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
@@ -116,7 +120,7 @@ export function RasterHazardMap({
     ctx.strokeStyle = "rgba(180, 60, 90, 0.9)";
     ctx.lineWidth = 1;
     ctx.stroke();
-  }, [day, layer]);
+  }, [day, layer, forecastDays, backendRisk]);
 
   useEffect(() => {
     if (!focusPoint || focusRequest === 0) return;

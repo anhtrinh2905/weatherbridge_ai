@@ -1,4 +1,4 @@
-import { getForecastDays } from "../../features/demo/data";
+import { getBackendRisk, getForecastDays } from "../../features/demo/data";
 import {
   dominantHazard,
   isInsideBoundary,
@@ -25,7 +25,7 @@ export interface RasterInspectionResult {
   hazards: Record<HazardType, RasterSample>;
 }
 
-export { getForecastDays, isInsideBoundary, RASTER_H, RASTER_W };
+export { getBackendRisk, getForecastDays, isInsideBoundary, RASTER_H, RASTER_W };
 export type { RasterSample };
 
 export function toDemoHazardLayer(layer: RasterLayer): DemoHazardType | "dominant" {

@@ -19,6 +19,7 @@ from services.admin_user_service import AdminUserService
 from services.ai_job_service import AiJobService
 from services.forecast_service import ForecastService
 from services.hazard_archive_service import HazardArchiveService
+from services.hazard_risk_service import HazardRiskService
 from services.translation_service import TranslationCacheService
 
 
@@ -96,6 +97,12 @@ async def get_hazard_archive_service(
     session: AsyncSession = Depends(get_db),
 ) -> AsyncIterator[HazardArchiveService]:
     yield HazardArchiveService(HazardArchiveRepository(session))
+
+
+async def get_hazard_risk_service(
+    session: AsyncSession = Depends(get_db),
+) -> AsyncIterator[HazardRiskService]:
+    yield HazardRiskService(session)
 
 
 async def get_admin_user_service(

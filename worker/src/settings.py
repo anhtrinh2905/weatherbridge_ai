@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     pii_encryption_key: str | None = None
     pii_hash_key: str | None = None
     pii_key_version: str = "v1"
+    # Path to the trained rainfall bias-correction artifact (joblib). Empty =
+    # disabled (the trigger runs on raw rainfall regardless). Provided at deploy;
+    # model weights are never committed to Git.
+    bias_correction_model_path: str = ""
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @model_validator(mode="after")
