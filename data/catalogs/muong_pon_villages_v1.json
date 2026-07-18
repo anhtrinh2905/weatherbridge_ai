@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "description": "Danh mục 22 bản xã Mường Pồn (sau sáp nhập Mường Mươn, hiệu lực 1/7/2025). Tọa độ cấp bản KHÔNG ước lượng — chỉ điền khi có nguồn đo/geocode kiểm chứng được.",
+    "commune": "Xã Mường Pồn, tỉnh Điện Biên",
+    "name_source": "https://vi.wikipedia.org/wiki/Mường_Pồn",
+    "boundary_osm": "relation/19571212",
+    "coordinate_policy": "Never invent village centroids. Public Nominatim/Photon/Overpass (2026-07-18) returned no reliable place=village nodes for these bản. Official disaster catalog also marks them unresolved. lat/lon stay null until UBND/GIS or surveyed POI (school, UBND bản) can be cited.",
+    "research_attempted_at": "2026-07-18",
+    "research_sources_checked": [
+      "Nominatim search (Bản <name>, Xã Mường Pồn)",
+      "Photon/Komoot",
+      "Overpass place/amenity in commune bbox",
+      "data/catalogs/dien_bien_locations_v1.csv",
+      "FallingRain Muong Muon (commune-level only — not used as village points)"
+    ],
+    "resolved_count": 0,
+    "unresolved_count": 22,
+    "is_exercise": true
+  },
+  "villages": [
+    { "id": "co-chay-1", "name": "Cò Chạy 1", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-pon" },
+    { "id": "co-chay-2", "name": "Cò Chạy 2", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-pon" },
+    { "id": "dinh-deo", "name": "Đỉnh Đèo", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-pon" },
+    { "id": "huoi-chan-1", "name": "Huổi Chan 1", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-pon", "notes": "QL12 Km164 mentioned in Nhan Dan flood report — road km only, not village GPS" },
+    { "id": "huoi-chan-2", "name": "Huổi Chan 2", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-pon" },
+    { "id": "huoi-ho", "name": "Huổi Ho", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "huoi-meo", "name": "Huổi Meo", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "huoi-nha", "name": "Huổi Nhả", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "huoi-un", "name": "Huổi Un", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-pon" },
+    { "id": "huoi-vang", "name": "Huổi Vang", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "ket-tinh", "name": "Kết Tinh", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "linh", "name": "Lĩnh", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": true, "formerCommune": "muong-pon", "notes": "Flood 2024 affected; QL12 Km170 in press — not GPS" },
+    { "id": "muong-muon-1", "name": "Mường Mươn 1", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "muong-muon-2", "name": "Mường Mươn 2", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "muong-pon-1", "name": "Mường Pồn 1", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": true, "formerCommune": "muong-pon", "notes": "Flood 2024 affected; QL12 ~Km172 in press — not GPS" },
+    { "id": "muong-pon-2", "name": "Mường Pồn 2", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": true, "formerCommune": "muong-pon" },
+    { "id": "pa-cha", "name": "Pá Chả", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-pon" },
+    { "id": "pu-cha", "name": "Pú Chả", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "pu-mua", "name": "Pú Múa", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "pung-giat-1", "name": "Púng Giắt 1", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon", "notes": "School address on tax record; no published lat/lon" },
+    { "id": "pung-giat-2", "name": "Púng Giắt 2", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": false, "formerCommune": "muong-muon" },
+    { "id": "tin-toc", "name": "Tin Tốc", "lat": null, "lon": null, "coordinateStatus": "unresolved", "floodHistory2024": true, "formerCommune": "muong-pon" }
+  ]
+}

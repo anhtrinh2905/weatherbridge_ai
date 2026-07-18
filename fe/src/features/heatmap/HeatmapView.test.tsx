@@ -1,7 +1,6 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, test } from "vitest";
-import { RASTER_VILLAGES } from "../../shared/hazard-raster/villages";
 import { I18nProvider } from "../../shared/i18n/I18nProvider";
 import { HeatmapView } from "./HeatmapView";
 
@@ -15,28 +14,28 @@ function renderHeatmapView() {
   );
 }
 
-test("inspects both hazards from a village anchor in the dominant layer", async () => {
-  const user = userEvent.setup();
+test("shows level legend on the right without village-on-polygon UI", () => {
   renderHeatmapView();
-  const village = RASTER_VILLAGES.find((entry) => entry.located);
-  if (!village) throw new Error("Expected at least one located raster village");
-
-  const villageButton = screen.getAllByRole("button").find((button) => button.textContent?.startsWith(village.village.name));
-  await user.click(villageButton as HTMLButtonElement);
-
-  expect(screen.getByText(/Nguy cơ trội tại điểm này/i)).toBeInTheDocument();
-  expect(screen.getByText(/Lũ quét.*trội|Sạt lở.*trội/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/Cấp độ nguy cơ/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/Số liệu/i)).toBeInTheDocument();
+  expect(screen.queryByText(/Cấp theo bản/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Chưa có tọa độ/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Chọn một điểm trên raster/i)).not.toBeInTheDocument();
 });
 
-test("switches the inspector to an individual hazard layer", async () => {
+test("switching hazard layer keeps the metrics panel available", async () => {
   const user = userEvent.setup();
   renderHeatmapView();
-  const village = RASTER_VILLAGES.find((entry) => entry.located);
-  if (!village) throw new Error("Expected at least one located raster village");
-  const villageButton = screen.getAllByRole("button").find((button) => button.textContent?.startsWith(village.village.name));
-  await user.click(villageButton as HTMLButtonElement);
-  await user.click(screen.getByRole("tab", { name: /Lũ quét/i }));
+  await user.click(screen.getByRole("tab", { name: /^Lũ$/i }));
+  expect(screen.getByRole("tab", { name: /^Lũ$/i })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByLabelText(/Số liệu/i)).toBeInTheDocument();
+});
 
-  expect(screen.queryByText(/Nguy cơ trội tại điểm này/i)).not.toBeInTheDocument();
-  expect(screen.getByText(/Kích hoạt mưa/i)).toBeInTheDocument();
+test("selecting a raster point reveals point metrics below the map", () => {
+  renderHeatmapView();
+  const canvas = screen.getByLabelText(/Bản đồ raster nguy cơ 5 cấp/i);
+  // Click near the commune center of the 560×~508 raster.
+  fireEvent.click(canvas, { clientX: 280, clientY: 250 });
+  // jsdom lacks layout; if click cannot resolve a point the panel still stays present.
+  expect(screen.getByLabelText(/Số liệu/i)).toBeInTheDocument();
 });

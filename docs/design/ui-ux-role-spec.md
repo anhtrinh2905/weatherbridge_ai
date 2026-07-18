@@ -118,11 +118,11 @@ tắc gốc. Điều hướng resident ở §6b riêng (tối giản, không ph�
 ### Sidebar — `admin`
 | Icon (lucide-react) | Nhãn | Route | Ghi chú |
 |---|---|---|---|
-| `LayoutDashboard` | Tổng quan | `/admin/overview` | Mặc định sau login |
+| `Map` | Bản đồ nguy hiểm | `/admin/heatmap` | Mặc định sau login |
+| `LayoutDashboard` | Tổng quan | `/admin/overview` | |
 | `Activity` | Pipeline & vận hành | `/admin/pipeline` | Badge đỏ nếu có `hazard_run` `failed` |
 | `SlidersHorizontal` | Ngưỡng cảnh báo | `/admin/thresholds` | |
 | `FlaskConical` | Kiểm định mô hình | `/admin/calibration` | |
-| `Map` | Bản đồ nguy hiểm | `/admin/heatmap` | Giống view officer, không giới hạn |
 | `Users` | Người dùng & phân quyền | `/admin/users` | |
 
 ### Sidebar — `commune_officer` (Cán bộ PCTT)
@@ -136,9 +136,9 @@ tắc gốc. Điều hướng resident ở §6b riêng (tối giản, không ph�
 ### Sidebar — `village_head` (Trưởng bản)
 | Icon | Nhãn | Route | Ghi chú |
 |---|---|---|---|
-| `LayoutDashboard` | Tổng quan bản tôi | `/village-head/overview` | Mặc định sau login |
+| `Map` | Bản đồ bản tôi | `/village-head/map` | Mặc định sau login |
+| `LayoutDashboard` | Tổng quan bản tôi | `/village-head/overview` | |
 | `Users` | Danh sách hộ dân | `/village-head/residents` | Badge số hộ ưu tiên chưa xác nhận |
-| `Map` | Bản đồ bản tôi | `/village-head/map` | |
 
 **Footer sidebar chung cả 3 vai trên**: tên user + vai (đọc từ `user.displayName` /
 `user.roles`), nút đăng xuất. Không hiện `village_id`/thông tin nội bộ khác ở footer để tránh
@@ -340,10 +340,10 @@ không được gộp làm 1:**
 Keycloak redirect → /workspace (callback chung hiện có)
   → đọc user.roles từ AuthContext (đã map sẵn từ claims.realm_access.roles)
   → resolveHomeRoute(roles):
-       'admin'            → /admin/overview
+       'admin'            → /admin/heatmap
        'commune_officer'  → /officer/heatmap
-       'village_head'     → /village-head/overview
-       'resident'         → /  (trang chính resident, §6)
+       'village_head'     → /village-head/map
+       'resident'         → /resident  (trang chính resident, §6)
   → <Navigate to={homeRoute} replace />
 ```
 

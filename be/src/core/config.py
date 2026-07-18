@@ -39,6 +39,7 @@ class Settings(BaseSettings):
         "https://historical-forecast-api.open-meteo.com/v1/forecast"
     )
     open_meteo_flood_url: str = "https://flood-api.open-meteo.com/v1/flood"
+    nominatim_reverse_url: str = "https://nominatim.openstreetmap.org/reverse"
     # Path to a Google Cloud service-account JSON key. Shared across the Google-backed
     # translation providers (Cloud Translation NMT and Vertex AI Gemini) — see ai/translation/.
     google_translate_credentials_path: str | None = None

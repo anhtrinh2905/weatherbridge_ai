@@ -17,6 +17,9 @@ processed datasets, model weights, and reports in approved external storage.
 - Village rows with `coordinate_confidence=unresolved` are labels from public
   reports without a defensible point coordinate. Never substitute synthetic
   household coordinates for them.
+- `catalogs/muong_pon_villages_v1.json` lists **22** bản for xã Mường Pồn
+  (post-merger). Coordinates are intentionally `unresolved` until a cited GPS/GIS
+  source exists — never invent centroids for map markers.
 - Join CSV tables using UUID columns. Use `location_id + valid_time_utc` to
   compare forecast rows with observations, and preserve `lead_hours` as a model
   feature.

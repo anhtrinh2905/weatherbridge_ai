@@ -5,6 +5,7 @@ import {
   RASTER_H,
   RASTER_W,
   renderHazardRaster as renderDemoHazardRaster,
+  sampleFogAt as sampleDemoFogAt,
   sampleRasterAt as sampleDemoRasterAt,
 } from "../../features/demo/terrain";
 import type { RasterInspection, RasterSample } from "../../features/demo/terrain";
@@ -25,15 +26,27 @@ export interface RasterInspectionResult {
   hazards: Record<HazardType, RasterSample>;
 }
 
-export { getBackendRisk, getForecastDays, isInsideBoundary, RASTER_H, RASTER_W };
+export {
+  getBackendRisk,
+  getForecastDays,
+  isInsideBoundary,
+  RASTER_H,
+  RASTER_W,
+  sampleDemoFogAt as sampleFogAt,
+};
 export type { RasterSample };
 
 export function toDemoHazardLayer(layer: RasterLayer): DemoHazardType | "dominant" {
   return layer === "flash_flood" ? "flood" : layer;
 }
 
-export function renderHazardRaster(out: Uint8ClampedArray, layer: RasterLayer, dayOffset: number): void {
-  renderDemoHazardRaster(out, toDemoHazardLayer(layer), dayOffset);
+export function renderHazardRaster(
+  out: Uint8ClampedArray,
+  layer: RasterLayer,
+  dayOffset: number,
+  options: { showFog?: boolean } = {},
+): void {
+  renderDemoHazardRaster(out, toDemoHazardLayer(layer), dayOffset, options);
 }
 
 export function sampleHazardAt(point: RasterPoint, layer: RasterLayer, dayOffset: number): RasterInspectionResult {

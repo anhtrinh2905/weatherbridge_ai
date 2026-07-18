@@ -14,39 +14,84 @@ const MUONG_PON = { latitude: 21.59, longitude: 103.03 };
 const FORECAST_URL =
   "https://api.open-meteo.com/v1/forecast" +
   `?latitude=${MUONG_PON.latitude}&longitude=${MUONG_PON.longitude}` +
-  "&daily=precipitation_sum&hourly=precipitation&forecast_days=5&timezone=Asia%2FBangkok";
+  "&daily=precipitation_sum" +
+  "&hourly=precipitation,visibility,temperature_2m,dew_point_2m" +
+  "&forecast_days=8&timezone=Asia%2FBangkok";
 
 /** forecast-model confidence is not served by the API; decay by horizon */
-const CONFIDENCE_BY_OFFSET = [0.92, 0.86, 0.78, 0.68, 0.6];
+const CONFIDENCE_BY_OFFSET = [0.92, 0.86, 0.78, 0.68, 0.6, 0.52, 0.45, 0.4];
 
 interface OpenMeteoResponse {
   daily: { time: string[]; precipitation_sum: (number | null)[] };
-  hourly?: { time: string[]; precipitation: (number | null)[] };
+  hourly?: {
+    time: string[];
+    precipitation: (number | null)[];
+    visibility?: (number | null)[];
+    temperature_2m?: (number | null)[];
+    dew_point_2m?: (number | null)[];
+  };
 }
 
 function dayLabel(offset: number): string {
-  if (offset === 0) return "Hôm nay";
-  if (offset === 1) return "Ngày mai";
+  if (offset === 0) return "Hiện tại";
   return `+${offset} ngày`;
+}
+
+function mean(values: number[]): number | undefined {
+  if (values.length === 0) return undefined;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
 /** Pure mapping from the Open-Meteo payload to the demo's ForecastDay shape. */
 export function mapOpenMeteoToForecastDays(data: OpenMeteoResponse): ForecastDay[] {
   const peakByDate = new Map<string, number>();
+  const minVisibilityByDate = new Map<string, number>();
+  const tempsByDate = new Map<string, number[]>();
+  const dewByDate = new Map<string, number[]>();
+
   const hourlyTimes = data.hourly?.time ?? [];
   const hourlyRain = data.hourly?.precipitation ?? [];
+  const hourlyVisibility = data.hourly?.visibility ?? [];
+  const hourlyTemp = data.hourly?.temperature_2m ?? [];
+  const hourlyDew = data.hourly?.dew_point_2m ?? [];
+
   hourlyTimes.forEach((stamp, i) => {
     const date = stamp.slice(0, 10);
     peakByDate.set(date, Math.max(peakByDate.get(date) ?? 0, hourlyRain[i] ?? 0));
+    const visibility = hourlyVisibility[i];
+    if (visibility !== null && visibility !== undefined) {
+      minVisibilityByDate.set(date, Math.min(minVisibilityByDate.get(date) ?? visibility, visibility));
+    }
+    const temperature = hourlyTemp[i];
+    if (temperature !== null && temperature !== undefined) {
+      const list = tempsByDate.get(date) ?? [];
+      list.push(temperature);
+      tempsByDate.set(date, list);
+    }
+    const dew = hourlyDew[i];
+    if (dew !== null && dew !== undefined) {
+      const list = dewByDate.get(date) ?? [];
+      list.push(dew);
+      dewByDate.set(date, list);
+    }
   });
 
-  return data.daily.time.slice(0, CONFIDENCE_BY_OFFSET.length).map((date, offset) => ({
-    offset,
-    label: dayLabel(offset),
-    rainfallMm: Math.round((data.daily.precipitation_sum[offset] ?? 0) * 10) / 10,
-    intensityMmH: Math.round((peakByDate.get(date) ?? 0) * 10) / 10,
-    confidence: CONFIDENCE_BY_OFFSET[offset],
-  }));
+  return data.daily.time.slice(0, CONFIDENCE_BY_OFFSET.length).map((date, offset) => {
+    const temperatureC = mean(tempsByDate.get(date) ?? []);
+    const dewPointC = mean(dewByDate.get(date) ?? []);
+    return {
+      offset,
+      label: dayLabel(offset),
+      rainfallMm: Math.round((data.daily.precipitation_sum[offset] ?? 0) * 10) / 10,
+      intensityMmH: Math.round((peakByDate.get(date) ?? 0) * 10) / 10,
+      confidence: CONFIDENCE_BY_OFFSET[offset],
+      visibilityM: minVisibilityByDate.has(date)
+        ? Math.round(minVisibilityByDate.get(date) as number)
+        : undefined,
+      temperatureC: temperatureC !== undefined ? Math.round(temperatureC * 10) / 10 : undefined,
+      dewPointC: dewPointC !== undefined ? Math.round(dewPointC * 10) / 10 : undefined,
+    };
+  });
 }
 
 export interface LiveForecastStatus {
