@@ -50,6 +50,7 @@ data/artifacts/*
 data/backups/*
 ai/datasets/*
 ai/artifacts/*
+ai/data/raw/*
 ai/data/processed/*
 ai/runs/*
 !**/.gitkeep

@@ -80,3 +80,33 @@ inventory (COOLR VN subset + the 25/07/2024 Mường Pồn event), then run
 
 Extra dependencies: `numpy`, `scikit-learn`, `joblib` (pipeline + model),
 `rasterio` (GeoTIFF I/O, imported lazily).
+
+## Rainfall bias-correction (M2 — Mường Pồn)
+
+The *rainfall trigger* side of the risk raster. `bias_correction.py` learns to
+correct the raw GFS precipitation forecast toward the ERA5/ERA5-Land
+observation, so the intensity–duration trigger is fed a de-biased rainfall
+series. This is orthogonal to the terrain susceptibility model above and is
+combined with it at serving time.
+
+- Input: the paired `training_samples.csv` (forecast columns joined to observed
+  columns per location/valid-time), Mường Pồn commune subset only, under
+  `ai/data/raw/muong_pon/` (git-ignored, never committed).
+- Features: `FORECAST_FEATURES` — forecast variables + cyclic season/hour terms.
+  The target is fit in `log1p` space (hourly precip is zero-inflated and
+  right-skewed; on raw mm a squared loss chases the dry-hour mean and raises
+  MAE). Model: `HistGradientBoostingRegressor`, which handles the many missing
+  forecast fields natively.
+- Split: `temporal_split` holds out the latest 20% by valid-time — a forward
+  hold-out, since correction is deployed on future forecasts.
+- Metrics: `evaluate_bias_correction` reports MAE, RMSE and mean bias for raw
+  vs corrected, plus an MAE skill score.
+
+Run it:
+
+```bash
+PYTHONPATH=ai/src uv run --project ai python ai/src/main.py bias-correct
+```
+
+Latest Mường Pồn hold-out (45,045 rows): MAE 0.274 → 0.225 (+18%), RMSE
+0.819 → 0.641 (+22%), bias ≈ 0. Artifact + `ModelRecord` land in `ai/runs/`.

@@ -127,6 +127,13 @@ components:
     use: historical forecast, previous model runs, and ERA5/ERA5-Land reference data
     modified: true
     notice: THIRD_PARTY_NOTICES.md
+  - name: weatherbridge-dien-bien-hazard-training
+    source: derived from open-meteo-historical-weather-products + openstreetmap-dien-bien-admin-centroids
+    commit: dataset-schema-1.1.0-generated-2026-07-18
+    license: CC-BY-4.0 (inherited from Open-Meteo); provenance in ai/data/raw/muong_pon/manifest.json
+    use: paired GFS forecast / ERA5 observation rows for rainfall bias-correction (Mường Pồn commune subset, 225216 rows)
+    modified: true
+    notice: THIRD_PARTY_NOTICES.md
   - name: openstreetmap-dien-bien-admin-centroids
     source: https://www.openstreetmap.org
     commit: relations-recorded-in-data-catalog-accessed-2026-07-18

@@ -1,6 +1,13 @@
 import numpy as np
 import pytest
 
+from bias_correction import (
+    FORECAST_FEATURES,
+    evaluate_bias_correction,
+    fit_bias_model,
+    predict_precip,
+    temporal_split,
+)
 from config import Config
 from data import LabelPoint, sample_dataset, spatial_split, split
 from evaluate import evaluate, evaluate_predictions
@@ -62,6 +69,44 @@ def test_fit_model_learns_separable_signal() -> None:
     model = fit_model(ds["X"], ds["y"], Config(n_estimators=50))
     metrics = evaluate_predictions(ds["y"], model.predict_proba(ds["X"])[:, 1])
     assert metrics["auc"] > 0.8
+
+
+def test_temporal_split_holds_out_latest_slice() -> None:
+    times = np.arange(100, dtype=float)  # ascending "epoch" seconds
+    mask = temporal_split(times, val_ratio=0.2)
+    assert mask.any() and not mask.all()
+    # Validation rows must all be later than every training row (no leakage).
+    assert times[mask].min() > times[~mask].max()
+
+
+def test_temporal_split_handles_all_nan_times() -> None:
+    mask = temporal_split(np.full(5, np.nan))
+    assert not mask.any()
+
+
+def test_bias_correction_beats_raw_on_learnable_signal() -> None:
+    # Raw forecast is the observation plus a systematic, feature-driven bias the
+    # model can learn to remove -> corrected MAE should undercut the raw MAE.
+    rng = np.random.default_rng(0)
+    n = 400
+    observed = rng.gamma(shape=1.5, scale=2.0, size=n)
+    X = np.zeros((n, len(FORECAST_FEATURES)))
+    precip_idx = FORECAST_FEATURES.index("forecast_precipitation_mm")
+    raw = observed * 1.8 + 1.0  # consistent over-forecast bias
+    X[:, precip_idx] = raw
+    model = fit_bias_model(X, observed, Config())
+    corrected = predict_precip(model, X)
+    metrics = evaluate_bias_correction(observed, raw, corrected)
+    assert metrics["mae_skill_score"] > 0.5
+    assert metrics["corrected"]["mae"] < metrics["raw"]["mae"]
+
+
+def test_evaluate_bias_correction_drops_nan_pairs() -> None:
+    y = np.array([1.0, 2.0, np.nan, 4.0])
+    raw = np.array([1.0, np.nan, 3.0, 4.0])
+    corrected = np.array([1.0, 2.0, 3.0, 4.0])
+    metrics = evaluate_bias_correction(y, raw, corrected)
+    assert metrics["count"] == 2  # only rows 0 and 3 are finite in all three
 
 
 def test_generic_helpers_retained() -> None:
