@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.errors import AppError
 from core.time import utc_now
 from database.models import AiJob, ForecastSnapshot, JobStatus
+from modules.admin.schemas import ForecastFreshnessItem
 from modules.forecasts.locations import LOCATIONS, ForecastLocation
 from modules.forecasts.schemas import (
     ForecastDay,
@@ -46,6 +47,27 @@ class ForecastService:
             days=[ForecastDay(**day) for day in snapshot.days],
             fetched_at=snapshot.fetched_at,
         )
+
+    async def list_freshness(self) -> list[ForecastFreshnessItem]:
+        """Admin-only: latest snapshot timestamp per known location (or None if
+        nothing ingested yet), so operators can spot a stale ingest per location."""
+        items: list[ForecastFreshnessItem] = []
+        for location in LOCATIONS.values():
+            snapshot = await self.session.scalar(
+                select(ForecastSnapshot)
+                .where(ForecastSnapshot.location_code == location.code)
+                .order_by(ForecastSnapshot.fetched_at.desc())
+                .limit(1)
+            )
+            items.append(
+                ForecastFreshnessItem(
+                    location_code=location.code,
+                    location_name=location.name,
+                    source=snapshot.source if snapshot else None,
+                    fetched_at=snapshot.fetched_at if snapshot else None,
+                )
+            )
+        return items
 
     async def refresh(self, location_code: str, user_id: str) -> ForecastRefreshResponse:
         """Queue a forecast ingest: `be` creates the job, Redis carries the id,

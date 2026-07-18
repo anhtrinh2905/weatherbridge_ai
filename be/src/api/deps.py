@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from functools import lru_cache
 
 from fastapi import Depends, Request
@@ -6,10 +6,12 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.keycloak import CurrentUser, KeycloakVerifier
+from auth.keycloak_admin import KeycloakAdminClient
 from core.config import Settings, get_settings
 from core.errors import AppError
 from database.session import get_db
 from queues.redis_queue import JobQueue
+from services.admin_user_service import AdminUserService
 from services.ai_job_service import AiJobService
 from services.forecast_service import ForecastService
 
@@ -19,6 +21,12 @@ def get_keycloak_verifier() -> KeycloakVerifier:
     return KeycloakVerifier(get_settings())
 
 
+@lru_cache
+def get_keycloak_admin_client() -> KeycloakAdminClient:
+    # Cached so the service-account access token is reused across requests.
+    return KeycloakAdminClient(get_settings())
+
+
 async def get_current_user(
     request: Request, verifier: KeycloakVerifier = Depends(get_keycloak_verifier)
 ) -> CurrentUser:
@@ -26,6 +34,25 @@ async def get_current_user(
     if not authorization or not authorization.lower().startswith("bearer "):
         raise AppError(401, "Authentication is required", "authentication_required")
     return await verifier.verify(authorization[7:])
+
+
+def require_roles(*roles: str) -> Callable[[CurrentUser], Awaitable[CurrentUser]]:
+    """Authorization guard: fail closed unless the caller holds one of `roles`.
+
+    Authentication (`get_current_user`) only proves identity; role checks live
+    here so every guarded endpoint returns 403 for the wrong role. The frontend
+    `RoleRoute` is UX-only — this is the real boundary.
+    """
+
+    async def _require(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
+        if user.roles.isdisjoint(roles):
+            raise AppError(403, "You do not have access to this resource", "forbidden")
+        return user
+
+    return _require
+
+
+require_admin = require_roles("admin")
 
 
 async def get_redis(settings: Settings = Depends(get_settings)) -> AsyncIterator[Redis]:
@@ -52,3 +79,9 @@ async def get_forecast_service(
     queue: JobQueue = Depends(get_job_queue),
 ) -> AsyncIterator[ForecastService]:
     yield ForecastService(session, queue)
+
+
+async def get_admin_user_service(
+    client: KeycloakAdminClient = Depends(get_keycloak_admin_client),
+) -> AsyncIterator[AdminUserService]:
+    yield AdminUserService(client)

@@ -15,14 +15,42 @@ export interface SidebarItem {
   badge?: number;
 }
 
+/** A titled group of sidebar links. Omit `title` for an ungrouped (flat) block. */
+export interface SidebarSection {
+  title?: string;
+  items: SidebarItem[];
+}
+
+function initialsOf(name: string | undefined): string {
+  if (!name) return "?";
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 /**
  * Shared chrome for the 3 dashboard-style roles (admin/commune_officer/village_head) per
  * docs/design/ui-ux-role-spec.md §2b. `resident` intentionally does NOT use this layout — see
  * pages/resident/ResidentShell.tsx for the minimal, sidebar-free navigation for that role.
+ *
+ * Pass `sections` for grouped navigation (with section headers) or `items` for a flat list.
  */
-export function DashboardLayout({ role, items }: { role: Role; items: SidebarItem[] }) {
+export function DashboardLayout({
+  role,
+  items,
+  sections,
+}: {
+  role: Role;
+  items?: SidebarItem[];
+  sections?: SidebarSection[];
+}) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const groups: SidebarSection[] = sections ?? (items ? [{ items }] : []);
 
   return (
     <div className="flex min-h-screen bg-canvas text-fg">
@@ -30,39 +58,59 @@ export function DashboardLayout({ role, items }: { role: Role; items: SidebarIte
         <div className="px-5 py-6">
           <Logo />
         </div>
-        <nav className="flex-1 space-y-1 px-3">
-          {items.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                cn(
-                  "flex min-h-11 items-center justify-between gap-2 rounded-xl px-3 text-sm font-medium transition",
-                  isActive ? "bg-accent/15 text-accent" : "text-muted hover:bg-surface-2 hover:text-fg",
-                )
-              }
-            >
-              <span className="flex items-center gap-2.5">
-                <item.icon size={17} />
-                {item.label}
-              </span>
-              {item.badge ? (
-                <span className="rounded-full bg-danger px-1.5 py-0.5 text-[10px] font-bold text-white">{item.badge}</span>
+        <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-4">
+          {groups.map((group, groupIndex) => (
+            <div key={group.title ?? `group-${groupIndex}`} className="space-y-1">
+              {group.title ? (
+                <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-2">
+                  {group.title}
+                </p>
               ) : null}
-            </NavLink>
+              {group.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    cn(
+                      "relative flex min-h-10 items-center justify-between gap-2 rounded-lg pl-3 pr-2.5 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-accent/12 text-accent before:absolute before:left-0 before:top-1/2 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-accent"
+                        : "text-muted hover:bg-surface-2 hover:text-fg",
+                    )
+                  }
+                >
+                  <span className="flex items-center gap-3">
+                    <item.icon size={18} />
+                    {item.label}
+                  </span>
+                  {item.badge ? (
+                    <span className="min-w-5 rounded-full bg-danger px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
+                      {item.badge}
+                    </span>
+                  ) : null}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
-        <div className="border-t border-border-soft px-4 py-4">
-          <p className="truncate text-sm font-medium text-fg-strong">{user?.displayName}</p>
-          <p className="text-xs text-muted">{ROLE_LABELS[role]}</p>
+        <div className="border-t border-border-soft p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold text-fg-strong">
+              {initialsOf(user?.displayName)}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-fg-strong">{user?.displayName}</p>
+              <p className="text-xs text-muted">{ROLE_LABELS[role]}</p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={async () => {
               await logout();
               navigate("/");
             }}
-            className="mt-3 flex min-h-9 w-full items-center gap-2 rounded-lg px-2 text-xs font-medium text-muted hover:bg-surface-2 hover:text-fg"
+            className="mt-3 flex min-h-9 w-full items-center gap-2 rounded-lg px-2 text-xs font-medium text-muted transition-colors hover:bg-surface-2 hover:text-fg"
           >
             <LogOut size={14} /> Đăng xuất
           </button>
