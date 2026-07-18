@@ -1,4 +1,4 @@
-.PHONY: install dev dev-infra dev-ai ai-prepare ai-train ai-evaluate api worker check test build format migrate generate-contracts k8s-render-prod k8s-render-dev k8s-apply-prod k8s-apply-dev deploy-k3s
+.PHONY: install dev dev-infra dev-ai ai-prepare ai-train ai-evaluate api worker hazard-seed hazard-catalog-csv weather-backfill weather-quality training-csv research-db-sync research-db-collect research-db-backup check test build format migrate generate-contracts k8s-render-prod k8s-render-dev k8s-apply-prod k8s-apply-dev deploy-k3s
 
 install:
 	uv sync --project be
@@ -32,6 +32,30 @@ api:
 
 worker:
 	PYTHONPATH=worker/src:be/src uv run --project worker python worker/src/main.py
+
+hazard-seed:
+	PYTHONPATH=worker/src:be/src uv run --project worker python worker/src/backfill_cli.py seed
+
+hazard-catalog-csv:
+	PYTHONPATH=worker/src:be/src uv run --project worker python worker/src/backfill_cli.py catalog-csv
+
+weather-backfill:
+	PYTHONPATH=worker/src:be/src uv run --project worker python worker/src/backfill_cli.py backfill --continue-on-error
+
+weather-quality:
+	PYTHONPATH=worker/src:be/src uv run --project worker python worker/src/backfill_cli.py quality
+
+training-csv:
+	PYTHONPATH=worker/src:be/src uv run --project worker python worker/src/backfill_cli.py export-csv
+
+research-db-sync:
+	scripts/sync-research-database.sh --target local
+
+research-db-collect:
+	scripts/sync-research-database.sh --target local --collect --export
+
+research-db-backup:
+	scripts/backup-research-database.sh --target local
 
 check:
 	pnpm --dir fe lint

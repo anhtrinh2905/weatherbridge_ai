@@ -17,12 +17,15 @@ class AiJobService:
         self.queue = queue
 
     async def create(self, payload: CreateAiJobRequest, user_id: str) -> AiJobResponse:
+        return await self.create_system(payload.task, {"text": payload.text}, user_id)
+
+    async def create_system(self, task: str, payload: dict, user_id: str) -> AiJobResponse:
         now = utc_now()
         job = AiJob(
             user_id=user_id,
-            task=payload.task,
+            task=task,
             status=JobStatus.QUEUED.value,
-            payload={"text": payload.text},
+            payload=payload,
             created_at=now,
             updated_at=now,
         )
@@ -59,9 +62,7 @@ class AiJobService:
 
     async def stats(self) -> JobStatsResponse:
         """Admin-only: job counts per status for the operations overview."""
-        rows = await self.session.execute(
-            select(AiJob.status, func.count()).group_by(AiJob.status)
-        )
+        rows = await self.session.execute(select(AiJob.status, func.count()).group_by(AiJob.status))
         counts = {status: count for status, count in rows.all()}
         return JobStatsResponse(
             queued=counts.get(JobStatus.QUEUED.value, 0),
