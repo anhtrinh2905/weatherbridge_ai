@@ -275,12 +275,62 @@ class WebPushNotificationProvider:
             raise
 
 
+class EmailNotificationProvider:
+    name = "smtp_email"
+
+    def __init__(self, settings: Settings) -> None:
+        self.host = settings.smtp_host
+        self.port = settings.smtp_port
+        self.username = settings.smtp_username
+        self.password = settings.smtp_password
+        self.sender = settings.smtp_from
+
+    async def send(
+        self,
+        *,
+        channel: str,
+        destination: str,
+        content: dict[str, str],
+        idempotency_key: str,
+    ) -> DeliveryResult:
+        if channel != "email" or not self.host or not self.sender:
+            raise ValueError("Email provider received an invalid delivery request")
+        
+        from email.message import EmailMessage
+
+        import aiosmtplib
+
+        msg = EmailMessage()
+        msg["From"] = self.sender
+        msg["To"] = destination
+        msg["Subject"] = "Cảnh báo Thời tiết (WeatherBridge AI)"
+        msg["Message-ID"] = f"<{idempotency_key}@weatherbridge.local>"
+        msg.set_content(render_plain_text(content))
+
+        try:
+            await aiosmtplib.send(
+                msg,
+                hostname=self.host,
+                port=self.port,
+                username=self.username,
+                password=self.password,
+                use_tls=(self.port == 465),
+                start_tls=(self.port == 587),
+                timeout=15.0,
+            )
+            return DeliveryResult(status="sent", metadata={"channel": "email"})
+        except aiosmtplib.SMTPException as exc:
+            raise RuntimeError(f"SMTP Error: {exc}") from exc
+
+
 def configured_providers(settings: Settings) -> dict[str, NotificationProvider]:
     providers: dict[str, NotificationProvider] = {}
     if settings.sms_provider == "twilio":
         providers["sms"] = TwilioSmsNotificationProvider(settings)
     if settings.zalo_provider == "oa":
         providers["zalo"] = ZaloOANotificationProvider(settings)
+    if settings.email_provider == "smtp":
+        providers["email"] = EmailNotificationProvider(settings)
     if settings.web_push_vapid_private_key and settings.web_push_vapid_public_key:
         providers["web_push"] = WebPushNotificationProvider(settings)
     return providers

@@ -46,6 +46,7 @@ export const operationsApi = {
   deliverySummary: (id: string) => apiClient.get<DeliverySummaryItem[]>(`/alerts/${id}/delivery-summary`),
   alertTranslations: (id: string) => apiClient.get<AlertTranslation[]>(`/alerts/${id}/translations`),
   createAlertTranslation: (id: string, payload: AlertTranslationDraft) => apiClient.post<AlertTranslation>(`/alerts/${id}/translations`, payload),
+  generateAlertTranslation: (id: string, locale: string) => apiClient.post<AlertTranslation>(`/alerts/${id}/translations/generate`, { locale }),
   reviewAlertTranslation: (id: string, payload: components["schemas"]["AlertTranslationReviewRequest"]) => apiClient.post<AlertTranslation>(`/alerts/translations/${id}/review`, payload),
   publishAlertTranslation: (id: string) => apiClient.post<AlertLocalizedContent>(`/alerts/translations/${id}/publish`),
   alertAudio: (id: string) => apiClient.getBlob(`/alerts/${id}/audio`),

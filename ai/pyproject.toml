@@ -10,6 +10,8 @@ dependencies = [
   "pyyaml>=6.0.0,<7",
   "rasterio>=1.5.0",
   "scikit-learn>=1.9.0",
+  "fastapi>=0.115.0",
+  "uvicorn>=0.30.0",
 ]
 
 [dependency-groups]
@@ -18,8 +20,6 @@ dev = ["pytest>=8.3.0,<9", "ruff>=0.9.0,<1"]
 [tool.uv]
 package = false
 
-[[tool.uv.index]]
-url = "https://gitlab.gitguardian.ovh/api/v4/projects/435/packages/pypi/simple"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

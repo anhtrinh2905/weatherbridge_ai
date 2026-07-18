@@ -39,8 +39,7 @@ async def process_job(
                 result = await ingest_forecast(
                     session,
                     row["payload"],
-                    settings.open_meteo_base_url,
-                    model_path=settings.bias_correction_model_path or None,
+                    settings,
                 )
                 await set_status(session, job_id, "succeeded", result=result)
             elif row["task"] == HISTORICAL_WEATHER_BACKFILL_TASK:

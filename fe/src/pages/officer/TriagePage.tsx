@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { activeHazardDataSource } from "../../features/heatmap/dataSource";
 import { useResidents } from "../../features/operations/hooks";
 import { RASTER_VILLAGES } from "../../shared/hazard-raster/villages";
+import { sampleHazardAt } from "../../shared/hazard-raster";
 import { HazardLevelBadge } from "../../shared/ui/HazardBadge";
 import { Card, PageHeader } from "../../shared/ui/PageHeader";
 import { useTranslation } from "../../shared/i18n/I18nProvider";
@@ -10,7 +10,7 @@ export function OfficerTriagePage() {
   const { t } = useTranslation();
   const residents = useResidents();
   const ranked = RASTER_VILLAGES.map((entry) => {
-    const exposure = entry.located && activeHazardDataSource ? activeHazardDataSource.inspect(entry.point, "dominant", 0).primary.level : 0;
+    const exposure = entry.located ? sampleHazardAt(entry.point, "dominant", 0).primary.level : 0;
     const people = residents.data?.filter((item) => item.village_code === entry.village.id || item.village_code === `village-${entry.village.id}`) ?? [];
     return { village: entry.village, exposure, residentCount: people.length, score: exposure * (1 + people.length) };
   }).sort((left, right) => right.score - left.score);

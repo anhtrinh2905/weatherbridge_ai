@@ -6,6 +6,7 @@ import type { Alert } from "./api";
 import {
   useAlertTranslations,
   useCreateAlertTranslation,
+  useGenerateAlertTranslation,
   usePublishAlertTranslation,
   useReviewAlertTranslation,
 } from "./hooks";
@@ -21,6 +22,7 @@ type TranslationForm = {
 export function AlertLocalizationPanel({ alert }: { alert: Alert }) {
   const translations = useAlertTranslations(alert.id);
   const createDraft = useCreateAlertTranslation();
+  const generateDraft = useGenerateAlertTranslation();
   const review = useReviewAlertTranslation();
   const publish = usePublishAlertTranslation();
   const [form, setForm] = useState<TranslationForm>({
@@ -55,7 +57,10 @@ export function AlertLocalizationPanel({ alert }: { alert: Alert }) {
         <input value={form.danger_description} onChange={(event) => update("danger_description", event.target.value)} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm" placeholder="Mức nguy hiểm" />
         <input value={form.action_instruction} onChange={(event) => update("action_instruction", event.target.value)} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm" placeholder="Hành động cần làm" />
         <input value={form.deadline_instruction} onChange={(event) => update("deadline_instruction", event.target.value)} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm" placeholder="Hạn chót" />
-        <Button type="submit" variant="secondary" className="min-h-9 px-3 text-xs" isLoading={createDraft.isPending}><Send size={14} /> Lưu bản nháp</Button>
+        <div className="flex gap-2">
+          <Button type="submit" variant="secondary" className="min-h-9 px-3 text-xs" isLoading={createDraft.isPending}><Send size={14} /> Lưu bản nháp</Button>
+          <Button type="button" variant="primary" className="min-h-9 px-3 text-xs bg-indigo-600 hover:bg-indigo-700 text-white" isLoading={generateDraft.isPending} onClick={() => generateDraft.mutate({ id: alert.id, locale: form.locale })}>Dịch bằng AI</Button>
+        </div>
       </form>
       <div className="mt-3 space-y-2">
         {translations.data?.map((translation) => (

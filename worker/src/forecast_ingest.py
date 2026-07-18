@@ -10,14 +10,21 @@ Also stores WMO fog proxies: daily min visibility and mean temperature /
 dew point for dew-point depression (DPD) display — not a hand-tuned fog score.
 """
 
+import base64
+import json
 import logging
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
+import aioboto3
 import httpx
 from modules.forecasts.locations import LOCATIONS, ForecastLocation
-from sqlalchemy import JSON, Column, DateTime, Float, MetaData, String, Table, Uuid, insert
+from sqlalchemy import JSON, Column, DateTime, Float, MetaData, String, Table, Uuid, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+if TYPE_CHECKING:
+    from settings import Settings
 
 from risk_scoring import (
     BIAS_CORRECTION_HOURLY_VARS,
@@ -47,6 +54,62 @@ forecast_snapshots = Table(
     Column("source", String(120), nullable=False),
     Column("days", JSON, nullable=False),
     Column("fetched_at", DateTime(timezone=True), nullable=False),
+)
+
+hazard_model_versions = Table(
+    "hazard_model_versions",
+    metadata,
+    Column("id", Uuid(as_uuid=True), primary_key=True),
+    Column("name", String(120), nullable=False),
+    Column("description", String, nullable=True),
+    Column("is_active", String(30), nullable=False),
+)
+
+hazard_runs = Table(
+    "hazard_runs",
+    metadata,
+    Column("id", Uuid(as_uuid=True), primary_key=True),
+    Column("hazard_type", String(30), nullable=False),
+    Column("model_version_id", Uuid(as_uuid=True), nullable=False),
+    Column("input_ingestion_run_id", Uuid(as_uuid=True), nullable=True),
+    Column("issued_at", DateTime(timezone=True), nullable=False),
+    Column("valid_from", DateTime(timezone=True), nullable=False),
+    Column("valid_to", DateTime(timezone=True), nullable=False),
+    Column("status", String(20), nullable=False),
+    Column("quality_flags", JSON, nullable=False),
+    Column("error", String, nullable=True),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
+)
+
+hazard_layers = Table(
+    "hazard_layers",
+    metadata,
+    Column("id", Uuid(as_uuid=True), primary_key=True),
+    Column("run_id", Uuid(as_uuid=True), nullable=False),
+    Column("hazard_type", String(30), nullable=False),
+    Column("forecast_day", DateTime(timezone=True), nullable=False), # Date
+    Column("is_current", String(30), nullable=False), # boolean
+    Column("cog_object_key", String, nullable=False),
+    Column("png_object_key", String, nullable=False),
+    Column("bbox", JSON, nullable=False),
+    Column("crs", String(30), nullable=False),
+    Column("resolution_m", Float, nullable=False),
+    Column("level_bins", JSON, nullable=False),
+    Column("legend", JSON, nullable=False),
+    Column("confidence", Float, nullable=False),
+    Column("contribution_summary", JSON, nullable=False),
+    Column("checksum", String(64), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+)
+
+hazard_zones = Table(
+    "hazard_zones",
+    metadata,
+    Column("id", Uuid(as_uuid=True), primary_key=True),
+    Column("layer_id", Uuid(as_uuid=True), nullable=False),
+    Column("risk_level", Float, nullable=False), # integer in DB, but float is fine for core
+    Column("geometry", String, nullable=False), # WKT
 )
 
 
@@ -143,9 +206,8 @@ def enrich_days(
 async def ingest_forecast(
     session: AsyncSession,
     payload: dict,
-    base_url: str,
+    settings: "Settings",
     client: httpx.AsyncClient | None = None,
-    model_path: str | None = None,
 ) -> dict:
     location_code = payload.get("location_code", "")
     location = LOCATIONS.get(location_code)
@@ -161,22 +223,23 @@ async def ingest_forecast(
         "timezone": "Asia/Bangkok",
     }
     if client is not None:
-        response = await client.get(base_url, params=params)
+        response = await client.get(settings.open_meteo_base_url, params=params)
     else:
         async with httpx.AsyncClient(timeout=30.0) as own_client:
-            response = await own_client.get(base_url, params=params)
+            response = await own_client.get(settings.open_meteo_base_url, params=params)
     response.raise_for_status()
     data = response.json()
 
     days = build_days(data)
     if not days:
         raise ValueError("Open-Meteo returned an empty forecast")
-    days = enrich_days(days, data, location, model_path)
+    days = enrich_days(days, data, location, settings.bias_correction_model_path or None)
 
     fetched_at = datetime.now(UTC)
+    snapshot_id = uuid4()
     await session.execute(
         insert(forecast_snapshots).values(
-            id=uuid4(),
+            id=snapshot_id,
             location_code=location.code,
             latitude=location.latitude,
             longitude=location.longitude,
@@ -190,9 +253,184 @@ async def ingest_forecast(
     logging.info(
         "forecast_ingested location=%s days=%d source=%s", location.code, len(days), SOURCE
     )
+
+    try:
+        await generate_and_save_hazard_run(
+            session, location.code, days, fetched_at, snapshot_id, settings, client
+        )
+    except Exception as e:
+        logging.exception("Failed to generate hazard run for %s: %s", location.code, e)
+
     return {
         "location_code": location.code,
         "days_ingested": len(days),
         "source": SOURCE,
         "fetched_at": fetched_at.isoformat(),
     }
+
+
+async def generate_and_save_hazard_run(
+    session: AsyncSession,
+    location_code: str,
+    days: list[dict],
+    fetched_at: datetime,
+    snapshot_id: Uuid,
+    settings: "Settings",
+    client: httpx.AsyncClient | None = None,
+) -> None:
+    # 1. Ensure Model Version exists
+    active_version = (await session.execute(
+        select(hazard_model_versions).where(hazard_model_versions.c.is_active == "true")
+    )).mappings().first()
+
+    if not active_version:
+        version_id = uuid4()
+        await session.execute(
+            insert(hazard_model_versions).values(
+                id=version_id,
+                name="AI Model v1",
+                description="Default generated by worker",
+                is_active="true"
+            )
+        )
+    else:
+        version_id = active_version["id"]
+
+    run_id = uuid4()
+    
+    # Sort days to find valid_to
+    valid_from = fetched_at
+    valid_to = datetime.fromisoformat(days[-1]["date"] + "T23:59:59+07:00")
+
+    await session.execute(
+        insert(hazard_runs).values(
+            id=run_id,
+            hazard_type="flash_flood",
+            model_version_id=version_id,
+            input_ingestion_run_id=None, # In real system might map to ingestion_runs if available
+            issued_at=fetched_at,
+            valid_from=valid_from,
+            valid_to=valid_to,
+            status="running",
+            quality_flags={},
+            error=None,
+            created_at=fetched_at,
+            updated_at=fetched_at,
+        )
+    )
+
+    if settings.object_storage_s3_endpoint and settings.object_storage_bucket:
+        s3_session = aioboto3.Session()
+        s3_client_ctx = s3_session.client(
+            "s3",
+            endpoint_url=settings.object_storage_s3_endpoint,
+            aws_access_key_id=settings.object_storage_access_key,
+            aws_secret_access_key=settings.object_storage_secret_key,
+        )
+    else:
+        s3_client_ctx = None
+
+    try:
+        if client is None:
+            async with httpx.AsyncClient(timeout=60.0) as http_client:
+                await _process_days(
+                    http_client,
+                    session,
+                    location_code,
+                    days,
+                    run_id,
+                    fetched_at,
+                    settings,
+                    s3_client_ctx,
+                )
+        else:
+            await _process_days(
+                client,
+                session,
+                location_code,
+                days,
+                run_id,
+                fetched_at,
+                settings,
+                s3_client_ctx,
+            )
+
+        await session.execute(
+            hazard_runs.update().where(hazard_runs.c.id == run_id).values(status="completed")
+        )
+        await session.commit()
+    except Exception as e:
+        await session.rollback()
+        logging.exception("Error in hazard run %s: %s", run_id, e)
+        # We could mark the run as failed here
+
+
+async def _process_days(
+    http_client: httpx.AsyncClient,
+    session: AsyncSession,
+    location_code: str,
+    days: list[dict],
+    run_id: Uuid,
+    fetched_at: datetime,
+    settings: "Settings",
+    s3_client_ctx,
+) -> None:
+    for day in days:
+        if day["id_exceedance"] <= 0.0:
+            continue
+        
+        resp = await http_client.post(
+            settings.ai_inference_url,
+            json={"location_code": location_code, "trigger_ratio": day["id_exceedance"]}
+        )
+        resp.raise_for_status()
+        ai_result = resp.json()
+
+        # Upload webp
+        forecast_day_date = datetime.fromisoformat(day["date"]).date()
+        webp_data = base64.b64decode(ai_result["webp_base64"])
+        png_key = f"hazards/flash_flood/{run_id}/{forecast_day_date.isoformat()}.webp"
+        
+        if s3_client_ctx:
+            async with s3_client_ctx as s3:
+                await s3.put_object(
+                    Bucket=settings.object_storage_bucket,
+                    Key=png_key,
+                    Body=webp_data,
+                    ContentType="image/webp",
+                )
+
+        layer_id = uuid4()
+        await session.execute(
+            insert(hazard_layers).values(
+                id=layer_id,
+                run_id=run_id,
+                hazard_type="flash_flood",
+                forecast_day=datetime.fromisoformat(day["date"] + "T00:00:00Z"),
+                is_current=True,
+                cog_object_key="",
+                png_object_key=png_key,
+                bbox={"bounds": ai_result["bbox"]},
+                crs="EPSG:32648",
+                resolution_m=30.0,
+                level_bins=[0, 1, 2, 3, 4],
+                legend={},
+                confidence=0.8,
+                contribution_summary={},
+                checksum="computed",
+                created_at=fetched_at,
+            )
+        )
+
+        # Insert polygons
+        features = ai_result["geojson"]["features"]
+        for feat in features:
+            await session.execute(
+                insert(hazard_zones).values(
+                    id=uuid4(),
+                    layer_id=layer_id,
+                    risk_level=feat["properties"]["level"],
+                    geometry=json.dumps(feat["geometry"]),
+                )
+            )
+

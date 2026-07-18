@@ -99,6 +99,8 @@ async def get_hazard_archive_service(
     yield HazardArchiveService(HazardArchiveRepository(session))
 
 
+
+
 async def get_hazard_risk_service(
     session: AsyncSession = Depends(get_db),
 ) -> AsyncIterator[HazardRiskService]:

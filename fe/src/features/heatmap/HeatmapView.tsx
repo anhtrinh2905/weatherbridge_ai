@@ -5,7 +5,7 @@ import { HAZARD_LEVEL_LABELS, HAZARD_TYPE_LABELS } from "../../shared/domain/lab
 import type { HazardType } from "../../shared/domain/types";
 import { getForecastDays, sampleFogAt, sampleHazardAt } from "../../shared/hazard-raster";
 import { pixelToLonLat } from "../../shared/hazard-raster/villages";
-import type { RasterLayer, RasterPoint, RasterSample } from "../../shared/hazard-raster";
+import type { RasterLayer, RasterPoint, RasterSample, RasterInspectionResult } from "../../shared/hazard-raster";
 import { cn } from "../../shared/lib/cn";
 import { apiClient } from "../../shared/lib/api-client";
 import { DataFreshnessBadge } from "../../shared/ui/DataFreshnessBadge";
@@ -14,6 +14,7 @@ import { RasterHazardMap } from "../../shared/ui/RasterHazardMap";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { useLiveForecast } from "../demo/useLiveForecast";
 import { FOG_PATCHES, WMO_FOG_VISIBILITY_M } from "../demo/data";
+import { activeHazardDataSource } from "./dataSource";
 
 export type HeatmapVariant = "full" | "village" | "resident";
 
@@ -86,10 +87,41 @@ export function HeatmapView({
   const activeLayer = layer;
   const dayOffsets = FULL_DAYS;
 
-  const inspection = useMemo(
-    () => (selectedPoint ? sampleHazardAt(selectedPoint, activeLayer, day) : null),
-    [day, activeLayer, selectedPoint],
-  );
+  const [inspection, setInspection] = useState<RasterInspectionResult | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchManifest = async () => {
+      if (activeHazardDataSource.mode === "mock") {
+        setImageSrc(null);
+        return;
+      }
+      const manifest = await activeHazardDataSource.manifest(activeLayer, day);
+      if (!cancelled && manifest?.layers?.[0]?.web_png_url) {
+        setImageSrc(manifest.layers[0].web_png_url);
+      } else if (!cancelled) {
+        setImageSrc(null);
+      }
+    };
+    fetchManifest();
+    return () => { cancelled = true; };
+  }, [day, activeLayer]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const updateInspection = async () => {
+      if (!selectedPoint) {
+        setInspection(null);
+        return;
+      }
+      const result = await activeHazardDataSource.inspect(selectedPoint, activeLayer, day);
+      if (!cancelled) setInspection(result);
+    };
+    updateInspection();
+    return () => { cancelled = true; };
+  }, [day, activeLayer, selectedPoint]);
+
   const fog = useMemo(
     () => (selectedPoint ? sampleFogAt(selectedPoint.x, selectedPoint.y, day) : null),
     [day, selectedPoint],
@@ -215,6 +247,7 @@ export function HeatmapView({
           <RasterHazardMap
             layer={activeLayer}
             day={day}
+            imageSrc={imageSrc}
             selected={isFull || isVillage || isResident ? selectedPoint : null}
             selectedVillageId={null}
             showVillageMarkers={false}

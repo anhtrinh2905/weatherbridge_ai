@@ -140,6 +140,7 @@ export function RasterHazardMap({
   focusPoint,
   focusRequest = 0,
   markers = [],
+  imageSrc = null,
   /** fill = stretch into parent height; natural = keep raster aspect (no distortion). */
   aspectMode = "fill",
   className,
@@ -154,6 +155,7 @@ export function RasterHazardMap({
   focusPoint?: RasterPoint | null;
   focusRequest?: number;
   markers?: RasterMapMarker[];
+  imageSrc?: string | null;
   aspectMode?: "fill" | "natural";
   className?: string;
 }) {
@@ -202,22 +204,44 @@ export function RasterHazardMap({
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
-    const image = ctx.createImageData(RASTER_W, RASTER_H);
-    renderHazardRaster(image.data, layer, day);
-    ctx.putImageData(image, 0, 0);
-    ctx.beginPath();
-    BOUNDARY.forEach(([x, y], index) => {
-      if (index === 0) ctx.moveTo(x * RASTER_W, y * RASTER_H);
-      else ctx.lineTo(x * RASTER_W, y * RASTER_H);
-    });
-    ctx.closePath();
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.strokeStyle = "rgba(180, 60, 90, 0.9)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }, [day, layer, forecastDays, backendRisk]);
+    
+    let cancelled = false;
+    
+    const drawOutline = () => {
+      ctx.beginPath();
+      BOUNDARY.forEach(([x, y], index) => {
+        if (index === 0) ctx.moveTo(x * RASTER_W, y * RASTER_H);
+        else ctx.lineTo(x * RASTER_W, y * RASTER_H);
+      });
+      ctx.closePath();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(180, 60, 90, 0.9)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    };
+
+    if (imageSrc) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        if (cancelled || !canvas || !ctx) return;
+        ctx.clearRect(0, 0, RASTER_W, RASTER_H);
+        ctx.drawImage(img, 0, 0, RASTER_W, RASTER_H);
+        drawOutline();
+      };
+      img.src = imageSrc;
+    } else {
+      ctx.clearRect(0, 0, RASTER_W, RASTER_H);
+      const image = ctx.createImageData(RASTER_W, RASTER_H);
+      renderHazardRaster(image.data, layer, day);
+      ctx.putImageData(image, 0, 0);
+      drawOutline();
+    }
+    
+    return () => { cancelled = true; };
+  }, [day, layer, forecastDays, backendRisk, imageSrc]);
 
   useEffect(() => {
     applyFit();

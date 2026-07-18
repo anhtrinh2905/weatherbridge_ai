@@ -24,6 +24,10 @@ class AlertTranslationDraftRequest(BaseModel):
     translation_method: Literal["manual", "machine"] = "manual"
 
 
+class AlertTranslationGenerateRequest(BaseModel):
+    locale: str = Field(min_length=2, max_length=35)
+
+
 class AlertTranslationReviewRequest(BaseModel):
     decision: Literal["approve", "reject"]
     review_note: str | None = Field(default=None, max_length=2000)

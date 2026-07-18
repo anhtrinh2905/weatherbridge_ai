@@ -20,7 +20,11 @@ x-backend: &backend
     PII_ENCRYPTION_KEY: ${PII_ENCRYPTION_KEY:-}
     PII_HASH_KEY: ${PII_HASH_KEY:-}
     PII_KEY_VERSION: ${PII_KEY_VERSION:-v1}
-    OBJECT_STORAGE_BASE_URL: ${OBJECT_STORAGE_BASE_URL:-}
+    OBJECT_STORAGE_BASE_URL: ${OBJECT_STORAGE_BASE_URL:-http://localhost:9000/weatherbridge}
+    OBJECT_STORAGE_S3_ENDPOINT: ${OBJECT_STORAGE_S3_ENDPOINT:-http://minio:9000}
+    OBJECT_STORAGE_ACCESS_KEY: ${OBJECT_STORAGE_ACCESS_KEY:-minioadmin}
+    OBJECT_STORAGE_SECRET_KEY: ${OBJECT_STORAGE_SECRET_KEY:-minioadmin}
+    OBJECT_STORAGE_BUCKET: ${OBJECT_STORAGE_BUCKET:-weatherbridge}
     OBJECT_STORAGE_SIGNING_KEY: ${OBJECT_STORAGE_SIGNING_KEY:-}
     OBJECT_STORAGE_URL_TTL_SECONDS: ${OBJECT_STORAGE_URL_TTL_SECONDS:-300}
     NOTIFICATION_DELIVERY_MODE: ${NOTIFICATION_DELIVERY_MODE:-disabled}
@@ -29,6 +33,48 @@ x-backend: &backend
     WEB_PUSH_VAPID_PUBLIC_KEY: ${WEB_PUSH_VAPID_PUBLIC_KEY:-}
 
 services:
+  ai-service:
+    image: weather-bridge-ai:local
+    build:
+      context: ./ai
+      dockerfile: ../infra/docker/ai.Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./ai/data:/app/data
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:RELEASE.2024-01-31T20-20-55Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-minioadmin}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - weather-bridge-minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  minio-createbucket:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/weatherbridge || true;
+      /usr/bin/mc anonymous set download myminio/weatherbridge;
+      exit 0;
+      "
+
   db:
     image: postgis/postgis:16-3.5-alpine
     environment:
@@ -231,3 +277,4 @@ volumes:
   weather-bridge-db:
   keycloak-db:
   weather-bridge-redis:
+  weather-bridge-minio:

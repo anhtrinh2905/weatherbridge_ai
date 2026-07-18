@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -25,6 +26,9 @@ from modules.localization.schemas import (
     LocaleResponse,
 )
 from services.profile_service import AccessContext, ProfileService
+
+if TYPE_CHECKING:
+    from services.translation_service import TranslationCacheService
 
 
 class LocalizationService:
@@ -87,6 +91,83 @@ class LocalizationService:
         self._audit(
             context,
             "alert.translation.create",
+            alert_id,
+            {"locale": locale.code, "version": draft.version},
+        )
+        await self.session.commit()
+        return self._translation_response(draft)
+
+    async def generate_machine_translation(
+        self,
+        alert_id: UUID,
+        locale_code: str,
+        user: CurrentUser,
+        translation_cache: TranslationCacheService,
+    ) -> AlertTranslationResponse:
+        context = await self.profiles.access_context(user)
+        self._require_official(context)
+        alert = await self._scoped_alert(alert_id, context)
+        locale = await self._locale(locale_code)
+
+        if locale.code == "vi":
+            raise AppError(
+                409,
+                "Vietnamese content is canonical and cannot be translated",
+                "locale_canonical",
+            )
+
+        canonical = await self.session.scalar(
+            select(AlertContent).where(
+                AlertContent.alert_id == alert.id,
+                AlertContent.locale == "vi",
+                AlertContent.livelihood_type.is_(None),
+            )
+        )
+        if not canonical:
+            raise AppError(404, "Canonical content not found", "canonical_missing")
+
+        from ai.translation.models import TranslationRequest
+        
+        request = TranslationRequest(
+            texts=[
+                canonical.what_happened,
+                canonical.danger_description,
+                canonical.action_instruction,
+                canonical.deadline_instruction,
+            ],
+            source_language="Vietnamese",
+            target_language=locale.display_name,
+        )
+        response = await translation_cache.translate(request)
+
+        latest = await self.session.scalar(
+            select(func.max(ContentTranslation.version)).where(
+                ContentTranslation.source_kind == "alert",
+                ContentTranslation.source_id == alert_id,
+                ContentTranslation.locale == locale.code,
+            )
+        )
+        now = utc_now()
+        draft = ContentTranslation(
+            source_kind="alert",
+            source_id=alert_id,
+            locale=locale.code,
+            content={
+                "what_happened": response.translations[0],
+                "danger_description": response.translations[1],
+                "action_instruction": response.translations[2],
+                "deadline_instruction": response.translations[3],
+            },
+            translation_status="machine_draft",
+            translation_method="machine",
+            version=(latest or 0) + 1,
+            created_at=now,
+            updated_at=now,
+        )
+        self.session.add(draft)
+        self._audit(
+            context,
+            "alert.translation.generate",
             alert_id,
             {"locale": locale.code, "version": draft.version},
         )

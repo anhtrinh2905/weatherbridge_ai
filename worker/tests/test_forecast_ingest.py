@@ -1,4 +1,3 @@
-import json
 
 import httpx
 import pytest
@@ -6,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from forecast_ingest import build_days, forecast_snapshots, ingest_forecast, metadata
+from settings import Settings
 
 OPEN_METEO_RESPONSE = {
     "daily": {
@@ -60,40 +60,61 @@ def test_build_days_maps_rainfall_and_peak_intensity() -> None:
 
 async def test_ingest_persists_snapshot(session_factory) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
+        if str(request.url).endswith("/infer"):
+            return httpx.Response(200, json={
+                "webp_base64": "UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
+                "geojson": {"type": "FeatureCollection", "features": []},
+                "bbox": [103.0, 21.0, 103.2, 21.2]
+            })
+
         assert "precipitation" in request.url.params["hourly"]
         assert "visibility" in request.url.params["hourly"]
         assert request.url.params["forecast_days"] == "8"
         return httpx.Response(200, json=OPEN_METEO_RESPONSE)
 
     async with session_factory() as session, mock_client(handler) as client:
+        settings = Settings(open_meteo_base_url="https://api.test/v1/forecast")
         result = await ingest_forecast(
-            session, {"location_code": "muong-pon"}, "https://api.test/v1/forecast", client
+            session, {"location_code": "muong-pon"}, settings, client
         )
-        assert result["days_ingested"] == 3
-        assert result["source"] == "open-meteo:best_match"
 
-        row = (await session.execute(select(forecast_snapshots))).mappings().one()
-        days = row["days"] if isinstance(row["days"], list) else json.loads(row["days"])
-        assert days[0]["rainfall_mm"] == 13.3
+    assert result["location_code"] == "muong-pon"
+    assert result["days_ingested"] == 3
+    assert result["source"] == "open-meteo:best_match"
+
+    async with session_factory() as session:
+        cursor = await session.execute(select(forecast_snapshots))
+        row = cursor.mappings().one()
         assert row["location_code"] == "muong-pon"
+        assert row["latitude"] == 21.59
+        assert len(row["days"]) == 3
 
 
 async def test_ingest_fails_safely_and_keeps_previous_snapshot(session_factory) -> None:
     ok = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        if str(request.url).endswith("/infer"):
+            return httpx.Response(200, json={
+                "webp_base64": "UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
+                "geojson": {"type": "FeatureCollection", "features": []},
+                "bbox": [103.0, 21.0, 103.2, 21.2]
+            })
+
         ok["count"] += 1
         if ok["count"] == 1:
             return httpx.Response(200, json=OPEN_METEO_RESPONSE)
         return httpx.Response(503)
 
     async with session_factory() as session, mock_client(handler) as client:
+        settings = Settings(open_meteo_base_url="https://api.test/v1/forecast")
         await ingest_forecast(
-            session, {"location_code": "muong-pon"}, "https://api.test/v1/forecast", client
+            session, {"location_code": "muong-pon"}, settings, client
         )
+
         with pytest.raises(httpx.HTTPStatusError):
             await ingest_forecast(
-                session, {"location_code": "muong-pon"}, "https://api.test/v1/forecast", client
+                session, {"location_code": "muong-pon"}, settings, client
             )
         rows = (await session.execute(select(forecast_snapshots))).mappings().all()
         assert len(rows) == 1  # the good snapshot survives the failed run

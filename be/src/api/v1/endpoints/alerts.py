@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ai.speech.mms_service import MmsTtsService, SpeechConfigError
 from ai.speech.models import SpeechSynthesisRequest
-from api.deps import get_current_user, get_mms_tts_service
+from api.deps import get_current_user, get_mms_tts_service, get_translation_cache_service
 from auth.keycloak import CurrentUser
 from core.errors import AppError
 from database.session import get_db
@@ -21,11 +21,13 @@ from modules.alerts.schemas import (
 from modules.localization.schemas import (
     AlertLocalizedContentResponse,
     AlertTranslationDraftRequest,
+    AlertTranslationGenerateRequest,
     AlertTranslationResponse,
     AlertTranslationReviewRequest,
 )
 from services.alert_service import AlertService
 from services.localization_service import LocalizationService
+from services.translation_service import TranslationCacheService
 
 router = APIRouter()
 
@@ -95,6 +97,23 @@ async def create_translation_draft(
     session: AsyncSession = Depends(get_db),
 ) -> AlertTranslationResponse:
     return await LocalizationService(session).create_alert_draft(alert_id, payload, user)
+
+
+@router.post(
+    "/{alert_id}/translations/generate",
+    response_model=AlertTranslationResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def generate_translation_draft(
+    alert_id: UUID,
+    payload: AlertTranslationGenerateRequest,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+    translation_cache: TranslationCacheService = Depends(get_translation_cache_service),
+) -> AlertTranslationResponse:
+    return await LocalizationService(session).generate_machine_translation(
+        alert_id, payload.locale, user, translation_cache
+    )
 
 
 @router.post("/translations/{translation_id}/review", response_model=AlertTranslationResponse)

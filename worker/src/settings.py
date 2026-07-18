@@ -22,6 +22,12 @@ class Settings(BaseSettings):
     sms_twilio_auth_token: str | None = None
     sms_twilio_from: str | None = None
     sms_twilio_messaging_service_sid: str | None = None
+    email_provider: str = "disabled"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    smtp_from: str | None = None
     zalo_provider: str = "disabled"
     zalo_oa_access_token: str | None = None
     zalo_oa_api_base_url: str = "https://openapi.zalo.me"
@@ -33,6 +39,11 @@ class Settings(BaseSettings):
     # disabled (the trigger runs on raw rainfall regardless). Provided at deploy;
     # model weights are never committed to Git.
     bias_correction_model_path: str = ""
+    ai_inference_url: str = "http://ai-service:8001/infer"
+    object_storage_s3_endpoint: str | None = None
+    object_storage_access_key: str | None = None
+    object_storage_secret_key: str | None = None
+    object_storage_bucket: str = "weatherbridge"
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @model_validator(mode="after")
@@ -66,6 +77,13 @@ class Settings(BaseSettings):
             raise ValueError(
                 "Twilio SMS requires account SID, auth token, and a sender or messaging service"
             )
+        if self.email_provider not in {"disabled", "smtp"}:
+            raise ValueError("EMAIL_PROVIDER must be disabled or smtp")
+        if self.email_provider == "smtp" and (
+            not self.smtp_host
+            or not self.smtp_from
+        ):
+            raise ValueError("SMTP email requires host and from address")
         if self.zalo_provider not in {"disabled", "oa"}:
             raise ValueError("ZALO_PROVIDER must be disabled or oa")
         if self.zalo_provider == "oa" and not self.zalo_oa_access_token:
@@ -75,6 +93,7 @@ class Settings(BaseSettings):
         if self.notification_delivery_mode == "configured" and not any(
             (
                 self.sms_provider == "twilio",
+                self.email_provider == "smtp",
                 self.zalo_provider == "oa",
                 bool(self.web_push_vapid_private_key and self.web_push_vapid_public_key),
             )
