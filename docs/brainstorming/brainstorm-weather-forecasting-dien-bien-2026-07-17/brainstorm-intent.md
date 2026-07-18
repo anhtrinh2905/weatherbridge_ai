@@ -40,6 +40,9 @@ Giá trị cạnh tranh nằm ở **tầng con người** (last-mile relay + tr�
 
 ## Phạm vi
 
+**Địa bàn (đã chốt 2026-07-17):** giới hạn ở **một xã — Mường Pồn** (huyện Điện Biên cũ, tây bắc TP Điện Biên Phủ, dọc QL12; tọa độ tham chiếu ~21,5°N, 103,1°E) thay vì toàn tỉnh Điện Biên. Lý do: (1) hay tái diễn thiên tai, có "sự kiện mỏ neo" là lũ quét + sạt lở rạng sáng 25/7/2024 (hoàn lưu bão số 02; 4 chết, 3 mất tích, 7 bị thương, 86 nhà hư hại, ~175 tỷ đồng); (2) có báo cáo thiệt hại **đã lượng hóa theo từng bản** → dùng làm nhãn/ground-truth; (3) dữ liệu thời tiết + địa hình lấy được theo tọa độ (xem `docs/compliance/data-provenance.md`).
+_Cần xác minh: sau sáp nhập ĐVHC giữa 2025, tên/ranh giới xã Mường Pồn có thể đã đổi — vùng địa lý vẫn cố định theo tọa độ nên không ảnh hưởng việc kéo dữ liệu._
+
 **MVP (IN)** — triển khai đầy đủ cụm A–E:
 - A. Nội dung cảnh báo 4 phần.
 - B. Cá nhân hoá / phân vùng theo bản, độ cao, hướng dốc.
