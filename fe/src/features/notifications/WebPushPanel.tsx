@@ -1,13 +1,14 @@
 import { BellRing, Send } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../../shared/ui/Button";
-import { enableWebPush, sendTestWebPush } from "./webPush";
+import { enableWebPush, getWebPushEnvironment, sendTestWebPush } from "./webPush";
 
 type PanelStatus = "idle" | "ready" | "sending" | "sent" | "error";
 
 export function WebPushPanel() {
+  const environment = useMemo(() => getWebPushEnvironment(), []);
   const [status, setStatus] = useState<PanelStatus>("idle");
-  const [message, setMessage] = useState("Bật thông báo để nhận cảnh báo ngay cả khi không mở trang.");
+  const [message, setMessage] = useState(environment.guidance);
 
   const enable = async () => {
     setStatus("ready");

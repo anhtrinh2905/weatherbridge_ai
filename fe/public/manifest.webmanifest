@@ -1,0 +1,40 @@
+{
+  "id": "/",
+  "name": "Weather Bridge AI",
+  "short_name": "Weather Bridge",
+  "description": "Weather Bridge AI sends local weather risk alerts and resident guidance.",
+  "start_url": "/resident",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait",
+  "background_color": "#0B0E14",
+  "theme_color": "#0B0E14",
+  "categories": ["weather", "utilities", "health"],
+  "icons": [
+    {
+      "src": "/weather-bridge-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/weather-bridge-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/weather-bridge-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/weather-bridge-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
