@@ -106,7 +106,14 @@ async def test_zalo_oa_provider_posts_customer_service_message() -> None:
 
 def test_configured_delivery_requires_provider_and_resolves_enabled_channels() -> None:
     with pytest.raises(ValueError, match="at least one configured provider"):
-        Settings(notification_delivery_mode="configured", pii_mode="simulated")
+        Settings(
+            notification_delivery_mode="configured",
+            pii_mode="simulated",
+            sms_provider="disabled",
+            zalo_provider="disabled",
+            web_push_vapid_private_key=None,
+            web_push_vapid_public_key=None,
+        )
 
     settings = Settings(
         notification_delivery_mode="configured",
@@ -117,6 +124,8 @@ def test_configured_delivery_requires_provider_and_resolves_enabled_channels() -
         sms_twilio_messaging_service_sid="MG123",
         zalo_provider="oa",
         zalo_oa_access_token="oa-token",
+        web_push_vapid_private_key=None,
+        web_push_vapid_public_key=None,
     )
 
     assert set(configured_providers(settings)) == {"sms", "zalo"}

@@ -34,7 +34,7 @@ async function requestBlob(path: string, init: RequestInit = {}): Promise<Blob> 
   const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
   if (!response.ok) {
     const text = await response.text();
-    let body: unknown = undefined;
+    let body: unknown;
     try {
       body = text ? JSON.parse(text) : undefined;
     } catch {
