@@ -32,7 +32,7 @@ class GeocodeService:
         if cached and now - cached[0] < _CACHE_TTL_SECONDS:
             return cached[1]
 
-        params = {
+        params: dict[str, str | int | float] = {
             "lat": request.latitude,
             "lon": request.longitude,
             "format": "jsonv2",
