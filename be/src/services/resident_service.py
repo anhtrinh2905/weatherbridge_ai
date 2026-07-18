@@ -25,22 +25,22 @@ from database.domain_models import (
 from database.models import GeoLocation
 from database.spatial import point_value
 from modules.residents.schemas import (
-    HouseholdCreateRequest,
-    HouseholdMemberRequest,
-    HouseholdResponse,
     ContactCreateRequest,
     ContactResponse,
     ContactUpdateRequest,
+    ConsentResponse,
+    HouseholdCreateRequest,
+    HouseholdMemberRequest,
+    HouseholdResponse,
     LinkResidentAccountRequest,
     ResidentCreateRequest,
-    ResidentResponse,
     ResidentDetailResponse,
     ResidentLocationResponse,
     ResidentPointRequest,
+    ResidentResponse,
     SubscriptionCreateRequest,
     SubscriptionResponse,
     SubscriptionUpdateRequest,
-    ConsentResponse,
     SupportNeedRequest,
 )
 from services.profile_service import AccessContext, ProfileService
