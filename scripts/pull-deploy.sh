@@ -156,13 +156,13 @@ fi
 
 echo "deploying $ENVIRONMENT commit $TARGET_SHA"
 kubectl apply -f "$MANIFEST"
-kubectl -n "$NAMESPACE" rollout status statefulset/db --timeout=300s
-kubectl -n "$NAMESPACE" rollout status statefulset/keycloak-db --timeout=300s
-kubectl -n "$NAMESPACE" rollout status deploy/redis --timeout=180s
-kubectl -n "$NAMESPACE" rollout status deploy/be --timeout=300s
-kubectl -n "$NAMESPACE" rollout status deploy/fe --timeout=180s
-kubectl -n "$NAMESPACE" rollout status deploy/keycloak --timeout=300s
-kubectl -n "$NAMESPACE" rollout status deploy/worker --timeout=180s
+kubectl -n "$NAMESPACE" rollout status statefulset/db --timeout=600s
+kubectl -n "$NAMESPACE" rollout status statefulset/keycloak-db --timeout=600s
+kubectl -n "$NAMESPACE" rollout status deploy/redis --timeout=300s
+kubectl -n "$NAMESPACE" rollout status deploy/be --timeout=600s
+kubectl -n "$NAMESPACE" rollout status deploy/fe --timeout=300s
+kubectl -n "$NAMESPACE" rollout status deploy/keycloak --timeout=600s
+kubectl -n "$NAMESPACE" rollout status deploy/worker --timeout=600s
 
 ROOT_URL="https://$ROOT_HOST"
 AUTH_URL="https://$AUTH_HOST"
