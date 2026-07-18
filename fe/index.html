@@ -9,6 +9,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Weather Bridge AI" />
     <meta name="description" content="Weather Bridge AI biến dự báo thời tiết tại Điện Biên thành hành động rõ ràng, đúng hạn." />
+    <script>
+      if (typeof Promise.withResolvers !== "function") {
+        Promise.withResolvers = function () {
+          var resolve;
+          var reject;
+          var promise = new Promise(function (res, rej) {
+            resolve = res;
+            reject = rej;
+          });
+
+          return { promise: promise, resolve: resolve, reject: reject };
+        };
+      }
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="/weather-bridge-icon-180.png" />
     <link rel="manifest" href="/manifest.webmanifest" />

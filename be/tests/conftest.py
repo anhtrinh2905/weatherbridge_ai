@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from api.deps import get_current_user, get_job_queue
 from auth.keycloak import CurrentUser
-from core.config import get_settings
+from core.config import Settings, get_settings
 from database import Base
 from database.session import get_db
 from main import create_app
@@ -64,7 +64,8 @@ async def _make_client(roles: frozenset[str]) -> AsyncIterator[AsyncClient]:
         await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
 
-    app = create_app(get_settings())
+    test_settings = Settings(_env_file=None)
+    app = create_app(test_settings)
 
     async def override_db() -> AsyncIterator[AsyncSession]:
         async with test_session_factory() as session:
@@ -77,6 +78,7 @@ async def _make_client(roles: frozenset[str]) -> AsyncIterator[AsyncClient]:
         return _make_user(roles)
 
     app.dependency_overrides[get_db] = override_db
+    app.dependency_overrides[get_settings] = lambda: test_settings
     app.dependency_overrides[get_current_user] = override_current_user
     app.dependency_overrides[get_job_queue] = override_job_queue
     async with AsyncClient(
