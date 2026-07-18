@@ -30,12 +30,15 @@ export interface LiveRiskStatus {
   /** "backend" once real risk is loaded; "heuristic" before/on failure */
   source: "backend" | "heuristic";
   fetchedAt: Date | null;
+  /** the backend `computed_at` of the served snapshot (ISO), or null */
+  computedAt: string | null;
 }
 
 export function useLiveRisk(): LiveRiskStatus {
   const [status, setStatus] = useState<LiveRiskStatus>({
     source: "heuristic",
     fetchedAt: null,
+    computedAt: null,
   });
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export function useLiveRisk(): LiveRiskStatus {
         const days = mapHazardRiskToBackendDays(response);
         if (cancelled || days.length === 0) return;
         setBackendRisk(days);
-        setStatus({ source: "backend", fetchedAt: new Date() });
+        setStatus({ source: "backend", fetchedAt: new Date(), computedAt: response.computed_at });
       } catch {
         // not signed in / offline / not yet ingested: keep the heuristic
       }
