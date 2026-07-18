@@ -40,6 +40,14 @@ services:
       WEB_PUSH_SUBJECT: ${WEB_PUSH_SUBJECT:-mailto:dev@weatherbridge.local}
       WEB_PUSH_VAPID_PRIVATE_KEY: ${WEB_PUSH_VAPID_PRIVATE_KEY:-}
       WEB_PUSH_VAPID_PUBLIC_KEY: ${WEB_PUSH_VAPID_PUBLIC_KEY:-}
+      SMS_PROVIDER: ${SMS_PROVIDER:-disabled}
+      SMS_TWILIO_ACCOUNT_SID: ${SMS_TWILIO_ACCOUNT_SID:-}
+      SMS_TWILIO_AUTH_TOKEN: ${SMS_TWILIO_AUTH_TOKEN:-}
+      SMS_TWILIO_FROM: ${SMS_TWILIO_FROM:-}
+      SMS_TWILIO_MESSAGING_SERVICE_SID: ${SMS_TWILIO_MESSAGING_SERVICE_SID:-}
+      ZALO_PROVIDER: ${ZALO_PROVIDER:-disabled}
+      ZALO_OA_ACCESS_TOKEN: ${ZALO_OA_ACCESS_TOKEN:-}
+      ZALO_OA_API_BASE_URL: ${ZALO_OA_API_BASE_URL:-https://openapi.zalo.me}
     restart: unless-stopped
     command: uv run --project /app/worker --no-dev python /app/worker/src/main.py
 
