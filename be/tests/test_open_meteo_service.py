@@ -8,7 +8,16 @@ from ai.forecast.exceptions import (
     OpenMeteoPayloadError,
     OpenMeteoTransportError,
 )
-from ai.forecast.models import ForecastRequest
+from ai.forecast.models import (
+    ElevationRequest,
+    EnsembleRequest,
+    ForecastRequest,
+    FloodRequest,
+    GeocodingRequest,
+    HistoricalForecastRequest,
+    HistoricalWeatherRequest,
+    PreviousRunRequest,
+)
 from ai.forecast.service import OpenMeteoService
 from core.config import Settings
 
@@ -102,3 +111,77 @@ async def test_service_uses_configured_timeout_when_client_created(
 
     assert payload == {"ok": True}
     assert captured["timeout"] == 31
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    (
+        "method",
+        "expected_path",
+        "request_model",
+    ),
+    [
+        (
+            "forecast",
+            "/v1/forecast",
+            ForecastRequest(latitude=21, longitude=105),
+        ),
+        (
+            "elevation",
+            "/v1/elevation",
+            ElevationRequest(latitude=[21.0], longitude=[105.0]),
+        ),
+        (
+            "geocoding",
+            "/v1/search",
+            GeocodingRequest(name="Hanoi"),
+        ),
+        (
+            "ensemble",
+            "/v1/ensemble",
+            EnsembleRequest(latitude=21, longitude=105),
+        ),
+        (
+            "historical_weather",
+            "/v1/archive",
+            HistoricalWeatherRequest(
+                latitude=21,
+                longitude=105,
+                start_date="2025-01-01",
+                end_date="2025-01-03",
+            ),
+        ),
+        (
+            "previous_runs",
+            "/v1/forecast",
+            PreviousRunRequest(latitude=21, longitude=105),
+        ),
+        (
+            "historical_forecast",
+            "/v1/forecast",
+            HistoricalForecastRequest(
+                latitude=21,
+                longitude=105,
+                start_date="2025-01-01",
+                end_date="2025-01-03",
+            ),
+        ),
+        (
+            "flood",
+            "/v1/flood",
+            FloodRequest(latitude=21, longitude=105),
+        ),
+    ],
+)
+async def test_service_uses_expected_family_endpoint(
+    method: str, expected_path: str, request_model: object
+) -> None:
+    def transport_handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == expected_path
+        return httpx.Response(200, json={"source": method})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(transport_handler)) as client:
+        service = OpenMeteoService(Settings(), client=client)
+        response = await getattr(service, method)(request_model)  # type: ignore[arg-type]
+
+    assert response == {"source": method}

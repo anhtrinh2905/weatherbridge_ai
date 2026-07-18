@@ -6,7 +6,16 @@ import pytest
 from pydantic import ValidationError
 
 from ai.forecast.exceptions import OpenMeteoPayloadError
-from ai.forecast.models import ForecastRequest
+from ai.forecast.models import (
+    ElevationRequest,
+    EnsembleRequest,
+    FloodRequest,
+    ForecastRequest,
+    GeocodingRequest,
+    HistoricalForecastRequest,
+    HistoricalWeatherRequest,
+    PreviousRunRequest,
+)
 from ai.tools.dispatcher import OpenMeteoToolDispatcher, OpenMeteoToolNotFoundError
 from ai.tools.registry import TOOL_REGISTRY, tool_definitions
 
@@ -17,6 +26,32 @@ class ForecastServiceMock:
             "tool": "forecast",
             "payload": request.model_dump(),
         }
+
+
+class ComprehensiveToolServiceMock:
+    async def forecast(self, request: ForecastRequest) -> dict[str, Any]:
+        return {"tool": "forecast", "payload": request.model_dump()}
+
+    async def elevation(self, request: ElevationRequest) -> dict[str, Any]:
+        return {"tool": "elevation", "payload": request.model_dump()}
+
+    async def geocoding(self, request: GeocodingRequest) -> dict[str, Any]:
+        return {"tool": "geocoding", "payload": request.model_dump()}
+
+    async def ensemble(self, request: EnsembleRequest) -> dict[str, Any]:
+        return {"tool": "ensemble", "payload": request.model_dump()}
+
+    async def historical_weather(self, request: HistoricalWeatherRequest) -> dict[str, Any]:
+        return {"tool": "historical_weather", "payload": request.model_dump()}
+
+    async def previous_runs(self, request: PreviousRunRequest) -> dict[str, Any]:
+        return {"tool": "previous_runs", "payload": request.model_dump()}
+
+    async def historical_forecast(self, request: HistoricalForecastRequest) -> dict[str, Any]:
+        return {"tool": "historical_forecast", "payload": request.model_dump()}
+
+    async def flood(self, request: FloodRequest) -> dict[str, Any]:
+        return {"tool": "flood", "payload": request.model_dump()}
 
 
 class FailingForecastService:
@@ -77,3 +112,45 @@ def test_tool_definitions_expose_all_registered_tools() -> None:
 
     assert expected_tool_names == registered_tool_names
     assert len(definitions) == len(TOOL_REGISTRY)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    (
+        "tool_name",
+        "arguments",
+    ),
+    [
+        ("forecast", {"latitude": 21.0, "longitude": 103.0}),
+        ("elevation", {"latitude": [21.0], "longitude": [105.0]}),
+        ("geocoding", {"name": "Hanoi"}),
+        ("ensemble", {"latitude": 21.0, "longitude": 103.0}),
+        (
+            "historical_weather",
+            {
+                "latitude": 21.0,
+                "longitude": 103.0,
+                "start_date": "2025-01-01",
+                "end_date": "2025-01-03",
+            },
+        ),
+        ("previous_runs", {"latitude": 21.0, "longitude": 103.0}),
+        (
+            "historical_forecast",
+            {
+                "latitude": 21.0,
+                "longitude": 103.0,
+                "start_date": "2025-01-01",
+                "end_date": "2025-01-03",
+            },
+        ),
+        ("flood", {"latitude": 21.0, "longitude": 103.0}),
+    ],
+)
+async def test_dispatcher_accepts_all_registered_tools(
+    tool_name: str, arguments: dict[str, Any]
+) -> None:
+    dispatcher = OpenMeteoToolDispatcher(ComprehensiveToolServiceMock())
+    output = await dispatcher.dispatch(tool_name, arguments)
+
+    assert output["tool"] == tool_name
