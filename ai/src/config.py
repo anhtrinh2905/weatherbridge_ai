@@ -10,7 +10,10 @@ class Config(BaseModel):
     experiment: str = "baseline"
     seed: int = 42
     epochs: int = Field(default=1, ge=1)
-    learning_rate: float = Field(default=0.0001, gt=0)
+    learning_rate: float = Field(default=0.1, gt=0)
+    # Gradient-boosting hyperparameters for the susceptibility classifier.
+    n_estimators: int = Field(default=200, ge=1)
+    max_depth: int = Field(default=3, ge=1)
 
 
 def load_config(path: Path | None = None) -> Config:

@@ -67,6 +67,22 @@ Nguồn tham khảo sự kiện mỏ neo (lũ quét Mường Pồn 25/7/2024): C
 - Cờ `is_exercise: true` xuyên suốt.
 - Mục đích sử dụng và giới hạn: minh hoạ kiến trúc **mở rộng toàn tỉnh** (theo đúng lộ trình Pilot của PRD — "thêm tỉnh = thêm địa điểm dự báo, không đổi lõi"), KHÔNG dùng làm căn cứ vận hành thật; các xã tier `medium`/`light` cần bổ sung dữ liệu bản thật trước khi dùng ngoài demo.
 
+## Open-Meteo forecast ingest — bảng `forecast_snapshots` (ghi nhận 2026-07-18)
+
+- Nguồn: **Open-Meteo Forecast API** (`api.open-meteo.com/v1/forecast`, model "best match" GFS/IFS — **không phải ERA5**, đúng AC Story 2.2), không cần API key.
+- License/điều kiện: Open-Meteo free tier — non-commercial, attribution khuyến nghị (CC-BY 4.0 cho dữ liệu); cần rà lại ToS nếu chuyển sang thương mại.
+- Dữ liệu lấy: mưa ngày (`precipitation_sum`, mm) + mưa giờ (`precipitation`, mm/h → suy ra cường độ đỉnh/ngày), 7 ngày, timezone Asia/Bangkok, cho toạ độ Mường Pồn (21.59°N, 103.03°E).
+- Nhạy cảm: không — dữ liệu khí tượng công khai, không PII.
+- Lưu trữ: bảng `forecast_snapshots` (PostgreSQL), append-only kèm `fetched_at` + `source`; ingest lỗi giữ nguyên snapshot cũ (không blank bản đồ). Không commit dữ liệu ingest vào Git.
+- Mục đích/giới hạn: đầu vào trigger mưa cho tính điểm nguy cơ (FR3); là dự báo mô hình toàn cầu chưa hiệu chỉnh địa phương — không thay thế cảnh báo KTTV/PCTT chính thức.
+
+## `fe/src/features/demo/boundary.ts` — ranh giới xã Mường Pồn (ghi nhận 2026-07-18)
+
+- Nguồn: **OpenStreetMap**, relation `19571212` (boundary administrative "Xã Mường Pồn, Tỉnh Điện Biên"), lấy qua Nominatim API (`polygon_geojson=1`) ngày 2026-07-18.
+- License: **ODbL 1.0** (© OpenStreetMap contributors) — dữ liệu ranh giới công khai, không có PII.
+- Biến đổi: polygon gốc 864 đỉnh → chiếu equirectangular (hiệu chỉnh cos φ), đơn giản hoá Douglas–Peucker (ε ≈ 0,2% đường chéo bbox) còn 212 đỉnh, chuẩn hoá về hệ toạ độ đơn vị (y hướng xuống, đệm 4,5%). Tỉ lệ khung bbox gốc (rộng/cao): 1,1017.
+- Mục đích và giới hạn: mask + viền cho bản đồ raster **demo** (`/demo`); độ chính xác sau đơn giản hoá đủ cho minh hoạ, KHÔNG dùng cho nghiệp vụ đo đạc/pháp lý về ranh giới hành chính.
+
 ## Audit kết quả — `households_muong_pon_sample.json` (2026-07-18)
 
 Kiểm tra lại bằng script (không chỉ đọc mắt) sau khi dữ liệu đã ổn định. Kết quả:

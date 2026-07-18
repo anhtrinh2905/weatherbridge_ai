@@ -11,6 +11,7 @@ from core.errors import AppError
 from database.session import get_db
 from queues.redis_queue import JobQueue
 from services.ai_job_service import AiJobService
+from services.forecast_service import ForecastService
 
 
 @lru_cache
@@ -44,3 +45,10 @@ async def get_ai_job_service(
     queue: JobQueue = Depends(get_job_queue),
 ) -> AsyncIterator[AiJobService]:
     yield AiJobService(session, queue)
+
+
+async def get_forecast_service(
+    session: AsyncSession = Depends(get_db),
+    queue: JobQueue = Depends(get_job_queue),
+) -> AsyncIterator[ForecastService]:
+    yield ForecastService(session, queue)

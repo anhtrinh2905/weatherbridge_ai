@@ -1,5 +1,6 @@
-import { ArrowRight, BrainCircuit, Check, GitBranch, LockKeyhole, Menu, X } from "lucide-react";
+import { ArrowRight, BrainCircuit, Check, GitBranch, LockKeyhole, Menu, PlayCircle, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../features/auth/hooks";
 import { Button } from "../../shared/ui/Button";
 import { Logo } from "../../shared/ui/Logo";
@@ -155,7 +156,7 @@ export function LandingPage() {
             <Button className="w-full sm:w-auto" onClick={() => void beginAuth("register")} disabled={Boolean(authTransition)}>
               Tạo tài khoản <ArrowRight size={16} />
             </Button>
-            <a href="#principles"><Button variant="secondary" className="w-full sm:w-auto">Xem cách hoạt động</Button></a>
+            <Link to="/demo" className="w-full sm:w-auto"><Button variant="secondary" className="w-full sm:w-auto"><PlayCircle size={16} /> Xem demo</Button></Link>
           </div>
           <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 font-mono text-sm text-muted-2">
             <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> 5 điểm dự báo</span>
@@ -239,9 +240,7 @@ export function LandingPage() {
               <Button onClick={() => void beginAuth("register")} disabled={Boolean(authTransition)}>
                 Tạo tài khoản <ArrowRight size={16} />
               </Button>
-              <Button variant="secondary" onClick={() => void beginAuth("login")} disabled={Boolean(authTransition)}>
-                Đăng nhập
-              </Button>
+              <Link to="/demo"><Button variant="secondary" className="w-full"><PlayCircle size={16} /> Xem demo</Button></Link>
             </div>
           </div>
         </div>
