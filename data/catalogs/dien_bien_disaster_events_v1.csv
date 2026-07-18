@@ -1,0 +1,4 @@
+code,description,ended_at_utc,hazard_type,local_date,severity,started_at_utc,verification_status
+muong-pon-flash-flood-2024-07-25,Lũ quét và sạt lở do mưa lớn tại xã Mường Pồn.,2024-07-25T06:00:00Z,flash_flood,2024-07-25,major,2024-07-24T18:00:00Z,verified_public_sources
+dien-bien-east-flood-landslide-2025-08-01,Lũ quét và sạt lở diện rộng tại các xã phía đông tỉnh Điện Biên.,2025-08-01T12:00:00Z,compound_flash_flood_landslide,2025-08-01,major,2025-07-31T21:30:00Z,verified_public_sources
+phieng-dat-b-landslide-2022-06,"Sạt lở nghiêm trọng tại Km436+200 QL6 thuộc bản Phiêng Đất B, xã Nậm Nèn.",,landslide,2022-06-09,unknown,2022-06-08T17:00:00Z,candidate_needs_primary_report

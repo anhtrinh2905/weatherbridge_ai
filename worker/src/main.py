@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import date
 
 from ai.contracts import InferenceRequest
 from core.config import Settings as BackendSettings
@@ -8,9 +9,11 @@ from services.ai_inference_service import AiInferenceService
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from archive_operations import TRAINING_CSV_EXPORT_TASK, export_training_csv
 from forecast_ingest import FORECAST_INGEST_TASK, ingest_forecast
 from job_queue import next_job
 from job_store import ai_jobs, set_status
+from open_meteo_backfill import HISTORICAL_WEATHER_BACKFILL_TASK, backfill_open_meteo
 from settings import Settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -35,6 +38,25 @@ async def process_job(
                 result = await ingest_forecast(
                     session, row["payload"], settings.open_meteo_base_url
                 )
+                await set_status(session, job_id, "succeeded", result=result)
+            elif row["task"] == HISTORICAL_WEATHER_BACKFILL_TASK:
+                payload = row["payload"]
+                result = await backfill_open_meteo(
+                    session,
+                    settings,
+                    start_date=date.fromisoformat(payload["start_date"]),
+                    end_date=date.fromisoformat(payload["end_date"]),
+                    products=payload.get(
+                        "products", ["historical_forecast", "previous_runs", "archive"]
+                    ),
+                    location_codes=payload.get("location_codes"),
+                    forecast_model=payload.get("forecast_model", "gfs_seamless"),
+                    archive_model=payload.get("archive_model", "best_match"),
+                    continue_on_error=payload.get("continue_on_error", False),
+                )
+                await set_status(session, job_id, "succeeded", result=result)
+            elif row["task"] == TRAINING_CSV_EXPORT_TASK:
+                result = await export_training_csv(session)
                 await set_status(session, job_id, "succeeded", result=result)
             else:
                 request = InferenceRequest(task=row["task"], text=row["payload"]["text"])

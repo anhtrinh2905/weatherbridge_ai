@@ -12,9 +12,11 @@ from core.config import Settings, get_settings
 from core.errors import AppError
 from database.session import get_db
 from queues.redis_queue import JobQueue
+from repositories.hazard_archive_repository import HazardArchiveRepository
 from services.admin_user_service import AdminUserService
 from services.ai_job_service import AiJobService
 from services.forecast_service import ForecastService
+from services.hazard_archive_service import HazardArchiveService
 
 
 @lru_cache
@@ -85,6 +87,12 @@ async def get_forecast_service(
     queue: JobQueue = Depends(get_job_queue),
 ) -> AsyncIterator[ForecastService]:
     yield ForecastService(session, queue)
+
+
+async def get_hazard_archive_service(
+    session: AsyncSession = Depends(get_db),
+) -> AsyncIterator[HazardArchiveService]:
+    yield HazardArchiveService(HazardArchiveRepository(session))
 
 
 async def get_admin_user_service(

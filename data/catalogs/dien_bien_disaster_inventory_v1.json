@@ -1,0 +1,325 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-07-18",
+  "scope": {
+    "province": "Điện Biên",
+    "hazards": ["flash_flood", "landslide"],
+    "period_start": "2021-01-01",
+    "coordinate_order": "longitude,latitude"
+  },
+  "locations": [
+    {
+      "code": "commune-muong-pon",
+      "canonical_name": "Xã Mường Pồn",
+      "location_type": "commune",
+      "historical_admin_name": "Xã Mường Pồn, huyện Điện Biên, tỉnh Điện Biên",
+      "current_admin_name": "Xã Mường Pồn, tỉnh Điện Biên",
+      "longitude": 103.0296833,
+      "latitude": 21.5869655,
+      "uncertainty_m": 15000,
+      "coordinate_source": "OpenStreetMap Nominatim relation 19571212",
+      "source_url": "https://www.openstreetmap.org/relation/19571212",
+      "coordinate_confidence": "C",
+      "is_sampling_location": true
+    },
+    {
+      "code": "commune-xa-dung",
+      "canonical_name": "Xã Xa Dung",
+      "location_type": "commune",
+      "historical_admin_name": "Xã Xa Dung, huyện Điện Biên Đông, tỉnh Điện Biên",
+      "current_admin_name": "Xã Xa Dung, tỉnh Điện Biên",
+      "longitude": 103.2995758,
+      "latitude": 21.3182894,
+      "uncertainty_m": 13000,
+      "coordinate_source": "OpenStreetMap Nominatim relation 19571184",
+      "source_url": "https://www.openstreetmap.org/relation/19571184",
+      "coordinate_confidence": "C",
+      "is_sampling_location": true
+    },
+    {
+      "code": "commune-tia-dinh",
+      "canonical_name": "Xã Tìa Dình",
+      "location_type": "commune",
+      "historical_admin_name": "Xã Tìa Dình, huyện Điện Biên Đông, tỉnh Điện Biên",
+      "current_admin_name": "Xã Tìa Dình, tỉnh Điện Biên",
+      "longitude": 103.3380428,
+      "latitude": 21.1414586,
+      "uncertainty_m": 12000,
+      "coordinate_source": "OpenStreetMap Nominatim relation 19571188",
+      "source_url": "https://www.openstreetmap.org/relation/19571188",
+      "coordinate_confidence": "C",
+      "is_sampling_location": true
+    },
+    {
+      "code": "commune-na-son",
+      "canonical_name": "Xã Na Son",
+      "location_type": "commune",
+      "historical_admin_name": "Xã Na Son, huyện Điện Biên Đông, tỉnh Điện Biên",
+      "current_admin_name": "Xã Na Son, tỉnh Điện Biên",
+      "longitude": 103.2143726,
+      "latitude": 21.2972456,
+      "uncertainty_m": 17000,
+      "coordinate_source": "OpenStreetMap Nominatim relation 19571206",
+      "source_url": "https://www.openstreetmap.org/relation/19571206",
+      "coordinate_confidence": "C",
+      "is_sampling_location": true
+    },
+    {
+      "code": "commune-muong-luan",
+      "canonical_name": "Xã Mường Luân",
+      "location_type": "commune",
+      "historical_admin_name": "Xã Mường Luân, huyện Điện Biên Đông, tỉnh Điện Biên",
+      "current_admin_name": "Xã Mường Luân, tỉnh Điện Biên",
+      "longitude": 103.3801762,
+      "latitude": 21.2469241,
+      "uncertainty_m": 14000,
+      "coordinate_source": "OpenStreetMap Nominatim relation 19571216",
+      "source_url": "https://www.openstreetmap.org/relation/19571216",
+      "coordinate_confidence": "C",
+      "is_sampling_location": true
+    },
+    {
+      "code": "commune-pu-nhi",
+      "canonical_name": "Xã Pú Nhi",
+      "location_type": "commune",
+      "historical_admin_name": "Xã Pú Nhi, huyện Điện Biên Đông, tỉnh Điện Biên",
+      "current_admin_name": "Xã Pú Nhi, tỉnh Điện Biên",
+      "longitude": 103.1344866,
+      "latitude": 21.3456912,
+      "uncertainty_m": 14000,
+      "coordinate_source": "OpenStreetMap Nominatim relation 19571200",
+      "source_url": "https://www.openstreetmap.org/relation/19571200",
+      "coordinate_confidence": "C",
+      "is_sampling_location": true
+    },
+    {
+      "code": "commune-nam-nen",
+      "canonical_name": "Xã Nậm Nèn",
+      "location_type": "commune",
+      "historical_admin_name": "Xã Nậm Nèn, huyện Mường Chà, tỉnh Điện Biên",
+      "current_admin_name": "Xã Nậm Nèn, tỉnh Điện Biên",
+      "longitude": 103.2258203,
+      "latitude": 21.804404,
+      "uncertainty_m": 15000,
+      "coordinate_source": "OpenStreetMap Nominatim relation 19571204",
+      "source_url": "https://www.openstreetmap.org/relation/19571204",
+      "coordinate_confidence": "C",
+      "is_sampling_location": true
+    },
+    {
+      "code": "village-muong-pon-1",
+      "canonical_name": "Bản Mường Pồn 1",
+      "parent_code": "commune-muong-pon",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-muong-pon-2",
+      "canonical_name": "Bản Mường Pồn 2",
+      "parent_code": "commune-muong-pon",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-linh",
+      "canonical_name": "Bản Lĩnh",
+      "parent_code": "commune-muong-pon",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-tin-toc",
+      "canonical_name": "Bản Tin Tốc",
+      "parent_code": "commune-muong-pon",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-co-de",
+      "canonical_name": "Bản Cồ Dề",
+      "parent_code": "commune-xa-dung",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-hang-pu-xi",
+      "canonical_name": "Bản Háng Pú Xi",
+      "parent_code": "commune-xa-dung",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-chong-su-a",
+      "canonical_name": "Bản Chống Sư A",
+      "parent_code": "commune-xa-dung",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-tu-xa-b",
+      "canonical_name": "Bản Từ Xa B",
+      "parent_code": "commune-xa-dung",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-tia-dinh-1",
+      "canonical_name": "Bản Tìa Dình 1",
+      "parent_code": "commune-tia-dinh",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-tia-dinh-2",
+      "canonical_name": "Bản Tìa Dình 2",
+      "parent_code": "commune-tia-dinh",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-tia-mung",
+      "canonical_name": "Bản Tìa Mùng",
+      "parent_code": "commune-tia-dinh",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-suoi-lu-1",
+      "canonical_name": "Bản Suối Lư 1",
+      "parent_code": "commune-na-son",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-suoi-lu-2",
+      "canonical_name": "Bản Suối Lư 2",
+      "parent_code": "commune-na-son",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-na-phat",
+      "canonical_name": "Bản Na Phát",
+      "parent_code": "commune-na-son",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "village-na-canh",
+      "canonical_name": "Bản Na Cảnh",
+      "parent_code": "commune-na-son",
+      "location_type": "village",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    },
+    {
+      "code": "site-phieng-dat-b-ql6",
+      "canonical_name": "Km436+200 QL6, bản Phiêng Đất B",
+      "parent_code": "commune-nam-nen",
+      "location_type": "landslide_site",
+      "coordinate_confidence": "unresolved",
+      "is_sampling_location": false
+    }
+  ],
+  "events": [
+    {
+      "code": "muong-pon-flash-flood-2024-07-25",
+      "hazard_type": "flash_flood",
+      "started_at_utc": "2024-07-24T18:00:00Z",
+      "ended_at_utc": "2024-07-25T06:00:00Z",
+      "local_date": "2024-07-25",
+      "description": "Lũ quét và sạt lở do mưa lớn tại xã Mường Pồn.",
+      "verification_status": "verified_public_sources",
+      "severity": "major",
+      "sources": [
+        {
+          "title": "7 người chết, mất tích do lũ quét trong đêm tại Mường Pồn",
+          "url": "https://nhandan.vn/tim-kiem/?q=M%C6%B0%E1%BB%9Dng%20P%E1%BB%93n%20l%C5%A9%20qu%C3%A9t"
+        },
+        {
+          "title": "Data provenance của dự án",
+          "url": "docs/compliance/data-provenance.md"
+        }
+      ],
+      "locations": [
+        {"code": "commune-muong-pon", "impact_role": "sampling_area", "confidence": "C"},
+        {"code": "village-muong-pon-1", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-muong-pon-2", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-linh", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-tin-toc", "impact_role": "affected_village", "confidence": "B"}
+      ]
+    },
+    {
+      "code": "dien-bien-east-flood-landslide-2025-08-01",
+      "hazard_type": "compound_flash_flood_landslide",
+      "started_at_utc": "2025-07-31T21:30:00Z",
+      "ended_at_utc": "2025-08-01T12:00:00Z",
+      "local_date": "2025-08-01",
+      "description": "Lũ quét và sạt lở diện rộng tại các xã phía đông tỉnh Điện Biên.",
+      "verification_status": "verified_public_sources",
+      "severity": "major",
+      "sources": [
+        {
+          "title": "Lũ quét, sạt lở ở Điện Biên: 11 người chết, mất tích",
+          "url": "https://xaydungchinhsach.chinhphu.vn/tim-kiem.htm?keywords=%C4%90i%E1%BB%87n%20Bi%C3%AAn%20l%C5%A9%20qu%C3%A9t"
+        },
+        {
+          "title": "Xử lý môi trường sau ảnh hưởng do lũ, sạt lở",
+          "url": "http://ttytdbd.syt.dienbien.gov.vn/news/xu-ly-moi-truong-sau-anh-huong-do-lu-sat-lo"
+        }
+      ],
+      "locations": [
+        {"code": "commune-xa-dung", "impact_role": "sampling_area", "confidence": "C"},
+        {"code": "commune-tia-dinh", "impact_role": "sampling_area", "confidence": "C"},
+        {"code": "commune-na-son", "impact_role": "sampling_area", "confidence": "C"},
+        {"code": "commune-muong-luan", "impact_role": "reported_area", "confidence": "C"},
+        {"code": "commune-pu-nhi", "impact_role": "reported_area", "confidence": "C"},
+        {"code": "village-co-de", "impact_role": "affected_village", "confidence": "B", "fatalities": 3},
+        {"code": "village-hang-pu-xi", "impact_role": "affected_village", "confidence": "B", "missing_people": 2},
+        {"code": "village-chong-su-a", "impact_role": "affected_village", "confidence": "B", "missing_people": 3},
+        {"code": "village-tu-xa-b", "impact_role": "affected_village", "confidence": "B", "missing_people": 3},
+        {"code": "village-tia-dinh-1", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-tia-dinh-2", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-tia-mung", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-suoi-lu-1", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-suoi-lu-2", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-na-phat", "impact_role": "affected_village", "confidence": "B"},
+        {"code": "village-na-canh", "impact_role": "affected_village", "confidence": "B"}
+      ]
+    },
+    {
+      "code": "phieng-dat-b-landslide-2022-06",
+      "hazard_type": "landslide",
+      "started_at_utc": "2022-06-08T17:00:00Z",
+      "ended_at_utc": null,
+      "local_date": "2022-06-09",
+      "description": "Sạt lở nghiêm trọng tại Km436+200 QL6 thuộc bản Phiêng Đất B, xã Nậm Nèn.",
+      "verification_status": "candidate_needs_primary_report",
+      "severity": "unknown",
+      "sources": [
+        {
+          "title": "Điện Biên qua Báo chí Trung ương - Tháng 6/2022",
+          "url": "https://svhttdl.dienbien.gov.vn"
+        }
+      ],
+      "locations": [
+        {"code": "commune-nam-nen", "impact_role": "sampling_area", "confidence": "C"},
+        {"code": "site-phieng-dat-b-ql6", "impact_role": "reported_site", "confidence": "B"}
+      ]
+    }
+  ]
+}

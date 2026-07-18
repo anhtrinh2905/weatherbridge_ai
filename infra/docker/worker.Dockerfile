@@ -8,6 +8,7 @@ RUN uv sync --project /app/worker --frozen --no-dev
 
 COPY be/src /app/be/src
 COPY worker/src /app/worker/src
+COPY data/catalogs /app/data/catalogs
 
 ENV PYTHONPATH=/app/worker/src:/app/be/src
 ENV PYTHONUNBUFFERED=1
