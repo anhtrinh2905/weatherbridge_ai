@@ -52,9 +52,8 @@ export function HeroSection({ onRegister, disabled }: { onRegister: () => void; 
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button className="w-full sm:w-auto" onClick={onRegister} disabled={disabled}>
-                Tạo tài khoản <ArrowRight size={16} />
+                Đăng nhập <ArrowRight size={16} />
               </Button>
-              <a href="#how"><Button variant="secondary" className="w-full sm:w-auto">Xem cách hoạt động</Button></a>
             </div>
             <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 font-mono text-sm text-fg [text-shadow:0_2px_14px_rgba(0,0,0,0.8)]">
               <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> 5 điểm dự báo</span>
@@ -64,7 +63,7 @@ export function HeroSection({ onRegister, disabled }: { onRegister: () => void; 
           </div>
 
           <div className="hero-visual relative self-center">
-            <div className="hero-visual__index"><span>01</span> / 04</div>
+            <div className="hero-visual__index"><span>01</span> / 05</div>
             <SignalPanel />
           </div>
         </div>

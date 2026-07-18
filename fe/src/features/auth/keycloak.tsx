@@ -188,8 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       navigate("/workspace");
     },
     register: async () => {
-      await initializeKeycloak();
-      await keycloak.register({ redirectUri: `${window.location.origin}/workspace` });
+      navigate("/login");
     },
     recoverPassword: async () => {
       await initializeKeycloak();

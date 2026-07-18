@@ -1,6 +1,6 @@
 import { ArrowRight, KeyRound, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/hooks";
 import { DEMO_ACCOUNTS } from "../../features/auth/demoAccounts";
 import { ROLE_LABELS } from "../../shared/domain/labels";
@@ -60,7 +60,7 @@ export function LoginPage() {
           Đăng nhập tài khoản khác <ArrowRight size={16} />
         </Button>
         <p className="flex items-center justify-center gap-2 font-mono text-xs text-muted-2"><ShieldCheck size={14} className="text-positive" /> OIDC Authorization Code + PKCE</p>
-        <p className="text-center text-sm text-muted">Chưa có tài khoản? <Link to="/register" className="font-semibold text-accent hover:text-accent-hover">Tạo tài khoản</Link></p>
+        <p className="text-center text-sm text-muted">Tiếp tục bằng tài khoản được cấp trong hệ thống.</p>
       </div>
     </AuthLayout>
   );
