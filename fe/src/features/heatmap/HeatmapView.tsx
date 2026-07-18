@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { HAZARD_RUN_MOCK } from "../../shared/domain/mockData";
-import { getForecastDays, sampleHazardAt } from "../../shared/hazard-raster";
+import { activeHazardDataSource } from "./dataSource";
 import { RASTER_VILLAGES } from "../../shared/hazard-raster/villages";
 import type { RasterLayer, RasterPoint } from "../../shared/hazard-raster";
 import { useTranslation } from "../../shared/i18n/I18nProvider";
@@ -22,10 +22,10 @@ export function HeatmapView() {
   const [selectedPoint, setSelectedPoint] = useState<RasterPoint | null>(null);
   const [selectedVillageId, setSelectedVillageId] = useState<string | null>(null);
   const [focusRequest, setFocusRequest] = useState(0);
-  const forecastDays = getForecastDays();
+  const forecastDays = activeHazardDataSource?.forecastDays() ?? [];
   const selectedVillage = RASTER_VILLAGES.find((entry) => entry.village.id === selectedVillageId) ?? null;
   const inspection = useMemo(
-    () => (selectedPoint ? sampleHazardAt(selectedPoint, layer, day) : null),
+    () => (selectedPoint && activeHazardDataSource ? activeHazardDataSource.inspect(selectedPoint, layer, day) : null),
     [day, layer, selectedPoint],
   );
   const layers: { key: RasterLayer; label: string }[] = [
@@ -38,6 +38,7 @@ export function HeatmapView() {
     setLayer(nextLayer);
   };
 
+  if (!activeHazardDataSource) return <section className="signal-panel"><h2 className="text-xl font-semibold text-fg-strong">Chưa có lớp dự báo</h2><p className="mt-2 text-sm text-muted">Đang chờ raster từ mô hình dự báo được phát hành.</p></section>;
   return (
     <div>
       <section className="signal-panel">
@@ -108,7 +109,7 @@ export function HeatmapView() {
   );
 }
 
-function ForecastPanel({ forecastDays, day, onDayChange }: { forecastDays: ReturnType<typeof getForecastDays>; day: number; onDayChange: (day: number) => void }) {
+function ForecastPanel({ forecastDays, day, onDayChange }: { forecastDays: ReturnType<NonNullable<typeof activeHazardDataSource>["forecastDays"]>; day: number; onDayChange: (day: number) => void }) {
   const { t } = useTranslation();
   const current = forecastDays.find((forecastDay) => forecastDay.offset === day) ?? forecastDays[0];
   return <section className="rounded-2xl border border-border bg-surface-2 p-4"><div className="flex items-center justify-between"><span className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-muted">{t("heatmap.forecastTimeline")}</span><span className="text-sm font-semibold text-fg-strong">{current.label}</span></div><input type="range" min={0} max={forecastDays.length - 1} step={1} value={day} onChange={(event) => onDayChange(Number(event.target.value))} className="mt-3 w-full accent-[var(--accent)]" aria-label={t("heatmap.forecastDayAria")} /><div className="mt-1 flex justify-between font-mono text-[0.6rem] text-muted-2">{forecastDays.map((forecastDay) => <span key={forecastDay.offset}>{forecastDay.offset === 0 ? "0" : `+${forecastDay.offset}`}</span>)}</div><dl className="mt-4 grid grid-cols-2 gap-3"><div><dt className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-muted">{t("heatmap.rainfallBasin")}</dt><dd className="text-lg font-semibold text-fg-strong">{current.rainfallMm}<span className="text-xs text-muted"> mm</span></dd></div><div><dt className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-muted">{t("heatmap.peakIntensity")}</dt><dd className="text-lg font-semibold text-fg-strong">{current.intensityMmH}<span className="text-xs text-muted"> mm/h</span></dd></div></dl></section>;
@@ -122,7 +123,7 @@ function InlineLegend() {
 function VillageLevels({ layer, day, selectedVillageId, onSelectVillage }: { layer: RasterLayer; day: number; selectedVillageId: string | null; onSelectVillage: (entry: (typeof RASTER_VILLAGES)[number]) => void }) {
   const { t } = useTranslation();
   return <section className="rounded-2xl border border-border bg-surface-2 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("heatmap.villageAnchorLevels")}</p><ul className="mt-2 divide-y divide-border-soft text-sm">{RASTER_VILLAGES.map((entry) => {
-    const sample = entry.located ? sampleHazardAt(entry.point, layer, day).primary : null;
+    const sample = entry.located && activeHazardDataSource ? activeHazardDataSource.inspect(entry.point, layer, day).primary : null;
     return <li key={entry.village.id}><button type="button" disabled={!entry.located} onClick={() => onSelectVillage(entry)} className={cn("flex w-full items-center justify-between py-1.5 text-left", entry.located ? "text-fg hover:text-accent" : "cursor-not-allowed text-muted-2", selectedVillageId === entry.village.id && "font-semibold text-accent")}><span>{entry.village.name}</span><span className="text-muted">{sample ? t("heatmap.levelValue", { level: sample.level }) : t("heatmap.unlocated")}</span></button></li>;
   })}</ul></section>;
 }

@@ -1,7 +1,7 @@
 from datetime import date
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.keycloak import CurrentUser
@@ -19,6 +19,7 @@ from database.domain_models import (
     ResidentContact,
     ResidentLivelihood,
     ResidentLocation,
+    SupportNeed,
     UserProfile,
 )
 from database.models import GeoLocation
@@ -27,11 +28,20 @@ from modules.residents.schemas import (
     HouseholdCreateRequest,
     HouseholdMemberRequest,
     HouseholdResponse,
+    ContactCreateRequest,
+    ContactResponse,
+    ContactUpdateRequest,
     LinkResidentAccountRequest,
     ResidentCreateRequest,
     ResidentResponse,
+    ResidentDetailResponse,
+    ResidentLocationResponse,
+    ResidentPointRequest,
     SubscriptionCreateRequest,
     SubscriptionResponse,
+    SubscriptionUpdateRequest,
+    ConsentResponse,
+    SupportNeedRequest,
 )
 from services.profile_service import AccessContext, ProfileService
 
@@ -208,6 +218,75 @@ class ResidentService:
         await self.session.commit()
         return await self._resident_response(resident)
 
+    async def resident_detail(self, resident_id: UUID, user: CurrentUser) -> ResidentDetailResponse:
+        context = await self.profiles.access_context(user)
+        resident = await self._scoped_resident(resident_id, context)
+        base = await self._resident_response(resident)
+        contacts = list(await self.session.scalars(select(ResidentContact).where(ResidentContact.resident_id == resident.id).order_by(ResidentContact.created_at)))
+        locations = list(await self.session.scalars(select(ResidentLocation).where(ResidentLocation.resident_id == resident.id).order_by(ResidentLocation.created_at)))
+        return ResidentDetailResponse(**base.model_dump(), contacts=[self._contact_response(item) for item in contacts], locations=[await self._location_response(item) for item in locations])
+
+    async def add_contact(self, resident_id: UUID, payload: ContactCreateRequest, user: CurrentUser) -> ContactResponse:
+        context = await self.profiles.access_context(user)
+        resident = await self._scoped_resident(resident_id, context)
+        existing = await self.session.scalar(select(ResidentContact).where(ResidentContact.channel == payload.channel, ResidentContact.value_lookup_hash == self.protector.lookup_hash(payload.value)))
+        if existing:
+            raise AppError(409, "Contact is already registered", "contact_duplicate")
+        now = utc_now()
+        protected = self.protector.protect(payload.value, context="resident_contact.value")
+        if payload.is_primary:
+            await self._clear_primary_contacts(resident.id, payload.channel)
+        contact = ResidentContact(resident_id=resident.id, channel=payload.channel, value_ciphertext=protected.ciphertext, value_lookup_hash=self.protector.lookup_hash(payload.value), key_version=protected.key_version, verified_at=now if payload.verified else None, is_primary=payload.is_primary, is_active=True, delivery_metadata={}, created_at=now)
+        self.session.add(contact)
+        await self.session.flush()
+        self._audit(context, "resident.contact.create", "resident_contact", contact.id, resident.managed_geo_location_id, {"channel": payload.channel})
+        await self.session.commit()
+        return self._contact_response(contact)
+
+    async def update_contact(self, resident_id: UUID, contact_id: UUID, payload: ContactUpdateRequest, user: CurrentUser) -> ContactResponse:
+        context = await self.profiles.access_context(user)
+        resident = await self._scoped_resident(resident_id, context)
+        contact = await self.session.scalar(select(ResidentContact).where(ResidentContact.id == contact_id, ResidentContact.resident_id == resident.id))
+        if contact is None:
+            raise AppError(404, "Contact not found", "contact_not_found")
+        if payload.value is not None:
+            protected = self.protector.protect(payload.value, context="resident_contact.value")
+            contact.value_ciphertext = protected.ciphertext
+            contact.value_lookup_hash = self.protector.lookup_hash(payload.value)
+            contact.key_version = protected.key_version
+            contact.verified_at = None
+        if payload.is_primary is True:
+            await self._clear_primary_contacts(resident.id, contact.channel)
+            contact.is_primary = True
+        elif payload.is_primary is False:
+            contact.is_primary = False
+        if payload.is_active is not None:
+            contact.is_active = payload.is_active
+            contact.revoked_at = utc_now() if not payload.is_active else None
+        self._audit(context, "resident.contact.update", "resident_contact", contact.id, resident.managed_geo_location_id, {"channel": contact.channel, "is_active": contact.is_active})
+        await self.session.commit()
+        return self._contact_response(contact)
+
+    async def add_location(self, resident_id: UUID, payload: ResidentPointRequest, user: CurrentUser) -> ResidentLocationResponse:
+        context = await self.profiles.access_context(user)
+        resident = await self._scoped_resident(resident_id, context)
+        protected_label = self.protector.protect(payload.label, context="resident_location.label") if payload.label else None
+        location = ResidentLocation(resident_id=resident.id, geo_location_id=resident.managed_geo_location_id, location_type=payload.location_type, label_ciphertext=protected_label.ciphertext if protected_label else None, label_key_version=protected_label.key_version if protected_label else None, location=point_value(self.session.get_bind().dialect.name, payload.longitude, payload.latitude), precision_m=payload.precision_m, is_active=True, created_at=utc_now())
+        self.session.add(location)
+        await self.session.flush()
+        self._audit(context, "resident.location.create", "resident_location", location.id, resident.managed_geo_location_id, {"location_type": location.location_type})
+        await self.session.commit()
+        return await self._location_response(location)
+
+    async def add_support_need(self, resident_id: UUID, payload: SupportNeedRequest, user: CurrentUser) -> None:
+        context = await self.profiles.access_context(user)
+        resident = await self._scoped_resident(resident_id, context)
+        item = SupportNeed(resident_id=resident.id, need_type=payload.need_type, details=payload.details, is_active=True, created_at=utc_now())
+        self.session.add(item)
+        await self.session.flush()
+        self._audit(context, "resident.support_need.create", "support_need", item.id, resident.managed_geo_location_id, {"need_type": payload.need_type})
+        await self.session.commit()
+
     async def list_households(self, user: CurrentUser) -> list[HouseholdResponse]:
         context = await self.profiles.access_context(user)
         query = select(Household).order_by(Household.code)
@@ -296,6 +375,9 @@ class ResidentService:
 
     async def list_subscriptions(self, user: CurrentUser) -> list[SubscriptionResponse]:
         context, resident = await self._self_resident(user)
+        return await self._list_subscriptions_for(resident)
+
+    async def _list_subscriptions_for(self, resident: Resident) -> list[SubscriptionResponse]:
         rows = (
             await self.session.scalars(
                 select(AlertSubscription)
@@ -309,6 +391,11 @@ class ResidentService:
         self, payload: SubscriptionCreateRequest, user: CurrentUser
     ) -> SubscriptionResponse:
         context, resident = await self._self_resident(user)
+        return await self._create_subscription_for(context, resident, payload)
+
+    async def _create_subscription_for(
+        self, context: AccessContext, resident: Resident, payload: SubscriptionCreateRequest
+    ) -> SubscriptionResponse:
         if payload.resident_location_id:
             location = await self.session.get(ResidentLocation, payload.resident_location_id)
             if location is None or location.resident_id != resident.id:
@@ -359,6 +446,33 @@ class ResidentService:
         )
         await self.session.commit()
 
+    async def list_consents(self, user: CurrentUser) -> list[ConsentResponse]:
+        _, resident = await self._self_resident(user)
+        rows = list(await self.session.scalars(select(ConsentRecord).where(ConsentRecord.resident_id == resident.id).order_by(ConsentRecord.granted_at.desc())))
+        return [ConsentResponse(id=row.id, purpose=row.purpose, policy_version=row.policy_version, granted_at=row.granted_at, withdrawn_at=row.withdrawn_at) for row in rows]
+
+    async def withdraw_alert_consent(self, user: CurrentUser, consent_id: UUID) -> None:
+        context, resident = await self._self_resident(user)
+        consent = await self.session.scalar(select(ConsentRecord).where(ConsentRecord.id == consent_id, ConsentRecord.resident_id == resident.id))
+        if consent is None:
+            raise AppError(404, "Consent not found", "consent_not_found")
+        consent.withdrawn_at = utc_now()
+        self._audit(context, "consent.withdraw", "consent", consent.id, resident.managed_geo_location_id, {"purpose": consent.purpose})
+        await self.session.commit()
+
+    async def update_subscription(self, subscription_id: UUID, payload: SubscriptionUpdateRequest, user: CurrentUser) -> SubscriptionResponse:
+        context, resident = await self._self_resident(user)
+        row = await self.session.scalar(select(AlertSubscription).where(AlertSubscription.id == subscription_id, AlertSubscription.resident_id == resident.id))
+        if row is None:
+            raise AppError(404, "Subscription not found", "subscription_not_found")
+        for field in ("minimum_level", "quiet_hours_start", "quiet_hours_end", "is_active"):
+            value = getattr(payload, field)
+            if value is not None:
+                setattr(row, field, value)
+        self._audit(context, "subscription.update", "alert_subscription", row.id, resident.managed_geo_location_id, {"is_active": row.is_active})
+        await self.session.commit()
+        return self._subscription_response(row)
+
     async def _self_resident(self, user: CurrentUser) -> tuple[AccessContext, Resident]:
         context = await self.profiles.access_context(user)
         resident = await self.session.scalar(
@@ -375,8 +489,15 @@ class ResidentService:
         resident = await self.session.get(Resident, resident_id)
         if resident is None or resident.deleted_at is not None:
             raise AppError(404, "Resident not found", "resident_not_found")
+        if context.domain_role == "resident" and resident.user_profile_id != context.profile.id:
+            raise AppError(403, "Residents can only access themselves", "resident_forbidden")
         await self.profiles.assert_area_access(context, resident.managed_geo_location_id)
         return resident
+
+    async def _clear_primary_contacts(self, resident_id: UUID, channel: str) -> None:
+        contacts = list(await self.session.scalars(select(ResidentContact).where(ResidentContact.resident_id == resident_id, ResidentContact.channel == channel, ResidentContact.is_primary.is_(True))))
+        for contact in contacts:
+            contact.is_primary = False
 
     async def _resident_response(self, resident: Resident) -> ResidentResponse:
         village_code = await self.session.scalar(
@@ -429,6 +550,21 @@ class ResidentService:
             status=household.status,
             simulated=household.simulated,
         )
+
+    def _contact_response(self, contact: ResidentContact) -> ContactResponse:
+        value = self.protector.reveal(contact.value_ciphertext, context="resident_contact.value")
+        visible = value[-4:] if len(value) > 4 else value
+        return ContactResponse(id=contact.id, channel=contact.channel, masked_value=f"***{visible}", is_primary=contact.is_primary, is_active=contact.is_active, verified_at=contact.verified_at)
+
+    async def _location_response(self, location: ResidentLocation) -> ResidentLocationResponse:
+        coordinates = location.location.get("coordinates") if isinstance(location.location, dict) else None
+        if coordinates is None:
+            longitude = await self.session.scalar(select(func.ST_X(location.location)))
+            latitude = await self.session.scalar(select(func.ST_Y(location.location)))
+        else:
+            longitude, latitude = coordinates
+        label = self.protector.reveal(location.label_ciphertext, context="resident_location.label") if location.label_ciphertext else None
+        return ResidentLocationResponse(id=location.id, location_type=location.location_type, latitude=float(latitude), longitude=float(longitude), label=label, precision_m=location.precision_m, is_active=location.is_active)
 
     @staticmethod
     def _subscription_response(row: AlertSubscription) -> SubscriptionResponse:

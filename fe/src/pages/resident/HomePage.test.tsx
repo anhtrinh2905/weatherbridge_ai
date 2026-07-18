@@ -1,54 +1,28 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import { ResidentStatusProvider } from "../../shared/domain/residentStatusStore";
-import { getOccupationRecommendation } from "../../shared/domain/recommendations";
-import { getAlertForVillageDay, getSelfResident, personalizeAlert } from "../../shared/domain/mockData";
 import { I18nProvider } from "../../shared/i18n/I18nProvider";
 import { ResidentHomePage } from "./HomePage";
 
-vi.mock("../../features/auth/hooks", () => ({
-  useAuth: () => ({
-    user: {
-      id: "demo-resident",
-      displayName: "Người dân demo",
-      emailVerified: true,
-      roles: ["resident"],
-      villageId: "muong-pon-1",
-    },
-    initialized: true,
-    authenticated: true,
+const mutate = vi.fn();
+
+vi.mock("../../features/operations/hooks", () => ({
+  useInbox: () => ({
+    isPending: false,
+    isError: false,
+    data: [{
+      alert_id: "alert-1", recipient_id: "recipient-1", hazard_type: "flash_flood", level: 4,
+      tier: "go_now", what_happened: "Mua lon tren luu vuc", danger_description: "Nguy co lu quet cao",
+      action_instruction: "Di chuyen den noi an toan", deadline_instruction: "Ngay", deadline_at: "2026-07-20T08:00:00Z",
+      acknowledgement_status: "pending", acknowledged_at: null,
+    }],
   }),
+  useAcknowledgeAlert: () => ({ mutate, isPending: false }),
 }));
 
-test("resident home shows occupation-personalized action for demo farmer", () => {
-  const self = getSelfResident("muong-pon-1");
-  expect(self?.occupation).toBe("nong_dan");
-
-  const base = getAlertForVillageDay("muong-pon-1", 0);
-  expect(base).toBeDefined();
-  const personalized = personalizeAlert(base!, self!.occupation);
-  const expected = getOccupationRecommendation(self!.occupation, personalized.hazardType, personalized.tier);
-
-  const queryClient = new QueryClient();
-  render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        <I18nProvider>
-          <ResidentStatusProvider>
-            <ResidentHomePage />
-          </ResidentStatusProvider>
-        </I18nProvider>
-      </MemoryRouter>
-    </QueryClientProvider>,
-  );
-
-  expect(screen.getByText(/Vàng A Quàng/i)).toBeInTheDocument();
-  expect(screen.getByText(/Nông dân/i)).toBeInTheDocument();
-  expect(screen.getByText(expected.whatToDo)).toBeInTheDocument();
-  expect(screen.getByText(/Diễn tập/i)).toBeInTheDocument();
-  expect(screen.getByRole("tab", { name: /Hôm nay/i })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Xem vì sao có cảnh báo này/i })).toBeInTheDocument();
-  expect(screen.queryByRole("link", { name: /số liệu chi tiết/i })).not.toBeInTheDocument();
+test("resident inbox displays a personalized delivery and stores acknowledgement", () => {
+  render(<I18nProvider><ResidentHomePage /></I18nProvider>);
+  expect(screen.getByText("Mua lon tren luu vuc")).toBeInTheDocument();
+  expect(screen.getByText("Di chuyen den noi an toan")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: /Tôi an toàn/i }));
+  expect(mutate).toHaveBeenCalledWith({ id: "alert-1", status: "safe" });
 });

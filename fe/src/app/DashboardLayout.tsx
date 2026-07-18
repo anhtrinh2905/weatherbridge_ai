@@ -8,6 +8,7 @@ import { cn } from "../shared/lib/cn";
 import { LanguageSwitcher } from "../shared/ui/LanguageSwitcher";
 import { Logo } from "../shared/ui/Logo";
 import type { ComponentType } from "react";
+import { useProfile } from "../features/operations/hooks";
 
 export interface SidebarItem {
   to: string;
@@ -52,6 +53,7 @@ export function DashboardLayout({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const labels = useLocalizedLabels();
+  useProfile();
 
   const groups: SidebarSection[] = sections ?? (items ? [{ items }] : []);
 

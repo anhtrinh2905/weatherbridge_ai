@@ -11,6 +11,7 @@ from modules.alerts.schemas import (
     AlertCreateRequest,
     AlertInboxItem,
     AlertResponse,
+    DeliverySummaryItem,
     PublishAlertResponse,
 )
 from services.alert_service import AlertService
@@ -51,6 +52,15 @@ async def publish_alert(
     session: AsyncSession = Depends(get_db),
 ) -> PublishAlertResponse:
     return await AlertService(session).publish_alert(alert_id, user)
+
+
+@router.get("/{alert_id}/delivery-summary", response_model=list[DeliverySummaryItem])
+async def delivery_summary(
+    alert_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> list[DeliverySummaryItem]:
+    return await AlertService(session).delivery_summary(alert_id, user)
 
 
 @router.get("/inbox", response_model=list[AlertInboxItem])

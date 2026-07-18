@@ -1,134 +1,19 @@
-import { useState } from "react";
-import { HandHelping, ShieldCheck } from "lucide-react";
-import { useAuth } from "../../features/auth/hooks";
-import { useTranslation } from "../../shared/i18n/I18nProvider";
-import { WebPushPanel } from "../../features/notifications/WebPushPanel";
-import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
-import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
+import { CheckCircle2, HandHelping, ShieldAlert } from "lucide-react";
+import { useAcknowledgeAlert, useInbox } from "../../features/operations/hooks";
 import { Button } from "../../shared/ui/Button";
-import type { Occupation } from "../../shared/domain/types";
-import {
-  getAlertForVillageDay,
-  getSelfResident,
-  getVillage,
-  personalizeAlert,
-} from "../../shared/domain/mockData";
-import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
-import { cn } from "../../shared/lib/cn";
-
-function occupationKey(occupation: Occupation): string {
-  return `occupation.${occupation}`;
-}
+import { HazardLevelBadge, TierBadge } from "../../shared/ui/HazardBadge";
+import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
+import { Spinner } from "../../shared/ui/Spinner";
 
 export function ResidentHomePage() {
-  const { user } = useAuth();
-  const { t } = useTranslation();
-  const villageId = user?.villageId ?? "muong-pon-1";
-  const village = getVillage(villageId);
-  const self = getSelfResident(villageId);
-  const { getStatus, setSafetyStatus } = useResidentStatusStore();
-  const status = self ? getStatus(self.id) : undefined;
-  const [day, setDay] = useState(0);
-
-  const dayTabs = [
-    { day: 0, label: t("resident.dayToday") },
-    { day: 1, label: t("resident.dayPlus1") },
-    { day: 2, label: t("resident.dayPlus2") },
-  ] as const;
-
-  const baseAlert = getAlertForVillageDay(villageId, day);
-  const alert = baseAlert && self ? personalizeAlert(baseAlert, self.occupation) : baseAlert;
-
-  return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="space-y-4 px-4 sm:px-0">
-        <SafetyDisclaimer />
-        <WebPushPanel />
-      </div>
-
-      <div className="px-4 sm:px-0">
-        <p className="text-xs uppercase tracking-wide text-muted">
-          {t("resident.village", { village: village?.name ?? "" })}
-        </p>
-        {self && (
-          <p className="mt-0.5 text-base text-fg">
-            <span className="font-semibold text-fg-strong">{self.fullName}</span>
-            <span className="text-muted"> · {t(occupationKey(self.occupation))}</span>
-          </p>
-        )}
-      </div>
-
-      <div className="grid items-start gap-4 lg:grid-cols-12 lg:gap-6">
-        <div className="lg:col-span-8">
-          {alert ? (
-            <AlertCard alert={alert} size="hero" forecastDay={day} />
-          ) : (
-            <SafeStatusCard size="hero" />
-          )}
-        </div>
-
-        <aside className="space-y-4 px-4 sm:px-0 lg:col-span-4">
-          <div className="flex gap-2" role="tablist" aria-label={t("resident.dayTabsAriaLabel")}>
-            {dayTabs.map((tab) => (
-              <button
-                key={tab.day}
-                type="button"
-                role="tab"
-                aria-selected={day === tab.day}
-                onClick={() => setDay(tab.day)}
-                className={cn(
-                  "min-h-12 flex-1 rounded-xl border text-sm font-semibold transition-colors",
-                  day === tab.day
-                    ? "border-accent bg-accent/15 text-fg-strong"
-                    : "border-border bg-surface-2 text-muted hover:bg-surface-3",
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {self && (
-            <div className="rounded-2xl border border-border bg-surface-2 p-4 sm:rounded-3xl sm:p-5">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-base font-semibold text-fg-strong">{t("resident.safetyCheckTitle")}</p>
-                <span className="rounded-md border border-dashed border-accent/50 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-accent">
-                  {t("resident.exerciseBadge")}
-                </span>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <Button
-                  variant={status?.safetyStatus === "safe" ? "primary" : "secondary"}
-                  className={cn(
-                    "min-h-16 flex-col gap-1 text-sm",
-                    status?.safetyStatus === "safe" && "ring-2 ring-positive",
-                  )}
-                  onClick={() => setSafetyStatus(self.id, "safe")}
-                >
-                  <ShieldCheck size={22} />
-                  {t("resident.imSafe")}
-                </Button>
-                <Button
-                  variant={status?.safetyStatus === "need_help" ? "danger" : "secondary"}
-                  className="min-h-16 flex-col gap-1 text-sm"
-                  onClick={() => setSafetyStatus(self.id, "need_help")}
-                >
-                  <HandHelping size={22} />
-                  {t("resident.needHelp")}
-                </Button>
-              </div>
-              {status?.safetyStatusUpdatedAt && (
-                <p className="mt-3 text-center text-xs text-muted">
-                  {t("resident.recordedAt", {
-                    time: new Date(status.safetyStatusUpdatedAt).toLocaleTimeString("vi-VN"),
-                  })}
-                </p>
-              )}
-            </div>
-          )}
-        </aside>
-      </div>
-
-    </div>
-  );
+  const inbox = useInbox();
+  const acknowledge = useAcknowledgeAlert();
+  if (inbox.isPending) return <Spinner label="Đang tải cảnh báo" />;
+  return <div className="space-y-5">
+    <SafetyDisclaimer />
+    <header><p className="text-xs font-semibold uppercase tracking-wide text-muted">Cảnh báo của bạn</p><h1 className="mt-1 text-2xl font-semibold text-fg-strong">Theo dõi và phản hồi an toàn</h1></header>
+    {inbox.isError && <p className="rounded-lg border border-danger/30 bg-danger/10 p-4 text-sm text-danger">Không thể tải hộp thư cảnh báo.</p>}
+    {inbox.data?.length === 0 && <div className="rounded-lg border border-positive/30 bg-positive/10 p-6 text-center"><CheckCircle2 className="mx-auto text-positive" size={32} /><p className="mt-3 font-semibold">Chưa có cảnh báo đang hiệu lực</p></div>}
+    <div className="space-y-4">{inbox.data?.map((alert) => <article key={alert.alert_id} className="rounded-lg border border-border bg-surface-2 p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2"><ShieldAlert className="text-accent" size={20} /><span className="font-semibold">{alert.hazard_type ?? "Cảnh báo"}</span></div><div className="flex gap-2"><HazardLevelBadge level={alert.level as 1 | 2 | 3 | 4 | 5} compact /><TierBadge tier={alert.tier as "prepare" | "go_now"} size="sm" /></div></div><h2 className="mt-4 text-lg font-semibold text-fg-strong">{alert.what_happened}</h2><p className="mt-2 text-sm text-muted">{alert.danger_description}</p><p className="mt-3 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-fg">{alert.action_instruction}</p><p className="mt-3 text-xs text-muted">Thực hiện trước: {new Date(alert.deadline_at).toLocaleString("vi-VN")}</p><div className="mt-4 flex flex-wrap gap-2"><Button variant="secondary" className="min-h-9 px-3" isLoading={acknowledge.isPending} onClick={() => acknowledge.mutate({ id: alert.alert_id, status: "seen" })}>Đã xem</Button><Button className="min-h-9 px-3" isLoading={acknowledge.isPending} onClick={() => acknowledge.mutate({ id: alert.alert_id, status: "safe" })}><CheckCircle2 size={15} /> Tôi an toàn</Button><Button variant="danger" className="min-h-9 px-3" isLoading={acknowledge.isPending} onClick={() => acknowledge.mutate({ id: alert.alert_id, status: "need_help" })}><HandHelping size={15} /> Cần hỗ trợ</Button></div>{alert.acknowledged_at && <p className="mt-3 text-xs text-muted">Trạng thái: {alert.acknowledgement_status}</p>}</article>)}</div>
+  </div>;
 }

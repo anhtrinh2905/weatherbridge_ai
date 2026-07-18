@@ -69,3 +69,9 @@ class AlertInboxItem(BaseModel):
     deadline_at: datetime
     acknowledgement_status: str
     acknowledged_at: datetime | None
+
+
+class DeliverySummaryItem(BaseModel):
+    channel: str
+    status: str
+    count: int

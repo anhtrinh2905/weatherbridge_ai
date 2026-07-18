@@ -9,6 +9,7 @@ from core.config import Settings, get_settings
 from core.errors import AppError
 from database.session import get_db
 from modules.notifications.schemas import (
+    NotificationChannelResponse,
     WebPushConfigResponse,
     WebPushSubscriptionRequest,
     WebPushSubscriptionResponse,
@@ -16,6 +17,19 @@ from modules.notifications.schemas import (
 from services.notification_endpoint_service import NotificationEndpointService
 
 router = APIRouter()
+
+
+@router.get("/channels", response_model=list[NotificationChannelResponse])
+async def notification_channels(
+    _: CurrentUser = Depends(get_current_user),
+    settings: Settings = Depends(get_settings),
+) -> list[NotificationChannelResponse]:
+    transport_enabled = settings.notification_delivery_mode in {"simulate", "configured"}
+    return [
+        NotificationChannelResponse(channel="web_push", available=bool(settings.web_push_vapid_public_key)),
+        NotificationChannelResponse(channel="sms", available=transport_enabled and settings.sms_provider != "disabled"),
+        NotificationChannelResponse(channel="zalo", available=transport_enabled and settings.zalo_provider != "disabled"),
+    ]
 
 
 @router.get("/web-push/config", response_model=WebPushConfigResponse)

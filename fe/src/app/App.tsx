@@ -33,6 +33,7 @@ import { VillageHeadMapPage } from "../pages/village-head/MapPage";
 import { ResidentShell } from "../pages/resident/ResidentShell";
 import { ResidentHomePage } from "../pages/resident/HomePage";
 import { ResidentMapPage } from "../pages/resident/MapPage";
+import { ResidentNotificationsPage } from "../pages/resident/NotificationsPage";
 
 export function App() {
   return (
@@ -82,6 +83,7 @@ export function App() {
           <Route path="/resident" element={<ResidentShell />}>
             <Route index element={<ResidentHomePage />} />
             <Route path="map" element={<ResidentMapPage />} />
+            <Route path="notifications" element={<ResidentNotificationsPage />} />
             <Route path="details" element={<Navigate to="/resident" replace />} />
           </Route>
         </Route>

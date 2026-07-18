@@ -1,177 +1,19 @@
-import { useNavigate } from "react-router-dom";
-import { CheckCircle2, CircleHelp, MapPin, Navigation, ShieldCheck, Siren, type LucideIcon } from "lucide-react";
-import { PageHeader, Card } from "../../shared/ui/PageHeader";
+import { Plus, UserRound } from "lucide-react";
+import { useState } from "react";
+import { useCreateResident, useProfile, useResidents } from "../../features/operations/hooks";
 import { Button } from "../../shared/ui/Button";
-import { useAuth } from "../../features/auth/hooks";
-import { getResidentsByVillage, getVillage, triageScore } from "../../shared/domain/mockData";
-import { useTranslation } from "../../shared/i18n/I18nProvider";
-import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
-import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
-import { cn } from "../../shared/lib/cn";
-import type { ResidentSim, SafetyStatus } from "../../shared/domain/types";
-import type { ResidentStatus } from "../../shared/domain/residentStatusStore";
-
-const SAFETY_META: Record<SafetyStatus, { key: string; classes: string; icon: LucideIcon }> = {
-  safe: { key: "villageHead.residents.statusSafe", classes: "border-positive/25 bg-positive/10 text-positive", icon: ShieldCheck },
-  need_help: { key: "villageHead.residents.statusNeedHelp", classes: "border-danger/30 bg-danger/10 text-danger", icon: Siren },
-  unknown: { key: "villageHead.residents.statusUnknown", classes: "border-border-strong bg-surface text-muted", icon: CircleHelp },
-};
-
-function SummaryPill({ label, value, tone }: { label: string; value: number; tone: "default" | "positive" | "warning" | "danger" }) {
-  const classes = {
-    default: "border-border bg-surface-2 text-fg",
-    positive: "border-positive/25 bg-positive/10 text-positive",
-    warning: "border-accent/25 bg-accent/10 text-accent",
-    danger: "border-danger/30 bg-danger/10 text-danger",
-  };
-  return (
-    <div className={cn("rounded-lg border px-4 py-3", classes[tone])}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-fg-strong">{value}</p>
-    </div>
-  );
-}
-
-function ResidentCard({
-  resident,
-  status,
-  onOpenMap,
-  onMarkVisited,
-}: {
-  resident: ResidentSim;
-  status: ResidentStatus;
-  onOpenMap: () => void;
-  onMarkVisited: () => void;
-}) {
-  const { t } = useTranslation();
-  const labels = useLocalizedLabels();
-  const safety = SAFETY_META[status.safetyStatus];
-  const SafetyIcon = safety.icon;
-  const score = triageScore(resident);
-
-  return (
-    <article
-      className={cn(
-        "grid gap-4 rounded-lg border bg-surface-2 p-4 md:grid-cols-[minmax(0,1fr)_auto]",
-        status.safetyStatus === "need_help" ? "border-danger/35" : "border-border",
-      )}
-    >
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-base font-semibold text-fg-strong">{resident.fullName}</h2>
-          {resident.priority === "vulnerable" && (
-            <span className="rounded-full border border-accent/25 bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent">
-              {t("villageHead.residents.priorityBadge")}
-            </span>
-          )}
-          <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold", safety.classes)}>
-            <SafetyIcon size={14} aria-hidden />
-            {t(safety.key)}
-          </span>
-        </div>
-
-        <div className="mt-3 grid grid-cols-1 gap-2 text-sm text-muted sm:grid-cols-3">
-          <p>{t("villageHead.residents.occupationAge", { occupation: labels.occupation[resident.occupation], age: resident.age })}</p>
-          <p>
-            {t("villageHead.residents.priorityScoreLabel")}: <span className="font-semibold text-fg">{score}</span>
-          </p>
-          <p>{status.visitedByHeadAt ? t("villageHead.residents.visited") : t("villageHead.residents.notVisited")}</p>
-        </div>
-
-        {resident.vulnerabilityReason.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {resident.vulnerabilityReason.map((reason) => (
-              <span key={reason} className="rounded-md border border-border-soft bg-surface px-2 py-1 text-xs text-muted">
-                {labels.vulnerability[reason]}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2 md:justify-end">
-        <Button variant="secondary" className="min-h-10 rounded-lg px-3 text-xs" onClick={onOpenMap}>
-          <Navigation size={14} /> {t("villageHead.residents.locationButton")}
-        </Button>
-        <Button
-          variant={status.visitedByHeadAt ? "secondary" : "primary"}
-          className={cn("min-h-10 rounded-lg px-3 text-xs", status.visitedByHeadAt && "cursor-default opacity-70")}
-          disabled={Boolean(status.visitedByHeadAt)}
-          onClick={onMarkVisited}
-        >
-          {status.visitedByHeadAt ? (
-            <>
-              <CheckCircle2 size={14} /> {t("villageHead.residents.visitedButton")}
-            </>
-          ) : (
-            <>
-              <MapPin size={14} /> {t("villageHead.residents.markVisitedButton")}
-            </>
-          )}
-        </Button>
-      </div>
-    </article>
-  );
-}
+import { Card, PageHeader } from "../../shared/ui/PageHeader";
 
 export function VillageHeadResidentsPage() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { t } = useTranslation();
-  const villageId = user?.villageId ?? "muong-pon-1";
-  const village = getVillage(villageId);
-  const residents = [...getResidentsByVillage(villageId)].sort((a, b) => triageScore(b) - triageScore(a));
-  const { getStatus, markVisited } = useResidentStatusStore();
-
-  const priorityCount = residents.filter((r) => r.priority === "vulnerable").length;
-  const pendingVisits = residents.filter((r) => r.priority === "vulnerable" && !getStatus(r.id).visitedByHeadAt).length;
-  const needHelpCount = residents.filter((r) => getStatus(r.id).safetyStatus === "need_help").length;
-  const safeCount = residents.filter((r) => getStatus(r.id).safetyStatus === "safe").length;
-
-  return (
-    <div>
-      <PageHeader
-        eyebrow={t("role.village_head")}
-        title={t("villageHead.residents.title", { village: village?.name ?? t("villageHead.residents.myVillageFallback") })}
-        description={t("villageHead.residents.description")}
-      />
-
-      <section className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <SummaryPill label={t("villageHead.residents.totalHouseholds")} value={residents.length} tone="default" />
-        <SummaryPill label={t("villageHead.residents.priorityHouseholds")} value={priorityCount} tone="warning" />
-        <SummaryPill label={t("villageHead.residents.needHelp")} value={needHelpCount} tone={needHelpCount > 0 ? "danger" : "default"} />
-        <SummaryPill label={t("villageHead.residents.safe")} value={safeCount} tone="positive" />
-      </section>
-
-      <Card className="rounded-lg">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border-soft pb-4">
-          <div>
-            <p className="text-sm font-semibold text-fg-strong">{t("villageHead.residents.visitQueue")}</p>
-            <p className="mt-1 text-xs text-muted">
-              {t("villageHead.residents.pendingVisitsNotice", { count: pendingVisits })}
-            </p>
-          </div>
-          <span className="rounded-full border border-accent/25 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-            {t("villageHead.residents.highPriorityBadge")}
-          </span>
-        </div>
-        <div className="space-y-3">
-          {residents.map((resident) => (
-            <ResidentCard
-              key={resident.id}
-              resident={resident}
-              status={getStatus(resident.id)}
-              onOpenMap={() => navigate(`/village-head/map?resident=${encodeURIComponent(resident.id)}`)}
-              onMarkVisited={() => markVisited(resident.id)}
-            />
-          ))}
-        </div>
-      </Card>
-
-      <p className="mt-3 text-xs leading-5 text-muted-2">
-        {t("villageHead.residents.footnotePart1")} <code>resident_sim.visited_by_head_at</code>
-        {t("villageHead.residents.footnotePart2")}
-      </p>
-    </div>
-  );
+  const residents = useResidents();
+  const profile = useProfile();
+  const create = useCreateResident();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const village = profile.data?.area_codes.find((code) => code.startsWith("village-"));
+  return <div>
+    <PageHeader eyebrow="Trưởng bản" title="Danh sách cư dân" description="Chỉ hiển thị cư dân trong địa bàn được phân công." actions={<Button onClick={() => setOpen((value) => !value)}><Plus size={16} /> Thêm cư dân</Button>} />
+    {open && <Card className="mb-5"><form className="flex flex-wrap gap-3" onSubmit={(event) => { event.preventDefault(); if (name && village) create.mutate({ full_name: name, village_code: village, source: "official", simulated: true, contacts: [], locations: [], livelihood_details: {} }, { onSuccess: () => { setName(""); setOpen(false); } }); }}><input required value={name} onChange={(event) => setName(event.target.value)} placeholder="Họ và tên" className="min-w-56 flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm" /><Button type="submit" isLoading={create.isPending}>Lưu cư dân</Button></form></Card>}
+    <Card><div className="divide-y divide-border-soft">{residents.data?.map((resident) => <div key={resident.id} className="flex items-center justify-between gap-4 py-3"><div className="flex items-center gap-3"><UserRound size={18} className="text-accent" /><div><p className="font-medium text-fg-strong">{resident.full_name}</p><p className="text-xs text-muted">{resident.village_code} · {resident.verification_status}</p></div></div><div className="text-right text-xs text-muted"><p>{resident.contact_channels.join(", ") || "Chưa có kênh nhận tin"}</p><p>{resident.livelihood_types.join(", ") || "Chưa khai báo sinh kế"}</p></div></div>)}{residents.data?.length === 0 && <p className="py-6 text-center text-sm text-muted">Chưa có cư dân trong phạm vi.</p>}</div></Card>
+  </div>;
 }

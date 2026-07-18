@@ -58,6 +58,8 @@ class Settings(BaseSettings):
     web_push_subject: str = "mailto:dev@weatherbridge.local"
     web_push_vapid_private_key: str | None = None
     web_push_vapid_public_key: str | None = None
+    sms_provider: str = "disabled"
+    zalo_provider: str = "disabled"
     pii_mode: str = "simulated"
     pii_encryption_key: str | None = None
     pii_hash_key: str | None = None

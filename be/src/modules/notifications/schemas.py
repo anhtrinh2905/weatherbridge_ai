@@ -27,3 +27,8 @@ class WebPushSubscriptionResponse(BaseModel):
     id: UUID
     is_active: bool
     last_seen_at: datetime
+
+
+class NotificationChannelResponse(BaseModel):
+    channel: str
+    available: bool

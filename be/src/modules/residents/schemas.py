@@ -15,12 +15,37 @@ class ContactCreateRequest(BaseModel):
     verified: bool = False
 
 
+class ContactUpdateRequest(BaseModel):
+    value: str | None = Field(default=None, min_length=3, max_length=500)
+    is_primary: bool | None = None
+    is_active: bool | None = None
+
+
+class ContactResponse(BaseModel):
+    id: UUID
+    channel: str
+    masked_value: str
+    is_primary: bool
+    is_active: bool
+    verified_at: datetime | None
+
+
 class ResidentPointRequest(BaseModel):
     location_type: Literal["home", "farm", "livestock", "watch_point"]
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)
     label: str | None = Field(default=None, max_length=255)
     precision_m: int | None = Field(default=None, ge=0, le=100_000)
+
+
+class ResidentLocationResponse(BaseModel):
+    id: UUID
+    location_type: str
+    latitude: float
+    longitude: float
+    label: str | None
+    precision_m: int | None
+    is_active: bool
 
 
 class ResidentCreateRequest(BaseModel):
@@ -46,6 +71,16 @@ class ResidentResponse(BaseModel):
     contact_channels: list[str]
     livelihood_types: list[str]
     created_at: datetime
+
+
+class ResidentDetailResponse(ResidentResponse):
+    contacts: list[ContactResponse]
+    locations: list[ResidentLocationResponse]
+
+
+class SupportNeedRequest(BaseModel):
+    need_type: str = Field(min_length=1, max_length=50)
+    details: dict[str, object] = Field(default_factory=dict)
 
 
 class LinkResidentAccountRequest(BaseModel):
@@ -99,3 +134,24 @@ class SubscriptionResponse(BaseModel):
     quiet_hours_start: time | None
     quiet_hours_end: time | None
     is_active: bool
+
+
+class SubscriptionUpdateRequest(BaseModel):
+    minimum_level: int | None = Field(default=None, ge=1, le=5)
+    quiet_hours_start: time | None = None
+    quiet_hours_end: time | None = None
+    is_active: bool | None = None
+
+    @model_validator(mode="after")
+    def validate_quiet_hours(self) -> "SubscriptionUpdateRequest":
+        if (self.quiet_hours_start is None) != (self.quiet_hours_end is None):
+            raise ValueError("Both quiet hour boundaries are required")
+        return self
+
+
+class ConsentResponse(BaseModel):
+    id: UUID
+    purpose: str
+    policy_version: str
+    granted_at: datetime
+    withdrawn_at: datetime | None

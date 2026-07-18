@@ -125,6 +125,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/residents/{resident_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Resident */
+        get: operations["get_resident_api_v1_residents__resident_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/residents/{resident_id}/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Contact */
+        post: operations["add_contact_api_v1_residents__resident_id__contacts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/residents/{resident_id}/contacts/{contact_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Contact */
+        patch: operations["update_contact_api_v1_residents__resident_id__contacts__contact_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/residents/{resident_id}/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Location */
+        post: operations["add_location_api_v1_residents__resident_id__locations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/residents/{resident_id}/support-needs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Support Need */
+        post: operations["add_support_need_api_v1_residents__resident_id__support_needs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/households": {
         parameters: {
             query?: never;
@@ -185,7 +270,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List Consents */
+        get: operations["list_consents_api_v1_subscriptions_consent_get"];
         put?: never;
         /** Grant Consent */
         post: operations["grant_consent_api_v1_subscriptions_consent_post"];
@@ -193,6 +279,40 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/consent/{consent_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Withdraw Consent */
+        delete: operations["withdraw_consent_api_v1_subscriptions_consent__consent_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/{subscription_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Subscription */
+        patch: operations["update_subscription_api_v1_subscriptions__subscription_id__patch"];
         trace?: never;
     };
     "/api/v1/hazards/manifest": {
@@ -275,6 +395,23 @@ export interface paths {
         put?: never;
         /** Publish Alert */
         post: operations["publish_alert_api_v1_alerts__alert_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/delivery-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Delivery Summary */
+        get: operations["delivery_summary_api_v1_alerts__alert_id__delivery_summary_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -589,6 +726,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications/channels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notification Channels */
+        get: operations["notification_channels_api_v1_notifications_channels_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications/web-push/config": {
         parameters: {
             query?: never;
@@ -656,6 +810,23 @@ export interface paths {
          *     and fe/src/shared/i18n/ for that offline path.
          */
         post: operations["translate_api_v1_translations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/speech/mms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Synthesize Mms Speech */
+        post: operations["synthesize_mms_speech_api_v1_speech_mms_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1146,6 +1317,25 @@ export interface components {
              */
             continue_on_error: boolean;
         };
+        /** ConsentResponse */
+        ConsentResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Purpose */
+            purpose: string;
+            /** Policy Version */
+            policy_version: string;
+            /**
+             * Granted At
+             * Format: date-time
+             */
+            granted_at: string;
+            /** Withdrawn At */
+            withdrawn_at: string | null;
+        };
         /** ContactCreateRequest */
         ContactCreateRequest: {
             /**
@@ -1165,6 +1355,33 @@ export interface components {
              * @default false
              */
             verified: boolean;
+        };
+        /** ContactResponse */
+        ContactResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Channel */
+            channel: string;
+            /** Masked Value */
+            masked_value: string;
+            /** Is Primary */
+            is_primary: boolean;
+            /** Is Active */
+            is_active: boolean;
+            /** Verified At */
+            verified_at: string | null;
+        };
+        /** ContactUpdateRequest */
+        ContactUpdateRequest: {
+            /** Value */
+            value?: string | null;
+            /** Is Primary */
+            is_primary?: boolean | null;
+            /** Is Active */
+            is_active?: boolean | null;
         };
         /** CreateAiJobRequest */
         CreateAiJobRequest: {
@@ -1190,6 +1407,15 @@ export interface components {
             email_verified: boolean;
             /** Roles */
             roles: string[];
+        };
+        /** DeliverySummaryItem */
+        DeliverySummaryItem: {
+            /** Channel */
+            channel: string;
+            /** Status */
+            status: string;
+            /** Count */
+            count: number;
         };
         /** DisasterEventResponse */
         DisasterEventResponse: {
@@ -1872,6 +2098,13 @@ export interface components {
             /** Keycloak Subject */
             keycloak_subject: string;
         };
+        /** NotificationChannelResponse */
+        NotificationChannelResponse: {
+            /** Channel */
+            channel: string;
+            /** Available */
+            available: boolean;
+        };
         /** PreviousRunRequest */
         PreviousRunRequest: {
             /**
@@ -1966,6 +2199,59 @@ export interface components {
             livelihood_details?: {
                 [key: string]: unknown;
             };
+        };
+        /** ResidentDetailResponse */
+        ResidentDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** User Profile Id */
+            user_profile_id: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Village Code */
+            village_code: string;
+            /** Birth Year */
+            birth_year: number | null;
+            /** Verification Status */
+            verification_status: string;
+            /** Simulated */
+            simulated: boolean;
+            /** Contact Channels */
+            contact_channels: string[];
+            /** Livelihood Types */
+            livelihood_types: string[];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Contacts */
+            contacts: components["schemas"]["ContactResponse"][];
+            /** Locations */
+            locations: components["schemas"]["ResidentLocationResponse"][];
+        };
+        /** ResidentLocationResponse */
+        ResidentLocationResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Location Type */
+            location_type: string;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Label */
+            label: string | null;
+            /** Precision M */
+            precision_m: number | null;
+            /** Is Active */
+            is_active: boolean;
         };
         /** ResidentPointRequest */
         ResidentPointRequest: {
@@ -2109,6 +2395,16 @@ export interface components {
             /** Simulated */
             simulated: boolean;
         };
+        /** SpeechSynthesisRequest */
+        SpeechSynthesisRequest: {
+            /** Text */
+            text: string;
+            /**
+             * Language
+             * @default hmn
+             */
+            language: string;
+        };
         /** SubscriptionCreateRequest */
         SubscriptionCreateRequest: {
             /** Resident Location Id */
@@ -2154,6 +2450,26 @@ export interface components {
             quiet_hours_end: string | null;
             /** Is Active */
             is_active: boolean;
+        };
+        /** SubscriptionUpdateRequest */
+        SubscriptionUpdateRequest: {
+            /** Minimum Level */
+            minimum_level?: number | null;
+            /** Quiet Hours Start */
+            quiet_hours_start?: string | null;
+            /** Quiet Hours End */
+            quiet_hours_end?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+        };
+        /** SupportNeedRequest */
+        SupportNeedRequest: {
+            /** Need Type */
+            need_type: string;
+            /** Details */
+            details?: {
+                [key: string]: unknown;
+            };
         };
         /** TranslationRequest */
         TranslationRequest: {
@@ -2473,6 +2789,176 @@ export interface operations {
             };
         };
     };
+    get_resident_api_v1_residents__resident_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResidentDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_contact_api_v1_residents__resident_id__contacts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_contact_api_v1_residents__resident_id__contacts__contact_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resident_id: string;
+                contact_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_location_api_v1_residents__resident_id__locations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResidentPointRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResidentLocationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_support_need_api_v1_residents__resident_id__support_needs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportNeedRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_households_api_v1_households_get: {
         parameters: {
             query?: never;
@@ -2614,6 +3100,26 @@ export interface operations {
             };
         };
     };
+    list_consents_api_v1_subscriptions_consent_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentResponse"][];
+                };
+            };
+        };
+    };
     grant_consent_api_v1_subscriptions_consent_post: {
         parameters: {
             query?: never;
@@ -2633,6 +3139,70 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_consent_api_v1_subscriptions_consent__consent_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                consent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_subscription_api_v1_subscriptions__subscription_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subscription_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriptionUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -2813,6 +3383,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublishAlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delivery_summary_api_v1_alerts__alert_id__delivery_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverySummaryItem"][];
                 };
             };
             /** @description Validation Error */
@@ -3461,6 +4062,26 @@ export interface operations {
             };
         };
     };
+    notification_channels_api_v1_notifications_channels_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationChannelResponse"][];
+                };
+            };
+        };
+    };
     web_push_config_api_v1_notifications_web_push_config_get: {
         parameters: {
             query?: never;
@@ -3563,6 +4184,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TranslationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    synthesize_mms_speech_api_v1_speech_mms_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpeechSynthesisRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

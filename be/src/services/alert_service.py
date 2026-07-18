@@ -29,6 +29,7 @@ from modules.alerts.schemas import (
     AlertCreateRequest,
     AlertInboxItem,
     AlertResponse,
+    DeliverySummaryItem,
     PublishAlertResponse,
 )
 from services.profile_service import AccessContext, ProfileService
@@ -324,6 +325,20 @@ class AlertService:
             )
             for recipient, alert, content in rows
         ]
+
+    async def delivery_summary(self, alert_id: UUID, user: CurrentUser) -> list[DeliverySummaryItem]:
+        context = await self.profiles.access_context(user)
+        await self._scoped_alert(alert_id, context)
+        rows = (
+            await self.session.execute(
+                select(NotificationOutbox.channel, NotificationOutbox.status, func.count(NotificationOutbox.id))
+                .join(AlertRecipient, AlertRecipient.id == NotificationOutbox.alert_recipient_id)
+                .where(AlertRecipient.alert_id == alert_id)
+                .group_by(NotificationOutbox.channel, NotificationOutbox.status)
+                .order_by(NotificationOutbox.channel, NotificationOutbox.status)
+            )
+        ).all()
+        return [DeliverySummaryItem(channel=channel, status=status, count=count) for channel, status, count in rows]
 
     async def acknowledge(
         self, alert_id: UUID, payload: AcknowledgeAlertRequest, user: CurrentUser
