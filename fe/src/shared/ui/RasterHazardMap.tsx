@@ -164,13 +164,14 @@ export function RasterHazardMap({
   const pinchRef = useRef<{ distance: number; midpoint: PointerPosition; viewport: Viewport } | null>(null);
   const suppressClickRef = useRef(false);
   const fittedRef = useRef<Viewport | null>(null);
+  const [fittedViewport, setFittedViewport] = useState<Viewport | null>(null);
   const [minZoom] = useState(MIN_ZOOM);
   const viewportKey = `${layer}:${day}`;
   const [viewportState, setViewportState] = useState<ViewportState>({
     key: viewportKey,
     viewport: defaultViewport(),
   });
-  const fallbackViewport = fittedRef.current ?? defaultViewport();
+  const fallbackViewport = fittedViewport ?? defaultViewport();
   const viewport = viewportState.key === viewportKey ? viewportState.viewport : fallbackViewport;
   const [isPanning, setIsPanning] = useState(false);
   const zoomPct = zoomToPct(viewport.zoom);
@@ -189,6 +190,7 @@ export function RasterHazardMap({
     const height = rect && rect.height > 0 ? rect.height : 508;
     const fitted = fitBoundaryViewport(width, height);
     fittedRef.current = fitted;
+    setFittedViewport(fitted);
     setViewport(fitted);
   };
 
@@ -344,7 +346,7 @@ export function RasterHazardMap({
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
-  const fitted = fittedRef.current;
+  const fitted = fittedViewport;
   const isAtFit =
     fitted !== null &&
     Math.abs(viewport.zoom - fitted.zoom) < 0.001 &&

@@ -67,8 +67,19 @@ export function HeatmapView({
   };
 
   const [selectedPoint, setSelectedPoint] = useState<RasterPoint | null>(null);
-  const [address, setAddress] = useState<string | null>(null);
-  const [addressStatus, setAddressStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [addressResult, setAddressResult] = useState<{
+    point: RasterPoint;
+    address: string | null;
+    status: "idle" | "error";
+  } | null>(null);
+  
+  const addressStatus = selectedPoint === null
+    ? "idle"
+    : addressResult?.point === selectedPoint
+      ? addressResult.status
+      : "loading";
+  const address = addressResult?.point === selectedPoint ? addressResult.address : null;
+  
   const [showFog, setShowFog] = useState(true);
   const forecastStatus = useLiveForecast();
   const forecastDays = getForecastDays();
@@ -98,14 +109,10 @@ export function HeatmapView({
 
   useEffect(() => {
     if (!isFull || !lonLat || !selectedPoint) {
-      setAddress(null);
-      setAddressStatus("idle");
       return;
     }
     const fallback = "Xã Mường Pồn, Điện Biên";
     const controller = new AbortController();
-    setAddressStatus("loading");
-    setAddress(null);
     (async () => {
       try {
         const result = await apiClient.post<{ displayName: string }>("/geocode/reverse", {
@@ -113,12 +120,10 @@ export function HeatmapView({
           longitude: lonLat.lon,
         });
         if (controller.signal.aborted) return;
-        setAddress(result.displayName || fallback);
-        setAddressStatus("idle");
+        setAddressResult({ point: selectedPoint, status: "idle", address: result.displayName || fallback });
       } catch {
         if (controller.signal.aborted) return;
-        setAddress(fallback);
-        setAddressStatus("error");
+        setAddressResult({ point: selectedPoint, status: "error", address: fallback });
       }
     })();
     return () => controller.abort();
