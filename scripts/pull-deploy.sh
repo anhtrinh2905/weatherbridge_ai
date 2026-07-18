@@ -155,14 +155,24 @@ if [ -n "${GHCR_USER:-}" ] && [ -n "${GHCR_TOKEN:-}" ]; then
 fi
 
 echo "deploying $ENVIRONMENT commit $TARGET_SHA"
-kubectl apply -f "$MANIFEST"
-kubectl -n "$NAMESPACE" rollout status statefulset/db --timeout=600s
-kubectl -n "$NAMESPACE" rollout status statefulset/keycloak-db --timeout=600s
-kubectl -n "$NAMESPACE" rollout status deploy/redis --timeout=300s
-kubectl -n "$NAMESPACE" rollout status deploy/be --timeout=600s
-kubectl -n "$NAMESPACE" rollout status deploy/fe --timeout=300s
-kubectl -n "$NAMESPACE" rollout status deploy/keycloak --timeout=600s
-kubectl -n "$NAMESPACE" rollout status deploy/worker --timeout=600s
+APPLY_OUT="$(kubectl apply -f "$MANIFEST" 2>&1)"
+
+rollout_if_changed() {
+  local resource="$1"; local timeout="$2"
+  if echo "$APPLY_OUT" | grep -qE "$resource.*configured|$resource.*created"; then
+    kubectl -n "$NAMESPACE" rollout status "$resource" --timeout="${timeout}s"
+  else
+    echo "$resource unchanged, skipping rollout wait"
+  fi
+}
+
+rollout_if_changed statefulset/db 600
+rollout_if_changed statefulset/keycloak-db 600
+rollout_if_changed deploy/redis 300
+rollout_if_changed deploy/be 600
+rollout_if_changed deploy/fe 300
+rollout_if_changed deploy/keycloak 600
+rollout_if_changed deploy/worker 600
 
 ROOT_URL="https://$ROOT_HOST"
 AUTH_URL="https://$AUTH_HOST"
