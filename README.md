@@ -15,26 +15,26 @@ background worker, and an isolated AI runtime.
 - `docs/`: architecture decisions, runbooks, AI documentation, and compliance records.
 - `.opencode/` and `.claude/`: project agents, skills, and commands.
 
-## Local requirements
+## Local requirement
 
-- Node.js 24+
-- pnpm 11+
-- Python 3.12+
-- uv 0.11+
 - Docker Engine with Compose
 
 ## Quick start
 
 ```bash
-cp .env.example .env
-make install
-make dev
+docker compose up
 ```
+
+Compose builds every application image, initializes both databases, imports the
+Keycloak realm, runs Alembic migrations, and starts the API and worker in dependency
+order. No local Node.js, Python, `uv`, `pnpm`, or `.env` file is required.
 
 The frontend is available at `http://localhost:5173`.
 The API is available at `http://localhost:8000`.
 The API documentation is available at `http://localhost:8000/docs`.
+Keycloak admin is available at `http://localhost:8080/admin` (`admin` / `admin`, local only).
 Mailpit is available at `http://localhost:8025`.
+PostgreSQL is available at `localhost:5432` (`vai` / `vai`, database `weather_bridge`).
 
 ## Checks
 

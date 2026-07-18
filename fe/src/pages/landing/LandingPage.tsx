@@ -54,7 +54,6 @@ function AuthHandoff({ mode }: { mode: AuthTransition }) {
         <section className="auth-handoff__form">
           <div className="auth-handoff__form-inner">
             <h2>{registering ? "Tạo tài khoản" : "Đăng nhập tài khoản"}</h2>
-            {registering && <p className="auth-handoff__required">* Trường bắt buộc</p>}
             <div className="auth-handoff__fields">
               {authFields[mode].map((field) => (
                 <div key={field} className="auth-handoff__field">
@@ -66,7 +65,14 @@ function AuthHandoff({ mode }: { mode: AuthTransition }) {
             {!registering && <p className="auth-handoff__forgot">Quên mật khẩu?</p>}
             <div className="auth-handoff__submit">{registering ? "Tạo tài khoản" : "Tiếp tục"}</div>
             <p className="auth-handoff__switch">
-              {registering ? "Quay lại đăng nhập" : "Chưa có tài khoản Weather Bridge AI?  Tạo tài khoản"}
+              {registering ? (
+                <span className="auth-handoff__switch-action">Quay lại đăng nhập</span>
+              ) : (
+                <>
+                  <span>Chưa có tài khoản Weather Bridge AI?</span>
+                  <span className="auth-handoff__switch-action">Tạo tài khoản</span>
+                </>
+              )}
             </p>
           </div>
         </section>

@@ -63,10 +63,14 @@
     shell.removeAttribute("aria-busy");
     document.title = nextDocument.title;
     history.replaceState(history.state, "", nextUrl);
+    window.scrollTo(0, 0);
+    importedMain.scrollTop = 0;
     bindPasswordToggles(importedMain);
 
     if (!animate) {
       importedMain.style.removeProperty("opacity");
+      window.scrollTo(0, 0);
+      importedMain.scrollTop = 0;
       importedMain.querySelector("input")?.focus({ preventScroll: true });
       prefetchSwitch();
       return;
@@ -79,6 +83,8 @@
     enterAnimation.finished.then(() => {
       enterAnimation.cancel();
       importedMain.style.removeProperty("opacity");
+      window.scrollTo(0, 0);
+      importedMain.scrollTop = 0;
       importedMain.querySelector("input")?.focus({ preventScroll: true });
     });
 
@@ -92,6 +98,7 @@
     try {
       const targetUrl = link.href;
       const { document: nextDocument, url: nextUrl } = await loadPage(targetUrl);
+      cache.delete(targetUrl);
       const shell = document.querySelector(".pf-v5-c-login__container");
       const header = shell?.querySelector("#kc-header");
       const main = shell?.querySelector(".pf-v5-c-login__main");
@@ -110,15 +117,21 @@
       const travel = shell.clientWidth - header.offsetWidth;
       const movingRight = !shell.querySelector("#kc-register-form");
       const distance = movingRight ? travel : -travel;
-      const brandAnimation = header.animate(
-        [{ transform: "translateX(0)" }, { transform: `translateX(${distance}px)` }],
-        { duration: 480, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" },
-      );
       const formAnimation = main.animate(
         [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(8px)" }],
         { duration: 170, easing: "ease-out", fill: "forwards" },
       );
 
+      if (Math.abs(travel) < 2) {
+        await formAnimation.finished.catch(() => undefined);
+        replacePanels(nextDocument, nextUrl);
+        return;
+      }
+
+      const brandAnimation = header.animate(
+        [{ transform: "translateX(0)" }, { transform: `translateX(${distance}px)` }],
+        { duration: 480, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" },
+      );
       await Promise.allSettled([brandAnimation.finished, formAnimation.finished]);
       replacePanels(nextDocument, nextUrl);
     } catch {

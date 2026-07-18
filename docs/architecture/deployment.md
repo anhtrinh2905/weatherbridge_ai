@@ -2,8 +2,10 @@
 
 ## Development
 
-`infra/compose/compose.yaml` provides PostgreSQL, Redis, Mailpit, and Keycloak.
-`compose.dev.yaml` adds the API, worker, and Vite dev server with source mounts.
+The root `compose.yaml` is a complete local topology. `docker compose up` builds the
+frontend, API, worker, Keycloak theme, and proxy images; starts PostgreSQL, Redis,
+Mailpit, and Keycloak; applies migrations as a one-off job; and gates dependent
+services on readiness checks.
 
 ## Single-server production
 

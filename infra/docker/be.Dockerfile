@@ -3,8 +3,8 @@ FROM python:3.12-slim AS runtime
 COPY --from=ghcr.io/astral-sh/uv:0.11.28 /uv /uvx /bin/
 
 WORKDIR /app
-COPY be/pyproject.toml /app/be/pyproject.toml
-RUN uv lock --project /app/be && uv sync --project /app/be --no-dev
+COPY be/pyproject.toml be/uv.lock /app/be/
+RUN uv sync --project /app/be --frozen --no-dev
 
 COPY be/src /app/be/src
 COPY be/migrations /app/be/migrations
