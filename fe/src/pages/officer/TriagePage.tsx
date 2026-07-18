@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { VILLAGES, getDominantLevel, getResidentsByVillage } from "../../shared/domain/mockData";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
 import { HazardLevelBadge } from "../../shared/ui/HazardBadge";
 
 /** FR18: triage = exposure (dominant hazard level) x priority (count of hộ ưu tiên hỗ trợ). */
@@ -13,24 +14,25 @@ function villageTriage(villageId: string) {
 }
 
 export function OfficerTriagePage() {
+  const { t } = useTranslation();
   const ranked = VILLAGES.map((v) => ({ village: v, ...villageTriage(v.id) })).sort((a, b) => b.score - a.score);
 
   return (
     <div>
       <PageHeader
-        eyebrow="Cán bộ PCTT xã"
-        title="Ưu tiên theo bản"
-        description="Điểm triage = Phơi nhiễm (cấp nguy hiểm cao nhất) × Ưu tiên (số hộ ưu tiên hỗ trợ trong bản)."
+        eyebrow={t("role.commune_officer")}
+        title={t("officer.triage.title")}
+        description={t("officer.triage.description")}
       />
       <Card>
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border-soft text-xs uppercase tracking-wide text-muted">
-              <th className="pb-2">Bản</th>
-              <th className="pb-2">Cấp cao nhất</th>
-              <th className="pb-2">Hộ ưu tiên hỗ trợ</th>
-              <th className="pb-2">Tổng hộ</th>
-              <th className="pb-2">Điểm triage</th>
+              <th className="pb-2">{t("officer.triage.colVillage")}</th>
+              <th className="pb-2">{t("officer.triage.colHighestLevel")}</th>
+              <th className="pb-2">{t("officer.triage.colPriorityHouseholds")}</th>
+              <th className="pb-2">{t("officer.triage.colTotalHouseholds")}</th>
+              <th className="pb-2">{t("officer.triage.colTriageScore")}</th>
               <th className="pb-2" />
             </tr>
           </thead>
@@ -46,7 +48,7 @@ export function OfficerTriagePage() {
                 <td className="py-2.5 font-mono font-semibold text-fg-strong">{score}</td>
                 <td className="py-2.5 text-right">
                   <Link to={`/officer/alerts?village=${village.id}`} className="text-xs text-accent hover:underline">
-                    Xem cảnh báo →
+                    {t("officer.triage.viewAlerts")}
                   </Link>
                 </td>
               </tr>

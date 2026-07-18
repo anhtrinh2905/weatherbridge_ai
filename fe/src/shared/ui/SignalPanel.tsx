@@ -1,32 +1,35 @@
 import { ArrowUpRight, Check } from "lucide-react";
-
-const milestones = [
-  { label: "Lùa gia súc về chuồng", status: "Trước 18:00", tone: "ready" },
-  { label: "Che mạ, phủ bạt", status: "Trước 18:00", tone: "ready" },
-  { label: "Bật sưởi an toàn", status: "Trước 20:00", tone: "review" },
-];
+import { useTranslation } from "../i18n/I18nProvider";
 
 export function SignalPanel({ compact = false }: { compact?: boolean }) {
+  const { t } = useTranslation();
+
+  const milestones = [
+    { label: t("signalPanel.milestone1"), status: t("signalPanel.milestone1Time"), tone: "ready" },
+    { label: t("signalPanel.milestone2"), status: t("signalPanel.milestone2Time"), tone: "ready" },
+    { label: t("signalPanel.milestone3"), status: t("signalPanel.milestone3Time"), tone: "review" },
+  ];
+
   return (
     <div className={`signal-panel${compact ? " signal-panel--compact" : ""}`}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="signal-panel__dot" />
-          <span className="signal-label">TỦA CHÙA / 1.400M</span>
+          <span className="signal-label">{t("signalPanel.location")}</span>
         </div>
-        <span className="signal-live">ĐANG THEO DÕI</span>
+        <span className="signal-live">{t("signalPanel.liveStatus")}</span>
       </div>
 
       <div className="mt-8 grid grid-cols-[1fr_auto] items-end gap-6">
         <div>
-          <p className="signal-label">Sương muối / rét hại</p>
+          <p className="signal-label">{t("signalPanel.hazardLabel")}</p>
           <p className="mt-2 text-6xl font-semibold tracking-[-0.09em] text-fg-strong">
             2<sup className="align-super text-2xl text-accent">°</sup><span className="text-5xl">C</span>
           </p>
-          <p className="mt-2 text-xs text-positive">Dự kiến 03:00 · độ tin cậy cao</p>
+          <p className="mt-2 text-xs text-positive">{t("signalPanel.confidenceNote")}</p>
         </div>
-        <div className="signal-ring" role="img" aria-label="Mức cảnh báo chuẩn bị">
-          <span>CHUẨN<br />BỊ</span>
+        <div className="signal-ring" role="img" aria-label={t("signalPanel.tierAriaLabel")}>
+          <span>{t("signalPanel.tierBadge")}</span>
         </div>
       </div>
 
@@ -45,8 +48,8 @@ export function SignalPanel({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <div className="signal-panel__footer mt-4 flex items-center justify-between gap-4">
           <div>
-            <p className="signal-label">Bản tin hành động</p>
-            <p className="mt-1 text-sm font-medium text-fg-strong">Hoàn thành trước khi rét xuống thấp</p>
+            <p className="signal-label">{t("signalPanel.bulletinLabel")}</p>
+            <p className="mt-1 text-sm font-medium text-fg-strong">{t("signalPanel.bulletinTitle")}</p>
           </div>
           <ArrowUpRight size={18} className="shrink-0 text-accent" />
         </div>

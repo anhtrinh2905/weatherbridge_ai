@@ -15,7 +15,8 @@ import {
   HAZARD_RUN_MOCK,
   triageScore,
 } from "../../shared/domain/mockData";
-import { HAZARD_LEVEL_LABELS, HAZARD_TYPE_LABELS } from "../../shared/domain/labels";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
+import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
 import type { ResidentSim } from "../../shared/domain/types";
 
@@ -52,11 +53,14 @@ function StatCard({
 }
 
 function ResidentRow({ resident, visited }: { resident: ResidentSim; visited: boolean }) {
+  const { t } = useTranslation();
   return (
     <li className="flex items-center justify-between gap-3 rounded-lg border border-border-soft bg-surface px-3 py-2.5">
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-fg">{resident.fullName}</p>
-        <p className="text-xs text-muted">Điểm ưu tiên {triageScore(resident)} · {resident.age} tuổi</p>
+        <p className="text-xs text-muted">
+          {t("villageHead.overview.priorityScore", { score: triageScore(resident), age: resident.age })}
+        </p>
       </div>
       <span
         className={cn(
@@ -64,7 +68,7 @@ function ResidentRow({ resident, visited }: { resident: ResidentSim; visited: bo
           visited ? "border-positive/25 bg-positive/10 text-positive" : "border-accent/25 bg-accent/10 text-accent",
         )}
       >
-        {visited ? "Đã nhắc" : "Cần đi"}
+        {visited ? t("villageHead.overview.visited") : t("villageHead.overview.needsVisit")}
       </span>
     </li>
   );
@@ -73,6 +77,8 @@ function ResidentRow({ resident, visited }: { resident: ResidentSim; visited: bo
 export function VillageHeadOverviewPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
   const villageId = user?.villageId ?? "muong-pon-1";
   const village = getVillage(villageId);
   const alert = getHighestTierAlert(villageId);
@@ -91,12 +97,12 @@ export function VillageHeadOverviewPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Trưởng bản"
-        title={`Bản của tôi: ${village?.name ?? "Chưa rõ"}`}
-        description="Bảng việc cần làm hôm nay: nhìn cảnh báo, ưu tiên hộ cần nhắc, theo dõi ai đã an toàn và ai cần giúp."
+        eyebrow={t("role.village_head")}
+        title={t("villageHead.overview.title", { village: village?.name ?? t("villageHead.overview.unknownVillage") })}
+        description={t("villageHead.overview.description")}
         actions={
           <Button className="min-h-10 rounded-lg px-4" onClick={() => navigate("/village-head/residents")}>
-            <UsersRound size={16} /> Mở danh sách hộ
+            <UsersRound size={16} /> {t("villageHead.overview.openResidentList")}
           </Button>
         }
       />
@@ -104,14 +110,42 @@ export function VillageHeadOverviewPage() {
       <section className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-4">
         <StatCard
           icon={AlertTriangle}
-          label="Tình trạng bản"
-          value={alert?.tier === "go_now" ? "Đi ngay" : alert ? "Chuẩn bị" : "An toàn"}
+          label={t("villageHead.overview.villageStatus")}
+          value={
+            alert?.tier === "go_now"
+              ? t("villageHead.overview.statusGoNow")
+              : alert
+                ? t("villageHead.overview.statusPrepare")
+                : t("villageHead.overview.statusSafe")
+          }
           tone={alertTone}
-          helper={dominant ? `${HAZARD_LEVEL_LABELS[dominant.level]} · tin cậy ${Math.round(dominant.confidence * 100)}%` : undefined}
+          helper={
+            dominant
+              ? `${labels.hazardLevel[dominant.level]} ${t("villageHead.overview.confidenceSuffix", { percent: Math.round(dominant.confidence * 100) })}`
+              : undefined
+          }
         />
-        <StatCard icon={CheckCircle2} label="Đã an toàn" value={`${safeCount}/${residents.length} hộ`} tone="positive" helper={`${unknownCount} hộ chưa tự xác nhận`} />
-        <StatCard icon={HelpCircle} label="Cần giúp" value={`${needHelpCount} hộ`} tone={needHelpCount > 0 ? "danger" : "default"} helper="Ưu tiên gọi/đến trước nếu có báo đỏ" />
-        <StatCard icon={MapPinned} label="Chưa đến nhắc" value={`${pendingPriority.length} hộ`} tone={pendingPriority.length > 0 ? "warning" : "positive"} helper={`Trong ${priorityResidents.length} hộ ưu tiên hỗ trợ`} />
+        <StatCard
+          icon={CheckCircle2}
+          label={t("villageHead.overview.safeCount")}
+          value={t("villageHead.overview.safeCountValue", { safe: safeCount, total: residents.length })}
+          tone="positive"
+          helper={t("villageHead.overview.unconfirmedHelper", { count: unknownCount })}
+        />
+        <StatCard
+          icon={HelpCircle}
+          label={t("villageHead.overview.needHelp")}
+          value={t("villageHead.overview.needHelpValue", { count: needHelpCount })}
+          tone={needHelpCount > 0 ? "danger" : "default"}
+          helper={t("villageHead.overview.needHelpHelper")}
+        />
+        <StatCard
+          icon={MapPinned}
+          label={t("villageHead.overview.pendingVisits")}
+          value={t("villageHead.overview.pendingVisitsValue", { count: pendingPriority.length })}
+          tone={pendingPriority.length > 0 ? "warning" : "positive"}
+          helper={t("villageHead.overview.pendingVisitsHelper", { count: priorityResidents.length })}
+        />
       </section>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_24rem]">
@@ -124,9 +158,13 @@ export function VillageHeadOverviewPage() {
           <Card className="rounded-lg">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">Dữ liệu cảnh báo</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                  {t("villageHead.overview.alertData")}
+                </p>
                 <p className="mt-2 text-sm text-fg">
-                  {alert ? `${HAZARD_TYPE_LABELS[alert.hazardType]} đang có hiệu lực` : "Không có cảnh báo hiệu lực"}
+                  {alert
+                    ? t("villageHead.overview.alertActive", { hazardType: labels.hazardType[alert.hazardType] })
+                    : t("villageHead.overview.noActiveAlert")}
                 </p>
               </div>
               <DataFreshnessBadge status="fresh" timestamp={HAZARD_RUN_MOCK.forecastIssued} />
@@ -136,8 +174,12 @@ export function VillageHeadOverviewPage() {
           <Card className="rounded-lg">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">Việc cần làm tiếp theo</p>
-                <h2 className="mt-1 text-lg font-semibold text-fg-strong">Đi nhắc hộ ưu tiên</h2>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                  {t("villageHead.overview.nextTask")}
+                </p>
+                <h2 className="mt-1 text-lg font-semibold text-fg-strong">
+                  {t("villageHead.overview.nextTaskTitle")}
+                </h2>
               </div>
               <Clock3 className="text-accent" size={20} aria-hidden />
             </div>
@@ -147,7 +189,7 @@ export function VillageHeadOverviewPage() {
               ))}
             </ul>
             <Link to="/village-head/residents" className="mt-4 inline-flex text-sm font-semibold">
-              Xem toàn bộ danh sách
+              {t("villageHead.overview.viewFullList")}
             </Link>
           </Card>
         </aside>

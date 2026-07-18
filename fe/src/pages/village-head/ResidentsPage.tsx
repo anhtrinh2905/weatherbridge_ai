@@ -4,16 +4,17 @@ import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { Button } from "../../shared/ui/Button";
 import { useAuth } from "../../features/auth/hooks";
 import { getResidentsByVillage, getVillage, triageScore } from "../../shared/domain/mockData";
-import { OCCUPATION_LABELS, VULNERABILITY_LABELS } from "../../shared/domain/labels";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
+import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
 import { cn } from "../../shared/lib/cn";
 import type { ResidentSim, SafetyStatus } from "../../shared/domain/types";
 import type { ResidentStatus } from "../../shared/domain/residentStatusStore";
 
-const SAFETY_META: Record<SafetyStatus, { label: string; classes: string; icon: LucideIcon }> = {
-  safe: { label: "Đã an toàn", classes: "border-positive/25 bg-positive/10 text-positive", icon: ShieldCheck },
-  need_help: { label: "Cần giúp", classes: "border-danger/30 bg-danger/10 text-danger", icon: Siren },
-  unknown: { label: "Chưa xác nhận", classes: "border-border-strong bg-surface text-muted", icon: CircleHelp },
+const SAFETY_META: Record<SafetyStatus, { key: string; classes: string; icon: LucideIcon }> = {
+  safe: { key: "villageHead.residents.statusSafe", classes: "border-positive/25 bg-positive/10 text-positive", icon: ShieldCheck },
+  need_help: { key: "villageHead.residents.statusNeedHelp", classes: "border-danger/30 bg-danger/10 text-danger", icon: Siren },
+  unknown: { key: "villageHead.residents.statusUnknown", classes: "border-border-strong bg-surface text-muted", icon: CircleHelp },
 };
 
 function SummaryPill({ label, value, tone }: { label: string; value: number; tone: "default" | "positive" | "warning" | "danger" }) {
@@ -42,6 +43,8 @@ function ResidentCard({
   onOpenMap: () => void;
   onMarkVisited: () => void;
 }) {
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
   const safety = SAFETY_META[status.safetyStatus];
   const SafetyIcon = safety.icon;
   const score = triageScore(resident);
@@ -58,26 +61,28 @@ function ResidentCard({
           <h2 className="text-base font-semibold text-fg-strong">{resident.fullName}</h2>
           {resident.priority === "vulnerable" && (
             <span className="rounded-full border border-accent/25 bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent">
-              Hộ ưu tiên hỗ trợ
+              {t("villageHead.residents.priorityBadge")}
             </span>
           )}
           <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold", safety.classes)}>
             <SafetyIcon size={14} aria-hidden />
-            {safety.label}
+            {t(safety.key)}
           </span>
         </div>
 
         <div className="mt-3 grid grid-cols-1 gap-2 text-sm text-muted sm:grid-cols-3">
-          <p>{OCCUPATION_LABELS[resident.occupation]} · {resident.age} tuổi</p>
-          <p>Điểm ưu tiên: <span className="font-semibold text-fg">{score}</span></p>
-          <p>{status.visitedByHeadAt ? "Đã đến nhắc" : "Chưa đến nhắc"}</p>
+          <p>{t("villageHead.residents.occupationAge", { occupation: labels.occupation[resident.occupation], age: resident.age })}</p>
+          <p>
+            {t("villageHead.residents.priorityScoreLabel")}: <span className="font-semibold text-fg">{score}</span>
+          </p>
+          <p>{status.visitedByHeadAt ? t("villageHead.residents.visited") : t("villageHead.residents.notVisited")}</p>
         </div>
 
         {resident.vulnerabilityReason.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {resident.vulnerabilityReason.map((reason) => (
               <span key={reason} className="rounded-md border border-border-soft bg-surface px-2 py-1 text-xs text-muted">
-                {VULNERABILITY_LABELS[reason]}
+                {labels.vulnerability[reason]}
               </span>
             ))}
           </div>
@@ -86,7 +91,7 @@ function ResidentCard({
 
       <div className="flex items-center gap-2 md:justify-end">
         <Button variant="secondary" className="min-h-10 rounded-lg px-3 text-xs" onClick={onOpenMap}>
-          <Navigation size={14} /> Vị trí
+          <Navigation size={14} /> {t("villageHead.residents.locationButton")}
         </Button>
         <Button
           variant={status.visitedByHeadAt ? "secondary" : "primary"}
@@ -96,11 +101,11 @@ function ResidentCard({
         >
           {status.visitedByHeadAt ? (
             <>
-              <CheckCircle2 size={14} /> Đã nhắc
+              <CheckCircle2 size={14} /> {t("villageHead.residents.visitedButton")}
             </>
           ) : (
             <>
-              <MapPin size={14} /> Đánh dấu đã nhắc
+              <MapPin size={14} /> {t("villageHead.residents.markVisitedButton")}
             </>
           )}
         </Button>
@@ -112,6 +117,7 @@ function ResidentCard({
 export function VillageHeadResidentsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const villageId = user?.villageId ?? "muong-pon-1";
   const village = getVillage(villageId);
   const residents = [...getResidentsByVillage(villageId)].sort((a, b) => triageScore(b) - triageScore(a));
@@ -125,26 +131,28 @@ export function VillageHeadResidentsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Trưởng bản"
-        title={`Danh sách hộ dân - ${village?.name ?? "bản của tôi"}`}
-        description="Chỉ hiển thị hộ thuộc bản của bạn. Danh sách đã sắp theo điểm ưu tiên để đi nhắc đúng người trước."
+        eyebrow={t("role.village_head")}
+        title={t("villageHead.residents.title", { village: village?.name ?? t("villageHead.residents.myVillageFallback") })}
+        description={t("villageHead.residents.description")}
       />
 
       <section className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <SummaryPill label="Tổng hộ" value={residents.length} tone="default" />
-        <SummaryPill label="Hộ ưu tiên" value={priorityCount} tone="warning" />
-        <SummaryPill label="Cần giúp" value={needHelpCount} tone={needHelpCount > 0 ? "danger" : "default"} />
-        <SummaryPill label="Đã an toàn" value={safeCount} tone="positive" />
+        <SummaryPill label={t("villageHead.residents.totalHouseholds")} value={residents.length} tone="default" />
+        <SummaryPill label={t("villageHead.residents.priorityHouseholds")} value={priorityCount} tone="warning" />
+        <SummaryPill label={t("villageHead.residents.needHelp")} value={needHelpCount} tone={needHelpCount > 0 ? "danger" : "default"} />
+        <SummaryPill label={t("villageHead.residents.safe")} value={safeCount} tone="positive" />
       </section>
 
       <Card className="rounded-lg">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border-soft pb-4">
           <div>
-            <p className="text-sm font-semibold text-fg-strong">Hàng đợi đi nhắc</p>
-            <p className="mt-1 text-xs text-muted">{pendingVisits} hộ ưu tiên hỗ trợ chưa được đánh dấu đã đến nhắc.</p>
+            <p className="text-sm font-semibold text-fg-strong">{t("villageHead.residents.visitQueue")}</p>
+            <p className="mt-1 text-xs text-muted">
+              {t("villageHead.residents.pendingVisitsNotice", { count: pendingVisits })}
+            </p>
           </div>
           <span className="rounded-full border border-accent/25 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-            Ưu tiên cao ở trên
+            {t("villageHead.residents.highPriorityBadge")}
           </span>
         </div>
         <div className="space-y-3">
@@ -161,8 +169,8 @@ export function VillageHeadResidentsPage() {
       </Card>
 
       <p className="mt-3 text-xs leading-5 text-muted-2">
-        Trạng thái "đã đến nhắc" hiện lưu tạm trên trình duyệt. Backend chưa có trường
-        `resident_sim.visited_by_head_at`; xem docs/design/ui-ux-role-spec.md §7.
+        {t("villageHead.residents.footnotePart1")} <code>resident_sim.visited_by_head_at</code>
+        {t("villageHead.residents.footnotePart2")}
       </p>
     </div>
   );

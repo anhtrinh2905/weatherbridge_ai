@@ -3,11 +3,14 @@ import { useSearchParams } from "react-router-dom";
 import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { Button } from "../../shared/ui/Button";
 import { ALERTS, VILLAGES } from "../../shared/domain/mockData";
-import { HAZARD_TYPE_LABELS } from "../../shared/domain/labels";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
+import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { HazardLevelBadge, TierBadge } from "../../shared/ui/HazardBadge";
 import { Countdown } from "../../shared/ui/Countdown";
 
 export function OfficerAlertsPage() {
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
   const [params] = useSearchParams();
   const villageFilter = params.get("village");
   const alerts = villageFilter ? ALERTS.filter((a) => a.villageId === villageFilter) : ALERTS;
@@ -15,12 +18,16 @@ export function OfficerAlertsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Cán bộ PCTT xã"
-        title="Lịch sử cảnh báo"
-        description={villageFilter ? `Lọc theo bản: ${VILLAGES.find((v) => v.id === villageFilter)?.name}` : "Toàn xã"}
+        eyebrow={t("role.commune_officer")}
+        title={t("officer.alerts.title")}
+        description={
+          villageFilter
+            ? t("officer.alerts.filteredByVillage", { village: VILLAGES.find((v) => v.id === villageFilter)?.name ?? "" })
+            : t("officer.alerts.wholeCommune")
+        }
         actions={
-          <Button variant="secondary" onClick={() => window.alert("Xuất báo cáo (mock) — dữ liệu dân cư trong báo cáo là dữ liệu mô phỏng, không phải PII thật.")}>
-            <Download size={16} /> Xuất báo cáo
+          <Button variant="secondary" onClick={() => window.alert(t("officer.alerts.exportNotice"))}>
+            <Download size={16} /> {t("officer.alerts.exportButton")}
           </Button>
         }
       />
@@ -32,7 +39,7 @@ export function OfficerAlertsPage() {
               <li key={alert.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                 <div>
                   <p className="text-sm font-medium text-fg">
-                    {village?.name} — {HAZARD_TYPE_LABELS[alert.hazardType]}
+                    {village?.name} — {labels.hazardType[alert.hazardType]}
                   </p>
                   <p className="mt-1 text-xs text-muted">
                     <Countdown deadlineUtc={alert.deadlineUtc} />
@@ -45,7 +52,7 @@ export function OfficerAlertsPage() {
               </li>
             );
           })}
-          {alerts.length === 0 && <p className="py-3 text-sm text-muted">Không có cảnh báo trong phạm vi này.</p>}
+          {alerts.length === 0 && <p className="py-3 text-sm text-muted">{t("officer.alerts.empty")}</p>}
         </ul>
       </Card>
     </div>

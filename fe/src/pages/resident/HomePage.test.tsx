@@ -1,9 +1,11 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { ResidentStatusProvider } from "../../shared/domain/residentStatusStore";
 import { getOccupationRecommendation } from "../../shared/domain/recommendations";
 import { getAlertForVillageDay, getSelfResident, personalizeAlert } from "../../shared/domain/mockData";
+import { I18nProvider } from "../../shared/i18n/I18nProvider";
 import { ResidentHomePage } from "./HomePage";
 
 vi.mock("../../features/auth/hooks", () => ({
@@ -29,12 +31,17 @@ test("resident home shows occupation-personalized action for demo farmer", () =>
   const personalized = personalizeAlert(base!, self!.occupation);
   const expected = getOccupationRecommendation(self!.occupation, personalized.hazardType, personalized.tier);
 
+  const queryClient = new QueryClient();
   render(
-    <MemoryRouter>
-      <ResidentStatusProvider>
-        <ResidentHomePage />
-      </ResidentStatusProvider>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <I18nProvider>
+          <ResidentStatusProvider>
+            <ResidentHomePage />
+          </ResidentStatusProvider>
+        </I18nProvider>
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 
   expect(screen.getByText(/Vàng A Quàng/i)).toBeInTheDocument();

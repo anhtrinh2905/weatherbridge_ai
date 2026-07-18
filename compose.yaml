@@ -15,6 +15,7 @@ x-backend: &backend
     CORS_ORIGINS: http://localhost,http://localhost:5173
     LITELLM_ENABLED: "false"
     LANGFUSE_ENABLED: "false"
+    GOOGLE_TRANSLATE_CREDENTIALS_PATH: /app/secrets/vertex-key.json
 
 services:
   db:
@@ -134,6 +135,11 @@ services:
     init: true
     ports:
       - "8000:8000"
+    # Optional: only needed for live Hmong translation of dynamic content (alert bulletins).
+    # If vertex-key.json is missing, Docker mounts an empty dir here and the endpoint just
+    # returns 503 — the rest of the app is unaffected. See ai/translation/gemini_service.py.
+    volumes:
+      - ./vertex-key.json:/app/secrets/vertex-key.json:ro
     depends_on:
       migrate:
         condition: service_completed_successfully

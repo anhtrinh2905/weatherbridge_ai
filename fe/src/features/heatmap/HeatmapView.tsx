@@ -4,29 +4,33 @@ import { ContributionPanel } from "../../shared/ui/ContributionPanel";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { DataFreshnessBadge } from "../../shared/ui/DataFreshnessBadge";
 import { HAZARD_RUN_MOCK, VILLAGES, getDominantLevel, getHazardLevel } from "../../shared/domain/mockData";
-import { HAZARD_LEVEL_LABELS, HAZARD_TYPE_LABELS } from "../../shared/domain/labels";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
+import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { cn } from "../../shared/lib/cn";
 import type { HazardType } from "../../shared/domain/types";
 
 type Layer = HazardType | "dominant";
-const LAYERS: { key: Layer; label: string }[] = [
-  { key: "dominant", label: "Nguy hiểm cao nhất (gộp)" },
-  { key: "flash_flood", label: HAZARD_TYPE_LABELS.flash_flood },
-  { key: "landslide", label: HAZARD_TYPE_LABELS.landslide },
-];
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
 
 /** Full detail heatmap: admin + commune_officer (AD-2 cell-inspect included). */
 export function HeatmapView() {
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
   const [layer, setLayer] = useState<Layer>("dominant");
   const [day, setDay] = useState(0);
   const [inspecting, setInspecting] = useState<string | null>(null);
+
+  const layers: { key: Layer; label: string }[] = [
+    { key: "dominant", label: t("heatmap.layerDominant") },
+    { key: "flash_flood", label: labels.hazardType.flash_flood },
+    { key: "landslide", label: labels.hazardType.landslide },
+  ];
 
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
-          {LAYERS.map((l) => (
+          {layers.map((l) => (
             <button
               key={l.key}
               type="button"
@@ -54,7 +58,7 @@ export function HeatmapView() {
               day === d ? "border-accent bg-accent/15 text-accent" : "border-border-strong text-muted hover:text-fg",
             )}
           >
-            {d === 0 ? "Hôm nay" : `+${d} ngày`}
+            {d === 0 ? t("heatmap.dayToday") : t("heatmap.dayPlusN", { day: d })}
           </button>
         ))}
       </div>
@@ -66,11 +70,11 @@ export function HeatmapView() {
             <ContributionPanel villageId={inspecting} hazardType={layer} day={day} onClose={() => setInspecting(null)} />
           ) : (
             <div className="rounded-2xl border border-dashed border-border-strong p-5 text-sm text-muted">
-              Click vào 1 bản trên bản đồ để xem đóng góp đặc trưng (feature contribution).
+              {t("heatmap.clickVillagePrompt")}
             </div>
           )}
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Chú giải 5 cấp</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("heatmap.legend5Levels")}</p>
             <ul className="mt-2 space-y-1.5 text-xs">
               {([1, 2, 3, 4, 5] as const).map((lvl) => (
                 <li key={lvl} className="flex items-center gap-2">
@@ -78,20 +82,22 @@ export function HeatmapView() {
                     className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: ["#A7D8F0", "#FFF3A0", "#FFA94D", "#E03131", "#862E9C"][lvl - 1] }}
                   />
-                  <span className="text-muted">{HAZARD_LEVEL_LABELS[lvl]}</span>
+                  <span className="text-muted">{labels.hazardLevel[lvl]}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Cấp hiện tại theo bản</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("heatmap.currentLevelByVillage")}</p>
             <ul className="mt-2 divide-y divide-border-soft text-sm">
               {VILLAGES.map((v) => {
                 const hazard = layer === "dominant" ? getDominantLevel(v.id, day) : getHazardLevel(v.id, layer, day);
                 return (
                   <li key={v.id} className="flex items-center justify-between py-1.5">
                     <span className="text-fg">{v.name}</span>
-                    <span className="text-muted">Cấp {hazard?.level ?? "-"}</span>
+                    <span className="text-muted">
+                      {hazard?.level ? t("heatmap.levelValue", { level: hazard.level }) : "-"}
+                    </span>
                   </li>
                 );
               })}

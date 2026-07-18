@@ -4,6 +4,8 @@
 !.env.dev.example
 .envrc
 .direnv/
+/env
+/vertex-key.json
 
 # Local credentials and certificates
 *.pem

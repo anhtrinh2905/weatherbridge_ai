@@ -1,10 +1,12 @@
 import { ArrowRight, Check } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { heroMetrics, heroPillars } from "../landing.data";
+import { useTranslation } from "../../../shared/i18n/I18nProvider";
 import { Button } from "../../../shared/ui/Button";
 import { SignalPanel } from "../../../shared/ui/SignalPanel";
 
 export function HeroSection({ onRegister, disabled }: { onRegister: () => void; disabled: boolean }) {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -43,22 +45,22 @@ export function HeroSection({ onRegister, disabled }: { onRegister: () => void; 
       <div className="relative z-10 mx-auto max-w-7xl px-5 pb-24 pt-16 sm:px-8 md:pt-24 lg:px-12 lg:pb-32">
         <div className="grid gap-14 lg:grid-cols-[1fr_0.9fr]">
           <div className="relative self-center">
-            <p className="eyebrow"><span className="eyebrow__dot" /> Dữ liệu mở · Ngưỡng minh bạch · Xác nhận có vết</p>
+            <p className="eyebrow"><span className="eyebrow__dot" /> {t("landing.hero.eyebrow")}</p>
             <h1 className="mt-7 max-w-2xl text-4xl font-semibold leading-[1.02] tracking-[-0.06em] text-fg-strong [text-shadow:0_2px_24px_rgba(0,0,0,0.45)] sm:text-6xl lg:text-[4.25rem]">
-              Từ dấu hiệu đầu tiên đến hành động kịp thời.
+              {t("landing.hero.headline")}
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-8 text-fg [text-shadow:0_2px_18px_rgba(0,0,0,0.75)] sm:text-xl">
-              Weather Bridge AI tổng hợp dự báo đa nguồn, hiệu chỉnh theo độ cao từng bản và biến sương muối, rét hại, mưa lớn thành chỉ dẫn rõ ràng: làm gì, trước khi nào.
+              {t("landing.hero.description")}
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button className="w-full sm:w-auto" onClick={onRegister} disabled={disabled}>
-                Đăng nhập <ArrowRight size={16} />
+                {t("common.login")} <ArrowRight size={16} />
               </Button>
             </div>
             <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 font-mono text-sm text-fg [text-shadow:0_2px_14px_rgba(0,0,0,0.8)]">
-              <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> 5 điểm dự báo</span>
-              <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> Bản tin 4 phần</span>
-              <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> Ngưỡng công khai</span>
+              <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> {t("landing.hero.feature1")}</span>
+              <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> {t("landing.hero.feature2")}</span>
+              <span className="flex items-center gap-2"><Check size={15} className="text-accent" /> {t("landing.hero.feature3")}</span>
             </div>
           </div>
 
@@ -69,20 +71,20 @@ export function HeroSection({ onRegister, disabled }: { onRegister: () => void; 
         </div>
 
         <div className="pillar-row mt-20">
-          {heroPillars.map(({ index, title, text }) => (
+          {heroPillars.map(({ index, titleKey, textKey }) => (
             <div key={index} className="pillar-row__item">
               <span className="pillar-row__index">{index}</span>
-              <h2 className="mt-4 text-xl font-semibold text-fg-strong">{title}</h2>
-              <p className="mt-2 text-base leading-6 text-muted">{text}</p>
+              <h2 className="mt-4 text-xl font-semibold text-fg-strong">{t(titleKey)}</h2>
+              <p className="mt-2 text-base leading-6 text-muted">{t(textKey)}</p>
             </div>
           ))}
         </div>
 
         <div className="metric-strip mt-12">
-          {heroMetrics.map(({ value, label }) => (
-            <div key={label} className="metric-strip__item">
+          {heroMetrics.map(({ value, labelKey }) => (
+            <div key={labelKey} className="metric-strip__item">
               <p className="metric-strip__value">{value}</p>
-              <p className="metric-strip__label">{label}</p>
+              <p className="metric-strip__label">{t(labelKey)}</p>
             </div>
           ))}
         </div>

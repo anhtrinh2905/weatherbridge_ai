@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/hooks";
 import { DEMO_ACCOUNTS } from "../../features/auth/demoAccounts";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
+import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { Button } from "../../shared/ui/Button";
+import { LanguageSwitcher } from "../../shared/ui/LanguageSwitcher";
 import { Logo } from "../../shared/ui/Logo";
 import type { Role } from "../../shared/domain/types";
 
@@ -23,6 +26,8 @@ const ROLE_ICON: Record<Role, typeof ShieldCheck> = {
 export function LoginPage() {
   const navigate = useNavigate();
   const { authenticated, login, loginAsDemo } = useAuth();
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState(false);
 
@@ -46,15 +51,18 @@ export function LoginPage() {
       <div className="w-full max-w-lg">
         <div className="flex items-center justify-between">
           <Logo />
-          <Link to="/" className="text-sm text-muted transition hover:text-fg">
-            Về trang chủ
-          </Link>
+          <div className="flex items-center gap-1">
+            <LanguageSwitcher />
+            <Link to="/" className="text-sm text-muted transition hover:text-fg">
+              {t("common.backToHome")}
+            </Link>
+          </div>
         </div>
 
         <div className="mt-10 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-fg-strong">Đăng nhập</h1>
-          <p className="mt-2 text-lg font-semibold text-fg">Chọn vai để vào trung tâm cảnh báo</p>
-          <p className="mt-2 text-sm leading-6 text-muted">Bấm 1 vai demo bên dưới để vào ngay — không cần nhập mật khẩu.</p>
+          <h1 className="text-4xl font-bold tracking-tight text-fg-strong">{t("auth.heading")}</h1>
+          <p className="mt-2 text-lg font-semibold text-fg">{t("auth.subtitle")}</p>
+          <p className="mt-2 text-sm leading-6 text-muted">{t("auth.instructions")}</p>
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -74,7 +82,7 @@ export function LoginPage() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold text-fg-strong">
-                    {isPending ? "Đang vào..." : account.label}
+                    {isPending ? t("auth.loggingIn") : labels.role[account.role]}
                   </span>
                   <span className="block truncate text-xs text-muted-2">{account.username}</span>
                 </span>
@@ -82,21 +90,18 @@ export function LoginPage() {
             );
           })}
         </div>
-        {error && <p className="mt-3 text-center text-xs text-danger">Không đăng nhập được — thử lại.</p>}
+        {error && <p className="mt-3 text-center text-xs text-danger">{t("auth.loginFailed")}</p>}
 
         <div className="mt-8 flex items-center gap-3 text-xs text-muted-2" aria-hidden="true">
           <div className="h-px flex-1 bg-border-soft" />
-          hoặc
+          {t("auth.or")}
           <div className="h-px flex-1 bg-border-soft" />
         </div>
 
         <Button variant="secondary" className="mt-6 w-full" onClick={() => void login()}>
-          Đăng nhập tài khoản khác <ArrowRight size={16} />
+          {t("auth.loginOtherAccount")} <ArrowRight size={16} />
         </Button>
-        <p className="mt-4 text-center text-xs leading-5 text-muted-2">
-          Tài khoản demo dùng chung mật khẩu. "Đăng nhập tài khoản khác" đi qua OIDC Authorization
-          Code + PKCE thật của Keycloak.
-        </p>
+        <p className="mt-4 text-center text-xs leading-5 text-muted-2">{t("auth.demoNote")}</p>
       </div>
     </main>
   );

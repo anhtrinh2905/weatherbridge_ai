@@ -1,9 +1,11 @@
 import { LogOut } from "lucide-react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/hooks";
-import { ROLE_LABELS } from "../shared/domain/labels";
+import { useTranslation } from "../shared/i18n/I18nProvider";
+import { useLocalizedLabels } from "../shared/i18n/useLocalizedLabels";
 import type { Role } from "../shared/domain/types";
 import { cn } from "../shared/lib/cn";
+import { LanguageSwitcher } from "../shared/ui/LanguageSwitcher";
 import { Logo } from "../shared/ui/Logo";
 import type { ComponentType } from "react";
 
@@ -49,14 +51,17 @@ export function DashboardLayout({
 }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
 
   const groups: SidebarSection[] = sections ?? (items ? [{ items }] : []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-canvas text-fg">
       <aside className="flex w-64 shrink-0 flex-col border-r border-border-soft bg-surface">
-        <div className="px-5 py-6">
-          <Logo />
+        <div className="flex items-center justify-between px-5 py-6">
+          <Logo compact />
+          <LanguageSwitcher />
         </div>
         <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-4">
           {groups.map((group, groupIndex) => (
@@ -101,7 +106,7 @@ export function DashboardLayout({
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-fg-strong">{user?.displayName}</p>
-              <p className="text-xs text-muted">{ROLE_LABELS[role]}</p>
+              <p className="text-xs text-muted">{labels.role[role]}</p>
             </div>
           </div>
           <button
@@ -112,7 +117,7 @@ export function DashboardLayout({
             }}
             className="mt-3 flex min-h-9 w-full items-center gap-2 rounded-lg px-2 text-xs font-medium text-muted transition-colors hover:bg-surface-2 hover:text-fg"
           >
-            <LogOut size={14} /> Đăng xuất
+            <LogOut size={14} /> {t("common.logout")}
           </button>
         </div>
       </aside>

@@ -9,119 +9,75 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+// Text lives in the i18n catalog (shared/i18n/locales/*.json) under the keys referenced below —
+// these are data-shape + translation-key tables, not the translated strings themselves. Icons and
+// place names (proper nouns — not translated, same convention as shared/domain data) stay literal.
+
 export type Metric = {
   value: string;
-  label: string;
+  labelKey: string;
 };
 
 export type Pillar = {
   index: string;
-  title: string;
-  text: string;
+  titleKey: string;
+  textKey: string;
 };
 
 export type ProblemPoint = {
   icon: LucideIcon;
-  title: string;
-  text: string;
+  titleKey: string;
+  textKey: string;
 };
 
 export type Differentiator = {
   icon: LucideIcon;
-  title: string;
-  text: string;
+  titleKey: string;
+  textKey: string;
 };
 
 export type ScenarioTab = {
   id: string;
   label: string;
   elevation: string;
-  hazard: string;
-  description: string;
+  hazardKey: string;
+  descriptionKey: string;
   temperature?: string;
-  confidence?: string;
+  confidenceKey?: string;
 };
 
 export type RoleView = {
-  category: string;
-  name: string;
-  description: string;
-  specs: string[];
+  categoryKey: string;
+  nameKey: string;
+  descriptionKey: string;
+  specKeys: [string, string, string];
 };
 
 export const heroMetrics: Metric[] = [
-  { value: "5", label: "Địa điểm dự báo, 250–1.800m độ cao" },
-  { value: "±300m", label: "Chênh cao đủ để hiệu chỉnh riêng theo bản" },
-  { value: "15/30′", label: "Mốc leo thang tới trưởng bản, cán bộ xã" },
+  { value: "5", labelKey: "landing.metric.1.label" },
+  { value: "±300m", labelKey: "landing.metric.2.label" },
+  { value: "15/30′", labelKey: "landing.metric.3.label" },
 ];
 
 export const heroPillars: Pillar[] = [
-  {
-    index: "01",
-    title: "Thu thập & hiệu chỉnh",
-    text: "5 địa điểm dự báo, hiệu chỉnh theo độ cao từng bản.",
-  },
-  {
-    index: "02",
-    title: "Ra quyết định",
-    text: "Ngưỡng cố định quyết Mức; AI chỉ viết bản tin 4 phần.",
-  },
-  {
-    index: "03",
-    title: "Phân phối & xác nhận",
-    text: "Web push tức thời; thiếu xác nhận sẽ leo thang đúng mốc.",
-  },
+  { index: "01", titleKey: "landing.pillar.1.title", textKey: "landing.pillar.1.text" },
+  { index: "02", titleKey: "landing.pillar.2.title", textKey: "landing.pillar.2.text" },
+  { index: "03", titleKey: "landing.pillar.3.title", textKey: "landing.pillar.3.text" },
 ];
 
 export const problemPoints: ProblemPoint[] = [
-  {
-    icon: Mountain,
-    title: "Một cảnh báo cho cả vùng chênh 1.500m độ cao",
-    text: "Trạm đo thưa, cảnh báo cấp tỉnh không phản ánh nổi chênh lệch nhiệt độ giữa Mường Lay (~250m) và Mường Nhé (~1.800m).",
-  },
-  {
-    icon: FileWarning,
-    title: "Bản tin có con số, không có việc phải làm",
-    text: "Nhiệt độ, lượng mưa là dữ liệu thô; người dân cần biết làm gì và trước mấy giờ, không phải một con số.",
-  },
-  {
-    icon: Users,
-    title: "Hộ yếu thế dễ bị bỏ sót",
-    text: "Một thông báo đẩy không đảm bảo người già, neo đơn, không điện thoại nhận được và hành động kịp.",
-  },
+  { icon: Mountain, titleKey: "landing.problem.1.title", textKey: "landing.problem.1.text" },
+  { icon: FileWarning, titleKey: "landing.problem.2.title", textKey: "landing.problem.2.text" },
+  { icon: Users, titleKey: "landing.problem.3.title", textKey: "landing.problem.3.text" },
 ];
 
 export const differentiators: Differentiator[] = [
-  {
-    icon: Mountain,
-    title: "Cảnh báo theo bản, không theo tỉnh",
-    text: "Hai bản cùng một địa điểm dự báo nhưng lệch ≥300m độ cao vẫn ra nhiệt độ hiệu chỉnh khác nhau.",
-  },
-  {
-    icon: AlertTriangle,
-    title: "Ngưỡng công khai, không hộp đen",
-    text: "Bảng ngưỡng theo loại thiên tai và bản là dữ liệu tĩnh, xem được — không phải mô hình tự học ẩn.",
-  },
-  {
-    icon: GitBranch,
-    title: "Leo thang có mốc rõ ràng",
-    text: "15 phút, 30 phút, và hạn chót trừ 60 phút — không phụ thuộc việc ai đó nhớ để gọi lại.",
-  },
-  {
-    icon: Users,
-    title: "Sổ hộ dễ tổn thương",
-    text: "Trưởng bản khai báo một lần các hộ già yếu, neo đơn, không điện thoại — hệ thống không tự suy đoán.",
-  },
-  {
-    icon: ClipboardList,
-    title: "Nhật ký trách nhiệm bất biến",
-    text: "Ai được cảnh báo, ai đã xác nhận, khi nào leo thang — ghi tự động, xuất được báo cáo.",
-  },
-  {
-    icon: Radio,
-    title: "Web push là kênh bắt buộc",
-    text: "Tức thời, không cần cài thêm ứng dụng; Zalo OA/SMS chỉ là lớp best-effort phía sau.",
-  },
+  { icon: Mountain, titleKey: "landing.differentiator.1.title", textKey: "landing.differentiator.1.text" },
+  { icon: AlertTriangle, titleKey: "landing.differentiator.2.title", textKey: "landing.differentiator.2.text" },
+  { icon: GitBranch, titleKey: "landing.differentiator.3.title", textKey: "landing.differentiator.3.text" },
+  { icon: Users, titleKey: "landing.differentiator.4.title", textKey: "landing.differentiator.4.text" },
+  { icon: ClipboardList, titleKey: "landing.differentiator.5.title", textKey: "landing.differentiator.5.text" },
+  { icon: Radio, titleKey: "landing.differentiator.6.title", textKey: "landing.differentiator.6.text" },
 ];
 
 export const scenarioTabs: ScenarioTab[] = [
@@ -129,59 +85,59 @@ export const scenarioTabs: ScenarioTab[] = [
     id: "dien-bien-phu",
     label: "TP. Điện Biên Phủ",
     elevation: "~490m",
-    hazard: "Mưa lớn / ngập",
-    description: "Địa điểm nền, độ cao thấp nhất trong 5 điểm — dùng làm mốc so sánh khi hiệu chỉnh các bản khác.",
+    hazardKey: "landing.scenario.dien-bien-phu.hazard",
+    descriptionKey: "landing.scenario.dien-bien-phu.description",
   },
   {
     id: "muong-lay",
     label: "Mường Lay",
     elevation: "~250m",
-    hazard: "Lũ ven sông Đà / ngập",
-    description: "Ven sông Đà, độ cao thấp nhất trong 5 điểm — rủi ro ngập khi mưa lớn thượng nguồn.",
+    hazardKey: "landing.scenario.muong-lay.hazard",
+    descriptionKey: "landing.scenario.muong-lay.description",
   },
   {
     id: "pha-din",
     label: "Đèo Pha Đin / Tuần Giáo",
     elevation: "~1.500m",
-    hazard: "Sương mù đèo",
-    description: "Cảnh báo tầm nhìn thấp cho tài xế tuyến Hà Nội – Điện Biên qua đèo.",
+    hazardKey: "landing.scenario.pha-din.hazard",
+    descriptionKey: "landing.scenario.pha-din.description",
   },
   {
     id: "tua-chua",
     label: "Tủa Chùa",
     elevation: "~1.400m",
-    hazard: "Sương muối / rét hại",
-    description: "Kịch bản mẫu: nhiệt độ hiệu chỉnh xuống 2°C lúc 03:00, kích hoạt Mức Đi ngay.",
+    hazardKey: "landing.scenario.tua-chua.hazard",
+    descriptionKey: "landing.scenario.tua-chua.description",
     temperature: "2°C",
-    confidence: "Dự kiến 03:00 · độ tin cậy cao",
+    confidenceKey: "landing.scenario.tua-chua.confidence",
   },
   {
     id: "muong-nhe",
     label: "Mường Nhé",
     elevation: "600–1.800m",
-    hazard: "Lũ quét / sạt lở",
-    description: "Dải độ cao rộng nhất trong 5 điểm; địa bàn đề xuất cho pilot 6 tháng.",
+    hazardKey: "landing.scenario.muong-nhe.hazard",
+    descriptionKey: "landing.scenario.muong-nhe.description",
   },
 ];
 
 export const roleViews: RoleView[] = [
   {
-    category: "VAI TRÒ 01",
-    name: "Người dân",
-    description: "Xem thẻ cảnh báo, nghe bản tin 4 phần, bấm “Tôi đã làm” để khép vòng xác nhận.",
-    specs: ["Web push tức thời", "Bản tin 4 phần", "Xác nhận 1 chạm"],
+    categoryKey: "landing.role.1.category",
+    nameKey: "landing.role.1.name",
+    descriptionKey: "landing.role.1.description",
+    specKeys: ["landing.role.1.spec1", "landing.role.1.spec2", "landing.role.1.spec3"],
   },
   {
-    category: "VAI TRÒ 02",
-    name: "Trưởng bản",
-    description: "Quản Sổ hộ dễ tổn thương của bản mình, nhận Danh sách đến nhắc khi Mức Đi ngay được phát.",
-    specs: ["Sổ hộ dễ tổn thương", "Danh sách đến nhắc", "Xác nhận “Đã đến nhắc”"],
+    categoryKey: "landing.role.2.category",
+    nameKey: "landing.role.2.name",
+    descriptionKey: "landing.role.2.description",
+    specKeys: ["landing.role.2.spec1", "landing.role.2.spec2", "landing.role.2.spec3"],
   },
   {
-    category: "VAI TRÒ 03",
-    name: "Cán bộ xã",
-    description: "Duyệt phát lệnh cảnh báo sơ tán Mức Đi ngay, nhận leo thang, xem Nhật ký trách nhiệm toàn xã.",
-    specs: ["Duyệt lệnh sơ tán", "Nhận leo thang", "Nhật ký trách nhiệm toàn xã"],
+    categoryKey: "landing.role.3.category",
+    nameKey: "landing.role.3.name",
+    descriptionKey: "landing.role.3.description",
+    specKeys: ["landing.role.3.spec1", "landing.role.3.spec2", "landing.role.3.spec3"],
   },
 ];
 

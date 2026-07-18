@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { getDominantLevel, getHazardLevel, getVillage } from "../domain/mockData";
-import { HAZARD_TYPE_LABELS } from "../domain/labels";
+import { useTranslation } from "../i18n/I18nProvider";
+import { useLocalizedLabels } from "../i18n/useLocalizedLabels";
 import type { HazardType } from "../domain/types";
 import { HazardLevelBadge, ConfidenceBadge } from "./HazardBadge";
 
@@ -13,12 +14,12 @@ import { HazardLevelBadge, ConfidenceBadge } from "./HazardBadge";
  */
 
 const MOCK_CONTRIBUTORS = [
-  { key: "slope", label: "Độ dốc", weight: 0.28 },
-  { key: "hand", label: "HAND (độ cao trên dòng chảy gần nhất)", weight: 0.24 },
-  { key: "twi", label: "Chỉ số ẩm địa hình (TWI)", weight: 0.16 },
-  { key: "distance_road", label: "Khoảng cách tới đường", weight: 0.1 },
-  { key: "rain_trigger", label: "Trigger mưa theo loại", weight: 0.22 },
-];
+  { key: "slope", weight: 0.28 },
+  { key: "hand", weight: 0.24 },
+  { key: "twi", weight: 0.16 },
+  { key: "distance_road", weight: 0.1 },
+  { key: "rain_trigger", weight: 0.22 },
+] as const;
 
 export function ContributionPanel({
   villageId,
@@ -31,6 +32,8 @@ export function ContributionPanel({
   day: number;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
   const village = getVillage(villageId);
   const hazard = hazardType === "dominant" ? getDominantLevel(villageId, day) : getHazardLevel(villageId, hazardType, day);
   if (!village || !hazard) return null;
@@ -39,16 +42,18 @@ export function ContributionPanel({
     <div className="w-full max-w-sm rounded-2xl border border-border bg-surface-2 p-4">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-wide text-muted">Đóng góp đặc trưng · {village.name}</p>
+          <p className="text-xs uppercase tracking-wide text-muted">
+            {t("contributionPanel.title", { village: village.name })}
+          </p>
           <p className="mt-1 text-sm font-semibold text-fg-strong">
-            {hazardType === "dominant" ? "Nguy hiểm cao nhất" : HAZARD_TYPE_LABELS[hazardType]}
+            {hazardType === "dominant" ? t("contributionPanel.dominantLabel") : labels.hazardType[hazardType]}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
           className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-surface-3 hover:text-fg"
-          aria-label="Đóng panel"
+          aria-label={t("contributionPanel.closeAriaLabel")}
         >
           <X size={16} />
         </button>
@@ -63,7 +68,7 @@ export function ContributionPanel({
         {MOCK_CONTRIBUTORS.map((c) => (
           <div key={c.key}>
             <div className="flex items-center justify-between text-xs text-muted">
-              <span>{c.label}</span>
+              <span>{t(`contributionPanel.contributor.${c.key}`)}</span>
               <span className="font-mono">{Math.round(c.weight * 100)}%</span>
             </div>
             <div className="mt-1 h-1.5 rounded-full bg-surface-3">
@@ -72,10 +77,7 @@ export function ContributionPanel({
           </div>
         ))}
       </div>
-      <p className="mt-4 text-xs leading-5 text-muted-2">
-        Mô phỏng breakdown — chưa nối feature-stack thật (AD-1/AD-2). Điểm nguy hiểm không do LLM
-        tính; đây chỉ để minh hoạ cấu trúc UI cho cell-inspect.
-      </p>
+      <p className="mt-4 text-xs leading-5 text-muted-2">{t("contributionPanel.footnote")}</p>
     </div>
   );
 }

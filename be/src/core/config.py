@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     litellm_base_url: str = "http://localhost:4000"
     litellm_api_key: str | None = None
     litellm_model: str = "mock-model"
+    openai_api_key: str | None = None
+    openai_model: str = "gpt-4o-mini"
     open_meteo_api_key: str | None = None
     open_meteo_timeout_seconds: int = Field(default=15, ge=1, le=120)
     open_meteo_retry_attempts: int = Field(default=3, ge=1, le=5)
@@ -37,6 +39,11 @@ class Settings(BaseSettings):
         "https://historical-forecast-api.open-meteo.com/v1/forecast"
     )
     open_meteo_flood_url: str = "https://flood-api.open-meteo.com/v1/flood"
+    # Path to a Google Cloud service-account JSON key. Shared across the Google-backed
+    # translation providers (Cloud Translation NMT and Vertex AI Gemini) — see ai/translation/.
+    google_translate_credentials_path: str | None = None
+    vertex_location: str = "us-central1"
+    vertex_gemini_model: str = "gemini-2.5-flash"
     langfuse_enabled: bool = False
     langfuse_public_key: str | None = None
     langfuse_secret_key: str | None = None

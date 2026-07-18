@@ -6,6 +6,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ai.forecast import OpenMeteoService
+from ai.translation.gemini_service import GeminiTranslateService
 from auth.keycloak import CurrentUser, KeycloakVerifier
 from auth.keycloak_admin import KeycloakAdminClient
 from core.config import Settings, get_settings
@@ -15,6 +16,7 @@ from queues.redis_queue import JobQueue
 from services.admin_user_service import AdminUserService
 from services.ai_job_service import AiJobService
 from services.forecast_service import ForecastService
+from services.translation_service import TranslationCacheService
 
 
 @lru_cache
@@ -91,3 +93,16 @@ async def get_admin_user_service(
     client: KeycloakAdminClient = Depends(get_keycloak_admin_client),
 ) -> AsyncIterator[AdminUserService]:
     yield AdminUserService(client)
+
+
+def get_gemini_translate_service(
+    settings: Settings = Depends(get_settings),
+) -> GeminiTranslateService:
+    return GeminiTranslateService(settings)
+
+
+async def get_translation_cache_service(
+    redis: Redis = Depends(get_redis),
+    provider: GeminiTranslateService = Depends(get_gemini_translate_service),
+) -> AsyncIterator[TranslationCacheService]:
+    yield TranslationCacheService(redis, provider)

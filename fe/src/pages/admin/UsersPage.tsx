@@ -1,7 +1,8 @@
 import { PageHeader, Card } from "../../shared/ui/PageHeader";
 import { Alert } from "../../shared/ui/Alert";
 import { Spinner } from "../../shared/ui/Spinner";
-import { ROLE_LABELS } from "../../shared/domain/labels";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
+import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { VILLAGES } from "../../shared/domain/mockData";
 import type { Role } from "../../shared/domain/types";
 import { useSetUserRole, useSetUserVillage, useUsers } from "../../features/admin/hooks";
@@ -13,38 +14,43 @@ const selectClass =
   "min-h-9 rounded-lg border border-border-strong bg-surface-2 px-2 py-1 text-sm text-fg focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50";
 
 export function AdminUsersPage() {
+  const { t } = useTranslation();
+  const labels = useLocalizedLabels();
   const { data: users, isPending, isError, error } = useUsers();
   const setRole = useSetUserRole();
   const setVillage = useSetUserVillage();
 
   return (
     <div>
-      <PageHeader eyebrow="Admin" title="Người dùng & phân quyền" description="Gán vai qua Keycloak — mỗi user chỉ có đúng 1 trong 4 vai." />
+      <PageHeader
+        eyebrow={t("role.admin")}
+        title={t("admin.users.title")}
+        description={t("admin.users.description")}
+      />
       <Alert variant="info">
-        Dữ liệu người dùng và vai được đọc/ghi trực tiếp qua Keycloak Admin API. Đổi vai sẽ thu hồi
-        vai domain cũ và gán vai mới; vai nền <code>user</code> luôn được giữ.
+        {t("admin.users.alertPart1")} <code>user</code> {t("admin.users.alertPart2")}
       </Alert>
 
       {(setRole.isError || setVillage.isError) && (
         <div className="mt-4">
           <Alert variant="error">
-            Cập nhật thất bại: {(setRole.error ?? setVillage.error)?.message}
+            {t("admin.users.updateFailed", { error: (setRole.error ?? setVillage.error)?.message ?? "" })}
           </Alert>
         </div>
       )}
 
       <Card className="mt-4">
-        {isPending && <Spinner label="Đang tải danh sách người dùng" />}
-        {isError && <Alert variant="error">Không tải được người dùng: {error.message}</Alert>}
-        {users && users.length === 0 && <p className="py-3 text-sm text-muted">Chưa có người dùng nào.</p>}
+        {isPending && <Spinner label={t("admin.users.loading")} />}
+        {isError && <Alert variant="error">{t("admin.users.loadError", { error: error.message })}</Alert>}
+        {users && users.length === 0 && <p className="py-3 text-sm text-muted">{t("admin.users.empty")}</p>}
         {users && users.length > 0 && (
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border-soft text-xs uppercase tracking-wide text-muted">
-                <th className="pb-2">Tài khoản</th>
-                <th className="pb-2">Tên hiển thị</th>
-                <th className="pb-2">Vai</th>
-                <th className="pb-2">Bản (nếu có)</th>
+                <th className="pb-2">{t("admin.users.colAccount")}</th>
+                <th className="pb-2">{t("admin.users.colDisplayName")}</th>
+                <th className="pb-2">{t("admin.users.colRole")}</th>
+                <th className="pb-2">{t("admin.users.colVillage")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-soft">
@@ -64,10 +70,10 @@ export function AdminUsersPage() {
                           setRole.mutate({ userId: u.id, role: e.target.value as DomainRole })
                         }
                       >
-                        {u.domain_role === null && <option value="">(chưa gán)</option>}
+                        {u.domain_role === null && <option value="">{t("admin.users.unassigned")}</option>}
                         {ROLE_OPTIONS.map((role) => (
                           <option key={role} value={role}>
-                            {ROLE_LABELS[role]}
+                            {labels.role[role]}
                           </option>
                         ))}
                       </select>

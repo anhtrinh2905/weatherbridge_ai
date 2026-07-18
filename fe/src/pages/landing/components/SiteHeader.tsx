@@ -1,13 +1,9 @@
 import { ArrowRight, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "../../../shared/i18n/I18nProvider";
+import { LanguageSwitcher } from "../../../shared/ui/LanguageSwitcher";
 import { Button } from "../../../shared/ui/Button";
 import { Logo } from "../../../shared/ui/Logo";
-
-const navLinks = [
-  { href: "#why", label: "Bài toán" },
-  { href: "#scenarios", label: "Kịch bản" },
-  { href: "#roles", label: "Vai trò" },
-];
 
 export function SiteHeader({
   menuOpen,
@@ -20,8 +16,15 @@ export function SiteHeader({
   onRegister: () => void;
   disabled: boolean;
 }) {
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
+
+  const navLinks = [
+    { href: "#why", label: t("landing.nav.problem") },
+    { href: "#scenarios", label: t("landing.nav.scenarios") },
+    { href: "#roles", label: t("landing.nav.roles") },
+  ];
 
   useEffect(() => {
     let ticking = false;
@@ -61,28 +64,32 @@ export function SiteHeader({
         className={`site-header relative z-50 mx-auto mt-4 flex max-w-7xl items-center justify-between px-5 py-4 sm:mt-6 sm:px-8 lg:px-12${scrolled ? " site-header--scrolled" : ""}`}
       >
         <Logo />
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Điều hướng chính">
+        <nav className="hidden items-center gap-8 md:flex" aria-label={t("landing.nav.mainAriaLabel")}>
           {navLinks.map(({ href, label }) => (
             <a key={href} href={href} className="site-nav-link">{label}</a>
           ))}
+          <LanguageSwitcher />
           <Button className="min-h-10 px-4" onClick={onRegister} disabled={disabled}>
-            Đăng nhập <ArrowRight size={15} />
+            {t("common.login")} <ArrowRight size={15} />
           </Button>
         </nav>
-        <Button
-          variant="ghost"
-          className="min-h-10 px-3 md:hidden"
-          aria-label={menuOpen ? "Đóng menu" : "Mở menu"}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-navigation"
-          onClick={onToggleMenu}
-        >
-          {menuOpen ? <X /> : <Menu />}
-        </Button>
+        <div className="flex items-center gap-1 md:hidden">
+          <LanguageSwitcher />
+          <Button
+            variant="ghost"
+            className="min-h-10 px-3"
+            aria-label={menuOpen ? t("landing.nav.menuCloseAriaLabel") : t("landing.nav.menuOpenAriaLabel")}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
+            onClick={onToggleMenu}
+          >
+            {menuOpen ? <X /> : <Menu />}
+          </Button>
+        </div>
       </header>
 
       {menuOpen && (
-        <div className="mobile-drawer md:hidden" role="dialog" aria-modal="true" aria-label="Điều hướng di động">
+        <div className="mobile-drawer md:hidden" role="dialog" aria-modal="true" aria-label={t("landing.nav.mobileAriaLabel")}>
           <nav id="mobile-navigation" className="mobile-drawer__nav">
             {navLinks.map(({ href, label }, i) => (
               <a
@@ -98,7 +105,7 @@ export function SiteHeader({
             ))}
           </nav>
           <Button className="mobile-drawer__cta" onClick={onRegister} disabled={disabled}>
-            Đăng nhập <ArrowRight size={16} />
+            {t("common.login")} <ArrowRight size={16} />
           </Button>
         </div>
       )}

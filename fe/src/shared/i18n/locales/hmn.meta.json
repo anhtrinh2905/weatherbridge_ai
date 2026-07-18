@@ -1,0 +1,6 @@
+{
+  "status": "machine-translated",
+  "provider": "gemini-2.5-flash (Vertex AI)",
+  "generatedAt": "2026-07-18",
+  "note": "Machine-translated from vi.json via scripts/generate_hmong_locale.py — not yet reviewed by a native Hmong speaker. Covers all 4 dashboard roles, resident, login/register/password-recovery flows, and the marketing landing page. Re-run the script to regenerate after editing vi.json."
+}

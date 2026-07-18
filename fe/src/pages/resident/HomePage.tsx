@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { ShieldCheck, HandHelping } from "lucide-react";
 import { useAuth } from "../../features/auth/hooks";
+import { useTranslation } from "../../shared/i18n/I18nProvider";
 import { AlertCard, SafeStatusCard } from "../../shared/ui/AlertCard";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { VillageMap } from "../../shared/ui/VillageMap";
 import { Button } from "../../shared/ui/Button";
-import { OCCUPATION_LABELS } from "../../shared/domain/labels";
+import type { Occupation } from "../../shared/domain/types";
 import {
   getAlertForVillageDay,
   getSelfResident,
@@ -15,20 +16,25 @@ import {
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
 import { cn } from "../../shared/lib/cn";
 
-const DAY_TABS = [
-  { day: 0, label: "Hôm nay" },
-  { day: 1, label: "+1 ngày" },
-  { day: 2, label: "+2 ngày" },
-] as const;
+function occupationKey(occupation: Occupation): string {
+  return `occupation.${occupation}`;
+}
 
 export function ResidentHomePage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const villageId = user?.villageId ?? "muong-pon-1";
   const village = getVillage(villageId);
   const self = getSelfResident(villageId);
   const { getStatus, setSafetyStatus } = useResidentStatusStore();
   const status = self ? getStatus(self.id) : undefined;
   const [day, setDay] = useState(0);
+
+  const dayTabs = [
+    { day: 0, label: t("resident.dayToday") },
+    { day: 1, label: t("resident.dayPlus1") },
+    { day: 2, label: t("resident.dayPlus2") },
+  ] as const;
 
   const baseAlert = getAlertForVillageDay(villageId, day);
   const alert = baseAlert && self ? personalizeAlert(baseAlert, self.occupation) : baseAlert;
@@ -40,11 +46,13 @@ export function ResidentHomePage() {
       </div>
 
       <div className="px-4 sm:px-0">
-        <p className="text-xs uppercase tracking-wide text-muted">Bản {village?.name}</p>
+        <p className="text-xs uppercase tracking-wide text-muted">
+          {t("resident.village", { village: village?.name ?? "" })}
+        </p>
         {self && (
           <p className="mt-0.5 text-base text-fg">
             <span className="font-semibold text-fg-strong">{self.fullName}</span>
-            <span className="text-muted"> · {OCCUPATION_LABELS[self.occupation]}</span>
+            <span className="text-muted"> · {t(occupationKey(self.occupation))}</span>
           </p>
         )}
       </div>
@@ -59,8 +67,8 @@ export function ResidentHomePage() {
         </div>
 
         <aside className="space-y-4 px-4 sm:px-0 lg:col-span-5">
-          <div className="flex gap-2" role="tablist" aria-label="Xem 3 ngày tới">
-            {DAY_TABS.map((tab) => (
+          <div className="flex gap-2" role="tablist" aria-label={t("resident.dayTabsAriaLabel")}>
+            {dayTabs.map((tab) => (
               <button
                 key={tab.day}
                 type="button"
@@ -81,7 +89,7 @@ export function ResidentHomePage() {
 
           <div className="overflow-hidden rounded-2xl border border-border bg-surface-2 sm:rounded-3xl">
             <p className="border-b border-border-soft px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
-              Bản đồ khu vực · 2 mức
+              {t("resident.mapTitle")}
             </p>
             <VillageMap
               layer="dominant"
@@ -95,9 +103,9 @@ export function ResidentHomePage() {
           {self && (
             <div className="rounded-2xl border border-border bg-surface-2 p-4 sm:rounded-3xl sm:p-5">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-base font-semibold text-fg-strong">Bạn có an toàn không?</p>
+                <p className="text-base font-semibold text-fg-strong">{t("resident.safetyCheckTitle")}</p>
                 <span className="rounded-md border border-dashed border-accent/50 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-accent">
-                  Diễn tập
+                  {t("resident.exerciseBadge")}
                 </span>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-3">
@@ -110,7 +118,7 @@ export function ResidentHomePage() {
                   onClick={() => setSafetyStatus(self.id, "safe")}
                 >
                   <ShieldCheck size={22} />
-                  Tôi an toàn
+                  {t("resident.imSafe")}
                 </Button>
                 <Button
                   variant={status?.safetyStatus === "need_help" ? "danger" : "secondary"}
@@ -118,12 +126,14 @@ export function ResidentHomePage() {
                   onClick={() => setSafetyStatus(self.id, "need_help")}
                 >
                   <HandHelping size={22} />
-                  Tôi cần giúp đỡ
+                  {t("resident.needHelp")}
                 </Button>
               </div>
               {status?.safetyStatusUpdatedAt && (
                 <p className="mt-3 text-center text-xs text-muted">
-                  Đã ghi nhận lúc {new Date(status.safetyStatusUpdatedAt).toLocaleTimeString("vi-VN")}
+                  {t("resident.recordedAt", {
+                    time: new Date(status.safetyStatusUpdatedAt).toLocaleTimeString("vi-VN"),
+                  })}
                 </p>
               )}
             </div>

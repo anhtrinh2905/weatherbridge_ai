@@ -9,15 +9,16 @@ import type { Role } from "../../shared/domain/types";
  */
 export interface DemoAccount {
   role: Role;
-  label: string;
   username: string;
 }
 
 export const DEMO_PASSWORD = "Demo@12345";
 
+// Display label per role comes from the i18n `role.*` catalog (shared/i18n/useLocalizedLabels)
+// so the demo picker translates along with the rest of the UI.
 export const DEMO_ACCOUNTS: DemoAccount[] = [
-  { role: "admin", label: "Admin", username: "admin@weather-bridge.local" },
-  { role: "commune_officer", label: "Cán bộ PCTT xã", username: "canbo@weather-bridge.local" },
-  { role: "village_head", label: "Trưởng bản", username: "truongban@weather-bridge.local" },
-  { role: "resident", label: "Người dân", username: "dan@weather-bridge.local" },
+  { role: "admin", username: "admin@weather-bridge.local" },
+  { role: "commune_officer", username: "canbo@weather-bridge.local" },
+  { role: "village_head", username: "truongban@weather-bridge.local" },
+  { role: "resident", username: "dan@weather-bridge.local" },
 ];

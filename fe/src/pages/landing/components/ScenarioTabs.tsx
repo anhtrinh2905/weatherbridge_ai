@@ -1,5 +1,6 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import { scenarioTabs, type ScenarioTab } from "../landing.data";
+import { useTranslation } from "../../../shared/i18n/I18nProvider";
 import { SignalPanel } from "../../../shared/ui/SignalPanel";
 
 const DEFAULT_INDEX = Math.max(
@@ -8,6 +9,7 @@ const DEFAULT_INDEX = Math.max(
 );
 
 function ScenarioVisual({ tab }: { tab: ScenarioTab }) {
+  const { t } = useTranslation();
   if (tab.id === "tua-chua") return <SignalPanel compact />;
 
   return (
@@ -17,14 +19,15 @@ function ScenarioVisual({ tab }: { tab: ScenarioTab }) {
         <span className="signal-live shrink-0">{tab.elevation}</span>
       </div>
       <div className="mt-8">
-        <p className="signal-label">{tab.hazard}</p>
-        <p className="mt-3 text-base leading-7 text-fg">{tab.description}</p>
+        <p className="signal-label">{t(tab.hazardKey)}</p>
+        <p className="mt-3 text-base leading-7 text-fg">{t(tab.descriptionKey)}</p>
       </div>
     </div>
   );
 }
 
 export function ScenarioTabs() {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(DEFAULT_INDEX);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const active = scenarioTabs[activeIndex];
@@ -46,11 +49,13 @@ export function ScenarioTabs() {
   return (
     <section id="scenarios" className="landing-section landing-section--surface relative z-10">
       <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="landing-section__meta"><span>04 / KỊCH BẢN THEO ĐỊA ĐIỂM</span><i /></div>
-        <p className="section-kicker">Năm địa điểm, năm dạng rủi ro</p>
-        <h2 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight tracking-[-0.045em] text-fg-strong sm:text-6xl">Mỗi độ cao một mối nguy khác nhau.</h2>
+        <div className="landing-section__meta"><span>{t("landing.section.scenario.meta")}</span><i /></div>
+        <p className="section-kicker">{t("landing.scenario.kicker")}</p>
+        <h2 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight tracking-[-0.045em] text-fg-strong sm:text-6xl">
+          {t("landing.scenario.headline")}
+        </h2>
 
-        <div className="scenario-tabs mt-10" role="tablist" aria-label="Chọn địa điểm dự báo" onKeyDown={onKeyDown}>
+        <div className="scenario-tabs mt-10" role="tablist" aria-label={t("landing.scenario.tabsAriaLabel")} onKeyDown={onKeyDown}>
           {scenarioTabs.map((tab, i) => (
             <button
               key={tab.id}
@@ -78,8 +83,8 @@ export function ScenarioTabs() {
         >
           <div>
             <p className="signal-label">{active.label} · {active.elevation}</p>
-            <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-fg-strong sm:text-3xl">{active.hazard}</h3>
-            <p className="mt-4 max-w-md leading-7 text-muted">{active.description}</p>
+            <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-fg-strong sm:text-3xl">{t(active.hazardKey)}</h3>
+            <p className="mt-4 max-w-md leading-7 text-muted">{t(active.descriptionKey)}</p>
           </div>
           <ScenarioVisual tab={active} />
         </div>
