@@ -3,6 +3,6 @@
 import pytest
 
 
-@pytest.mark.skip(reason="Run after the alert localization workflow is integrated with provider fixtures.")
+@pytest.mark.skip(reason="Needs alert localization + provider fixtures.")
 async def test_pending_outbox_uses_the_reviewed_locale_content() -> None:
     """Outbox dispatch must read the recipient's current reviewed content variant."""
