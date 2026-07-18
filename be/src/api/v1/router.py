@@ -11,6 +11,7 @@ from api.v1.endpoints import (
     hazards,
     health,
     households,
+    locales,
     notifications,
     open_meteo,
     profile,
@@ -27,6 +28,7 @@ router.include_router(profile.router, prefix="/profile", tags=["profile"])
 router.include_router(residents.router, prefix="/residents", tags=["residents"])
 router.include_router(households.router, prefix="/households", tags=["households"])
 router.include_router(subscriptions.router, prefix="/subscriptions", tags=["subscriptions"])
+router.include_router(locales.router, prefix="/locales", tags=["locales"])
 router.include_router(hazards.router, prefix="/hazards", tags=["hazards"])
 router.include_router(alerts.router, prefix="/alerts", tags=["alerts"])
 router.include_router(evacuations.router, prefix="/evacuations", tags=["evacuations"])

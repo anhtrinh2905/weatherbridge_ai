@@ -1,12 +1,15 @@
 import { Bell, MapPin, Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { WebPushPanel } from "../../features/notifications/WebPushPanel";
-import { useAddContact, useAddLocation, useConsents, useCreateSubscription, useGrantConsent, useNotificationChannels, useResident, useResidents, useSubscriptions, useUpdateSubscription, useWithdrawConsent } from "../../features/operations/hooks";
+import { useAddContact, useAddLocation, useConsents, useCreateSubscription, useGrantConsent, useLocales, useNotificationChannels, useProfile, useResident, useResidents, useSubscriptions, useUpdateProfile, useUpdateSubscription, useWithdrawConsent } from "../../features/operations/hooks";
 import { Button } from "../../shared/ui/Button";
 import { Card, PageHeader } from "../../shared/ui/PageHeader";
 
 export function ResidentNotificationsPage() {
   const residents = useResidents();
+  const profile = useProfile();
+  const locales = useLocales();
+  const updateProfile = useUpdateProfile();
   const residentId = residents.data?.[0]?.id;
   const resident = useResident(residentId);
   const channels = useNotificationChannels();
@@ -25,6 +28,14 @@ export function ResidentNotificationsPage() {
   return <div className="space-y-5">
     <PageHeader eyebrow="Cư dân" title="Nhận cảnh báo" description="Quản lý điểm theo dõi và kênh nhận tin của bạn." />
     <WebPushPanel />
+    <Card>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div><h2 className="font-semibold text-fg-strong">Ngôn ngữ nhận cảnh báo</h2><p className="mt-1 text-sm text-muted">Ngôn ngữ địa phương chỉ xuất hiện sau khi đã được người bản ngữ kiểm định.</p></div>
+        <select value={profile.data?.preferred_locale ?? "vi"} onChange={(event) => updateProfile.mutate({ preferred_locale: event.target.value })} disabled={updateProfile.isPending} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm">
+          {locales.data?.map((locale) => <option key={locale.code} value={locale.code}>{locale.display_name}</option>)}
+        </select>
+      </div>
+    </Card>
     <div className="grid gap-5 lg:grid-cols-2">
       <Card>
         <div className="flex items-center gap-2"><Bell size={18} className="text-accent" /><h2 className="font-semibold text-fg-strong">Kênh nhận tin</h2></div>

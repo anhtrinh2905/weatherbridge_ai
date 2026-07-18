@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.keycloak import CurrentUser
 from core.errors import AppError
 from core.time import utc_now
-from database.domain_models import Resident, UserAreaAssignment, UserProfile
+from database.domain_models import Locale, Resident, UserAreaAssignment, UserProfile
 from database.models import GeoLocation
 from modules.profiles.schemas import ProfileResponse
 
@@ -110,6 +110,13 @@ class ProfileService:
 
     async def update_locale(self, user: CurrentUser, locale: str) -> ProfileResponse:
         context = await self.access_context(user)
+        locale_record = await self.session.get(Locale, locale)
+        if (
+            locale_record is None
+            or not locale_record.is_active
+            or locale_record.status != "published"
+        ):
+            raise AppError(409, "Locale is not available for residents", "locale_unavailable")
         context.profile.preferred_locale = locale
         context.profile.updated_at = utc_now()
         await self.session.commit()

@@ -64,6 +64,7 @@ async function requestBlob(path: string, init: RequestInit = {}): Promise<Blob> 
 
 export const apiClient = {
   get: <T>(path: string, query?: Record<string, QueryValue>) => request<T>(withQuery(path, query)),
+  getBlob: (path: string, query?: Record<string, QueryValue>) => requestBlob(withQuery(path, query)),
   post: <T>(path: string, body?: unknown) => request<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
   put: <T>(path: string, body?: unknown) => request<T>(path, { method: "PUT", body: body === undefined ? undefined : JSON.stringify(body) }),
   patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body: body === undefined ? undefined : JSON.stringify(body) }),

@@ -17,6 +17,7 @@ from database.domain_models import (
     AlertTarget,
     AuditLog,
     ConsentRecord,
+    Locale,
     NotificationOutbox,
     Resident,
     ResidentContact,
@@ -311,20 +312,7 @@ class AlertService:
             )
         ).all()
         return [
-            AlertInboxItem(
-                alert_id=alert.id,
-                recipient_id=recipient.id,
-                hazard_type=alert.hazard_type,
-                level=alert.level,
-                tier=alert.tier,
-                what_happened=content.what_happened,
-                danger_description=content.danger_description,
-                action_instruction=content.action_instruction,
-                deadline_instruction=content.deadline_instruction,
-                deadline_at=alert.deadline_at,
-                acknowledgement_status=recipient.acknowledgement_status,
-                acknowledged_at=recipient.acknowledged_at,
-            )
+            await self._inbox_item(recipient, alert, content)
             for recipient, alert, content in rows
         ]
 
@@ -374,19 +362,47 @@ class AlertService:
         recipient.acknowledgement_status = payload.status
         recipient.acknowledged_at = utc_now()
         await self.session.commit()
-        return AlertInboxItem(
-            alert_id=alert.id,
-            recipient_id=recipient.id,
-            hazard_type=alert.hazard_type,
-            level=alert.level,
-            tier=alert.tier,
-            what_happened=content.what_happened,
-            danger_description=content.danger_description,
-            action_instruction=content.action_instruction,
-            deadline_instruction=content.deadline_instruction,
-            deadline_at=alert.deadline_at,
-            acknowledgement_status=recipient.acknowledgement_status,
-            acknowledged_at=recipient.acknowledged_at,
+        return await self._inbox_item(recipient, alert, content)
+
+    async def speech_text(self, alert_id: UUID, user: CurrentUser) -> tuple[str, str]:
+        """Returns reviewed recipient content only; the endpoint never speaks a draft."""
+        context = await self.profiles.access_context(user)
+        resident = await self._resident_for_profile(context.profile.id)
+        row = (
+            await self.session.execute(
+                select(AlertRecipient, Alert, AlertContent)
+                .join(Alert, Alert.id == AlertRecipient.alert_id)
+                .join(AlertContent, AlertContent.id == AlertRecipient.content_id)
+                .where(
+                    AlertRecipient.alert_id == alert_id,
+                    AlertRecipient.resident_id == resident.id,
+                    Alert.status == "published",
+                )
+            )
+        ).first()
+        if row is None:
+            raise AppError(404, "Alert was not delivered to this resident", "alert_not_found")
+        _recipient, _alert, content = row
+        locale = await self.session.get(Locale, content.locale)
+        if locale is None or not locale.tts_enabled:
+            raise AppError(
+                409,
+                "Speech is not enabled for this alert language",
+                "speech_unavailable",
+            )
+        speech_language = {"hmn-x-dienbien": "hmn"}.get(content.locale)
+        if speech_language is None:
+            raise AppError(409, "No reviewed speech voice is configured", "speech_unavailable")
+        return (
+            " ".join(
+                (
+                    content.what_happened,
+                    content.danger_description,
+                    content.action_instruction,
+                    content.deadline_instruction,
+                )
+            ),
+            speech_language,
         )
 
     async def _scoped_alert(self, alert_id: UUID, context: AccessContext) -> Alert:
@@ -458,6 +474,30 @@ class AlertService:
             recipient_count=recipient_count,
             delivery_count=delivery_count,
             published_at=alert.published_at,
+        )
+
+    async def _inbox_item(
+        self, recipient: AlertRecipient, alert: Alert, content: AlertContent
+    ) -> AlertInboxItem:
+        locale = await self.session.get(Locale, content.locale)
+        return AlertInboxItem(
+            alert_id=alert.id,
+            recipient_id=recipient.id,
+            hazard_type=alert.hazard_type,
+            level=alert.level,
+            tier=alert.tier,
+            what_happened=content.what_happened,
+            danger_description=content.danger_description,
+            action_instruction=content.action_instruction,
+            deadline_instruction=content.deadline_instruction,
+            deadline_at=alert.deadline_at,
+            content_locale=content.locale,
+            is_locale_fallback=content.locale != recipient.preferred_locale,
+            audio_available=bool(
+                locale and locale.tts_enabled and content.locale == "hmn-x-dienbien"
+            ),
+            acknowledgement_status=recipient.acknowledgement_status,
+            acknowledged_at=recipient.acknowledged_at,
         )
 
     def _audit(

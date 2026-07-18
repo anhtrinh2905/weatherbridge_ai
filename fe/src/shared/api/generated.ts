@@ -315,6 +315,23 @@ export interface paths {
         patch: operations["update_subscription_api_v1_subscriptions__subscription_id__patch"];
         trace?: never;
     };
+    "/api/v1/locales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Locales */
+        get: operations["list_locales_api_v1_locales_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hazards/manifest": {
         parameters: {
             query?: never;
@@ -395,6 +412,92 @@ export interface paths {
         put?: never;
         /** Publish Alert */
         post: operations["publish_alert_api_v1_alerts__alert_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/contents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Localized Contents */
+        get: operations["localized_contents_api_v1_alerts__alert_id__contents_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/translations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Translations */
+        get: operations["list_translations_api_v1_alerts__alert_id__translations_get"];
+        put?: never;
+        /** Create Translation Draft */
+        post: operations["create_translation_draft_api_v1_alerts__alert_id__translations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/translations/{translation_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Review Translation */
+        post: operations["review_translation_api_v1_alerts_translations__translation_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/translations/{translation_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Translation */
+        post: operations["publish_translation_api_v1_alerts_translations__translation_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/audio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alert Audio */
+        get: operations["alert_audio_api_v1_alerts__alert_id__audio_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1205,10 +1308,50 @@ export interface components {
              * Format: date-time
              */
             deadline_at: string;
+            /**
+             * Content Locale
+             * @default vi
+             */
+            content_locale: string;
+            /**
+             * Is Locale Fallback
+             * @default false
+             */
+            is_locale_fallback: boolean;
+            /**
+             * Audio Available
+             * @default false
+             */
+            audio_available: boolean;
             /** Acknowledgement Status */
             acknowledgement_status: string;
             /** Acknowledged At */
             acknowledged_at: string | null;
+        };
+        /** AlertLocalizedContentResponse */
+        AlertLocalizedContentResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Alert Id
+             * Format: uuid
+             */
+            alert_id: string;
+            /** Locale */
+            locale: string;
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /** Deadline Instruction */
+            deadline_instruction: string;
+            /** Is Published */
+            is_published: boolean;
         };
         /** AlertResponse */
         AlertResponse: {
@@ -1253,6 +1396,73 @@ export interface components {
             delivery_count: number;
             /** Published At */
             published_at: string | null;
+        };
+        /** AlertTranslationDraftRequest */
+        AlertTranslationDraftRequest: {
+            /** Locale */
+            locale: string;
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /** Deadline Instruction */
+            deadline_instruction: string;
+            /**
+             * Translation Method
+             * @default manual
+             * @enum {string}
+             */
+            translation_method: "manual" | "machine";
+        };
+        /** AlertTranslationResponse */
+        AlertTranslationResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Alert Id
+             * Format: uuid
+             */
+            alert_id: string;
+            /** Locale */
+            locale: string;
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /** Deadline Instruction */
+            deadline_instruction: string;
+            /** Translation Status */
+            translation_status: string;
+            /** Translation Method */
+            translation_method: string;
+            /** Version */
+            version: number;
+            /** Reviewed At */
+            reviewed_at: string | null;
+            /** Review Note */
+            review_note: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** AlertTranslationReviewRequest */
+        AlertTranslationReviewRequest: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "reject";
+            /** Review Note */
+            review_note?: string | null;
         };
         /** ArchiveCoverageResponse */
         ArchiveCoverageResponse: {
@@ -2097,6 +2307,23 @@ export interface components {
         LinkResidentAccountRequest: {
             /** Keycloak Subject */
             keycloak_subject: string;
+        };
+        /** LocaleResponse */
+        LocaleResponse: {
+            /** Code */
+            code: string;
+            /** Display Name */
+            display_name: string;
+            /** Native Name */
+            native_name: string | null;
+            /** Status */
+            status: string;
+            /** Is Active */
+            is_active: boolean;
+            /** Tts Enabled */
+            tts_enabled: boolean;
+            /** Fallback Locale Code */
+            fallback_locale_code: string | null;
         };
         /** NotificationChannelResponse */
         NotificationChannelResponse: {
@@ -3215,6 +3442,37 @@ export interface operations {
             };
         };
     };
+    list_locales_api_v1_locales_get: {
+        parameters: {
+            query?: {
+                include_inactive?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocaleResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     manifest_api_v1_hazards_manifest_get: {
         parameters: {
             query?: {
@@ -3383,6 +3641,200 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublishAlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    localized_contents_api_v1_alerts__alert_id__contents_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertLocalizedContentResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_translations_api_v1_alerts__alert_id__translations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertTranslationResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_translation_draft_api_v1_alerts__alert_id__translations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertTranslationDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertTranslationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_translation_api_v1_alerts_translations__translation_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                translation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertTranslationReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertTranslationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_translation_api_v1_alerts_translations__translation_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                translation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertLocalizedContentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    alert_audio_api_v1_alerts__alert_id__audio_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

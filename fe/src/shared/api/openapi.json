@@ -860,6 +860,53 @@
         }
       }
     },
+    "/api/v1/locales": {
+      "get": {
+        "tags": [
+          "locales"
+        ],
+        "summary": "List Locales",
+        "operationId": "list_locales_api_v1_locales_get",
+        "parameters": [
+          {
+            "name": "include_inactive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Inactive"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocaleResponse"
+                  },
+                  "title": "Response List Locales Api V1 Locales Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/hazards/manifest": {
       "get": {
         "tags": [
@@ -1148,6 +1195,288 @@
                 "schema": {
                   "$ref": "#/components/schemas/PublishAlertResponse"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{alert_id}/contents": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Localized Contents",
+        "operationId": "localized_contents_api_v1_alerts__alert_id__contents_get",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertLocalizedContentResponse"
+                  },
+                  "title": "Response Localized Contents Api V1 Alerts  Alert Id  Contents Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{alert_id}/translations": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "List Translations",
+        "operationId": "list_translations_api_v1_alerts__alert_id__translations_get",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertTranslationResponse"
+                  },
+                  "title": "Response List Translations Api V1 Alerts  Alert Id  Translations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Create Translation Draft",
+        "operationId": "create_translation_draft_api_v1_alerts__alert_id__translations_post",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertTranslationDraftRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertTranslationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/translations/{translation_id}/review": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Review Translation",
+        "operationId": "review_translation_api_v1_alerts_translations__translation_id__review_post",
+        "parameters": [
+          {
+            "name": "translation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Translation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertTranslationReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertTranslationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/translations/{translation_id}/publish": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Publish Translation",
+        "operationId": "publish_translation_api_v1_alerts_translations__translation_id__publish_post",
+        "parameters": [
+          {
+            "name": "translation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Translation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertLocalizedContentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{alert_id}/audio": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Alert Audio",
+        "operationId": "alert_audio_api_v1_alerts__alert_id__audio_get",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -3086,6 +3415,21 @@
             "format": "date-time",
             "title": "Deadline At"
           },
+          "content_locale": {
+            "type": "string",
+            "title": "Content Locale",
+            "default": "vi"
+          },
+          "is_locale_fallback": {
+            "type": "boolean",
+            "title": "Is Locale Fallback",
+            "default": false
+          },
+          "audio_available": {
+            "type": "boolean",
+            "title": "Audio Available",
+            "default": false
+          },
           "acknowledgement_status": {
             "type": "string",
             "title": "Acknowledgement Status"
@@ -3119,6 +3463,56 @@
           "acknowledged_at"
         ],
         "title": "AlertInboxItem"
+      },
+      "AlertLocalizedContentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "alert_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Alert Id"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "what_happened": {
+            "type": "string",
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "title": "Action Instruction"
+          },
+          "deadline_instruction": {
+            "type": "string",
+            "title": "Deadline Instruction"
+          },
+          "is_published": {
+            "type": "boolean",
+            "title": "Is Published"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "alert_id",
+          "locale",
+          "what_happened",
+          "danger_description",
+          "action_instruction",
+          "deadline_instruction",
+          "is_published"
+        ],
+        "title": "AlertLocalizedContentResponse"
       },
       "AlertResponse": {
         "properties": {
@@ -3228,6 +3622,178 @@
           "published_at"
         ],
         "title": "AlertResponse"
+      },
+      "AlertTranslationDraftRequest": {
+        "properties": {
+          "locale": {
+            "type": "string",
+            "maxLength": 35,
+            "minLength": 2,
+            "title": "Locale"
+          },
+          "what_happened": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Action Instruction"
+          },
+          "deadline_instruction": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Deadline Instruction"
+          },
+          "translation_method": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "machine"
+            ],
+            "title": "Translation Method",
+            "default": "manual"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locale",
+          "what_happened",
+          "danger_description",
+          "action_instruction",
+          "deadline_instruction"
+        ],
+        "title": "AlertTranslationDraftRequest"
+      },
+      "AlertTranslationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "alert_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Alert Id"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "what_happened": {
+            "type": "string",
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "title": "Action Instruction"
+          },
+          "deadline_instruction": {
+            "type": "string",
+            "title": "Deadline Instruction"
+          },
+          "translation_status": {
+            "type": "string",
+            "title": "Translation Status"
+          },
+          "translation_method": {
+            "type": "string",
+            "title": "Translation Method"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "review_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Note"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "alert_id",
+          "locale",
+          "what_happened",
+          "danger_description",
+          "action_instruction",
+          "deadline_instruction",
+          "translation_status",
+          "translation_method",
+          "version",
+          "reviewed_at",
+          "review_note",
+          "created_at"
+        ],
+        "title": "AlertTranslationResponse"
+      },
+      "AlertTranslationReviewRequest": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Decision"
+          },
+          "review_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "AlertTranslationReviewRequest"
       },
       "ArchiveCoverageResponse": {
         "properties": {
@@ -5603,6 +6169,63 @@
           "keycloak_subject"
         ],
         "title": "LinkResidentAccountRequest"
+      },
+      "LocaleResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "native_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Native Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "tts_enabled": {
+            "type": "boolean",
+            "title": "Tts Enabled"
+          },
+          "fallback_locale_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fallback Locale Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "display_name",
+          "native_name",
+          "status",
+          "is_active",
+          "tts_enabled",
+          "fallback_locale_code"
+        ],
+        "title": "LocaleResponse"
       },
       "NotificationChannelResponse": {
         "properties": {

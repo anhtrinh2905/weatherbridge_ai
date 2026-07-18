@@ -17,6 +17,10 @@ export type AlertCreate = components["schemas"]["AlertCreateRequest"];
 export type AlertInboxItem = components["schemas"]["AlertInboxItem"];
 export type NotificationChannel = components["schemas"]["NotificationChannelResponse"];
 export type DeliverySummaryItem = components["schemas"]["DeliverySummaryItem"];
+export type Locale = components["schemas"]["LocaleResponse"];
+export type AlertTranslationDraft = components["schemas"]["AlertTranslationDraftRequest"];
+export type AlertTranslation = components["schemas"]["AlertTranslationResponse"];
+export type AlertLocalizedContent = components["schemas"]["AlertLocalizedContentResponse"];
 
 export const operationsApi = {
   profile: () => apiClient.get<Profile>("/profile"),
@@ -34,11 +38,17 @@ export const operationsApi = {
   grantConsent: (policyVersion: string) => apiClient.post<void>("/subscriptions/consent", { policy_version: policyVersion }),
   withdrawConsent: (id: string) => apiClient.delete<void>(`/subscriptions/consent/${id}`),
   channels: () => apiClient.get<NotificationChannel[]>("/notifications/channels"),
+  locales: (includeInactive = false) => apiClient.get<Locale[]>("/locales", { include_inactive: includeInactive }),
   alerts: () => apiClient.get<Alert[]>("/alerts"),
   createAlert: (payload: AlertCreate) => apiClient.post<Alert>("/alerts", payload),
   submitAlert: (id: string) => apiClient.post<Alert>(`/alerts/${id}/submit`),
   publishAlert: (id: string) => apiClient.post<{ alert: Alert }>(`/alerts/${id}/publish`),
   deliverySummary: (id: string) => apiClient.get<DeliverySummaryItem[]>(`/alerts/${id}/delivery-summary`),
+  alertTranslations: (id: string) => apiClient.get<AlertTranslation[]>(`/alerts/${id}/translations`),
+  createAlertTranslation: (id: string, payload: AlertTranslationDraft) => apiClient.post<AlertTranslation>(`/alerts/${id}/translations`, payload),
+  reviewAlertTranslation: (id: string, payload: components["schemas"]["AlertTranslationReviewRequest"]) => apiClient.post<AlertTranslation>(`/alerts/translations/${id}/review`, payload),
+  publishAlertTranslation: (id: string) => apiClient.post<AlertLocalizedContent>(`/alerts/translations/${id}/publish`),
+  alertAudio: (id: string) => apiClient.getBlob(`/alerts/${id}/audio`),
   inbox: () => apiClient.get<AlertInboxItem[]>("/alerts/inbox"),
   acknowledge: (id: string, status: "seen" | "safe" | "need_help") => apiClient.post<AlertInboxItem>(`/alerts/${id}/acknowledgements`, { status }),
 };

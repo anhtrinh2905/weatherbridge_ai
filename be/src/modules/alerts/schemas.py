@@ -67,6 +67,9 @@ class AlertInboxItem(BaseModel):
     action_instruction: str
     deadline_instruction: str
     deadline_at: datetime
+    content_locale: str = "vi"
+    is_locale_fallback: bool = False
+    audio_available: bool = False
     acknowledgement_status: str
     acknowledged_at: datetime | None
 

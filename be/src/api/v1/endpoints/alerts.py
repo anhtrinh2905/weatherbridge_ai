@@ -1,10 +1,14 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.deps import get_current_user
+from ai.speech.mms_service import MmsTtsService, SpeechConfigError
+from ai.speech.models import SpeechSynthesisRequest
+from api.deps import get_current_user, get_mms_tts_service
 from auth.keycloak import CurrentUser
+from core.errors import AppError
 from database.session import get_db
 from modules.alerts.schemas import (
     AcknowledgeAlertRequest,
@@ -14,7 +18,14 @@ from modules.alerts.schemas import (
     DeliverySummaryItem,
     PublishAlertResponse,
 )
+from modules.localization.schemas import (
+    AlertLocalizedContentResponse,
+    AlertTranslationDraftRequest,
+    AlertTranslationResponse,
+    AlertTranslationReviewRequest,
+)
 from services.alert_service import AlertService
+from services.localization_service import LocalizationService
 
 router = APIRouter()
 
@@ -52,6 +63,76 @@ async def publish_alert(
     session: AsyncSession = Depends(get_db),
 ) -> PublishAlertResponse:
     return await AlertService(session).publish_alert(alert_id, user)
+
+
+@router.get("/{alert_id}/contents", response_model=list[AlertLocalizedContentResponse])
+async def localized_contents(
+    alert_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> list[AlertLocalizedContentResponse]:
+    return await LocalizationService(session).localized_contents(alert_id, user)
+
+
+@router.get("/{alert_id}/translations", response_model=list[AlertTranslationResponse])
+async def list_translations(
+    alert_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> list[AlertTranslationResponse]:
+    return await LocalizationService(session).list_alert_translations(alert_id, user)
+
+
+@router.post(
+    "/{alert_id}/translations",
+    response_model=AlertTranslationResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_translation_draft(
+    alert_id: UUID,
+    payload: AlertTranslationDraftRequest,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> AlertTranslationResponse:
+    return await LocalizationService(session).create_alert_draft(alert_id, payload, user)
+
+
+@router.post("/translations/{translation_id}/review", response_model=AlertTranslationResponse)
+async def review_translation(
+    translation_id: UUID,
+    payload: AlertTranslationReviewRequest,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> AlertTranslationResponse:
+    return await LocalizationService(session).review_translation(translation_id, payload, user)
+
+
+@router.post("/translations/{translation_id}/publish", response_model=AlertLocalizedContentResponse)
+async def publish_translation(
+    translation_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> AlertLocalizedContentResponse:
+    return await LocalizationService(session).publish_translation(translation_id, user)
+
+
+@router.get("/{alert_id}/audio")
+async def alert_audio(
+    alert_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+    speech: MmsTtsService = Depends(get_mms_tts_service),
+) -> Response:
+    text, language = await AlertService(session).speech_text(alert_id, user)
+    try:
+        result = await speech.synthesize(SpeechSynthesisRequest(text=text, language=language))
+    except SpeechConfigError as exc:
+        raise AppError(503, str(exc), "speech_unavailable") from exc
+    return Response(
+        content=result.audio,
+        media_type=result.media_type,
+        headers={"X-Speech-Model": result.model_name},
+    )
 
 
 @router.get("/{alert_id}/delivery-summary", response_model=list[DeliverySummaryItem])

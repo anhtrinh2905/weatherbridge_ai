@@ -716,8 +716,12 @@ class Locale(Base):
 
     code: Mapped[str] = mapped_column(String(35), primary_key=True)
     display_name: Mapped[str] = mapped_column(String(120))
+    native_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     status: Mapped[str] = mapped_column(String(30), index=True)
     native_review_required: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    tts_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    fallback_locale_code: Mapped[str | None] = mapped_column(String(35), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
@@ -755,7 +759,9 @@ class ContentTranslation(Base):
         Uuid(as_uuid=True), ForeignKey("user_profiles.id"), nullable=True
     )
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    review_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class RetentionPolicy(Base):
