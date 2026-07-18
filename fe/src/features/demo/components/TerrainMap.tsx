@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { BOUNDARY } from "../boundary";
-import { getForecastDays, HAZARD_META } from "../data";
+import { getBackendRisk, getForecastDays, HAZARD_META } from "../data";
 import { EVENT_MARKER, isInsideBoundary, RASTER_H, RASTER_W, renderHazardRaster } from "../terrain";
 import type { HazardType } from "../types";
 
@@ -21,9 +21,11 @@ export function TerrainMap({
   onSelect: (point: MapPoint) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  // reference changes when live Open-Meteo data replaces the simulated
-  // forecast, forcing a raster repaint with the real rainfall figures
+  // references change when live data replaces the defaults, forcing a raster
+  // repaint: forecastDays on the Open-Meteo swap, backendRisk when authenticated
+  // risk arrives from /hazards.
   const forecastDays = getForecastDays();
+  const backendRisk = getBackendRisk();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -46,7 +48,7 @@ export function TerrainMap({
     ctx.strokeStyle = "rgba(180, 60, 90, 0.9)";
     ctx.lineWidth = 1;
     ctx.stroke();
-  }, [type, dayOffset, forecastDays]);
+  }, [type, dayOffset, forecastDays, backendRisk]);
 
   const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();

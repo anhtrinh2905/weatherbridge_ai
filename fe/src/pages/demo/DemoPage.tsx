@@ -19,6 +19,7 @@ import {
 import { RASTER_H, RASTER_W } from "../../features/demo/terrain";
 import type { HazardLevel, HazardType, Role } from "../../features/demo/types";
 import { useLiveForecast } from "../../features/demo/useLiveForecast";
+import { useLiveRisk } from "../../features/demo/useLiveRisk";
 import { cn } from "../../shared/lib/cn";
 import { Logo } from "../../shared/ui/Logo";
 
@@ -40,6 +41,9 @@ export function DemoPage() {
   });
 
   const forecastStatus = useLiveForecast();
+  // Loads online risk from /hazards for authenticated users; the public demo
+  // falls back to the client heuristic. Side effect fills the risk store.
+  useLiveRisk();
   const resident = RESIDENTS.find((r) => r.id === residentId) ?? RESIDENTS[0];
   const forecastDays = getForecastDays();
   const day = forecastDays.find((d) => d.offset === dayOffset) ?? forecastDays[0];

@@ -131,6 +131,28 @@ export function setForecastDays(days: ForecastDay[]): void {
   if (days.length > 0) currentForecastDays = days;
 }
 
+/** Per-day risk from the backend `/hazards` endpoint, indexed by day offset. */
+export interface BackendRiskDay {
+  /** rainfall I–D trigger, normalised to 0..1 */
+  trigger: number;
+  /** composite risk level from the backend (0..4), or null if unscored */
+  riskLevel: number | null;
+}
+
+// Swappable backend-risk store: null until `useLiveRisk` fills it from
+// GET /api/v1/hazards/{location}/latest (authenticated callers only). When
+// present, `hazardDayContext` uses the backend rainfall trigger instead of the
+// client heuristic; the public, unauthenticated demo keeps the heuristic.
+let currentBackendRisk: BackendRiskDay[] | null = null;
+
+export function getBackendRisk(): BackendRiskDay[] | null {
+  return currentBackendRisk;
+}
+
+export function setBackendRisk(days: BackendRiskDay[] | null): void {
+  currentBackendRisk = days && days.length > 0 ? days : null;
+}
+
 export const THRESHOLDS: Threshold[] = [
   { type: "flood", level: 4, source: "Ngưỡng mưa lũ quét lưu vực nhỏ — QĐ PCTT tỉnh (giả lập)" },
   { type: "landslide", level: 4, source: "Đường I–D Guzzetti hiệu chỉnh vùng núi phía Bắc (giả lập)" },
@@ -189,6 +211,13 @@ export function hazardDayContext(type: HazardType, dayOffset: number): HazardDay
     const idThreshold = 9 + 34 * Math.exp(-0.35 * (dayOffset + 1));
     trigger = clamp01((day.intensityMmH / idThreshold) * 0.8 + (day.rainfallMm / 220) * 0.4);
   }
+
+  // Prefer the authoritative backend rainfall trigger when loaded (the offline-
+  // trained bias-correction + I–D pipeline, served via /hazards). It is the
+  // unified "Kích hoạt mưa" factor for both hazard types; the per-type terrain
+  // susceptibility below stays client-side, so risk = susceptibility × trigger.
+  const backend = getBackendRisk()?.[dayOffset];
+  if (backend) trigger = backend.trigger;
 
   return {
     trigger,
