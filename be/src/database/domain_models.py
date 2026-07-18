@@ -729,14 +729,28 @@ class MediaAsset(Base):
     __tablename__ = "media_assets"
 
     id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
+    source_content_id: Mapped[UUID | None] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("alert_contents.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     asset_type: Mapped[str] = mapped_column(String(30), index=True)
     locale: Mapped[str] = mapped_column(String(35), ForeignKey("locales.code"))
     voice: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    provider: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    model_version: Mapped[str | None] = mapped_column(String(120), nullable=True)
     object_key: Mapped[str] = mapped_column(Text)
     checksum: Mapped[str] = mapped_column(String(64))
+    generation_status: Mapped[str] = mapped_column(String(30), index=True, default="ready")
     review_status: Mapped[str] = mapped_column(String(30), index=True)
     generated_from_hash: Mapped[str] = mapped_column(String(64))
+    generation_error_code: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    generation_error_message_sanitized: Mapped[str | None] = mapped_column(Text, nullable=True)
+    duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    mime_type: Mapped[str | None] = mapped_column(String(120), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 class ContentTranslation(Base):
@@ -776,3 +790,23 @@ class RetentionPolicy(Base):
     approved_by: Mapped[str | None] = mapped_column(String(255), nullable=True)
     approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class LocaleReviewerAssignment(Base):
+    __tablename__ = "locale_reviewer_assignments"
+
+    id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
+    profile_id: Mapped[UUID] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("user_profiles.id", ondelete="CASCADE"), index=True
+    )
+    locale_code: Mapped[str] = mapped_column(String(35), ForeignKey("locales.code"), index=True)
+    status: Mapped[str] = mapped_column(String(30), index=True)  # pending | verified | revoked
+    verified_by_profile_id: Mapped[UUID | None] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("user_profiles.id"), nullable=True
+    )
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    valid_from: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    valid_to: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+

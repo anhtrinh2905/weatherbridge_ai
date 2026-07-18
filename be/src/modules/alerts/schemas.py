@@ -70,6 +70,7 @@ class AlertInboxItem(BaseModel):
     content_locale: str = "vi"
     is_locale_fallback: bool = False
     audio_available: bool = False
+    audio_asset_url: str | None = None
     acknowledgement_status: str
     acknowledged_at: datetime | None
 

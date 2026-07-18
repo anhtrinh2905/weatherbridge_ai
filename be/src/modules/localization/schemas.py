@@ -13,6 +13,7 @@ class LocaleResponse(BaseModel):
     is_active: bool
     tts_enabled: bool
     fallback_locale_code: str | None
+    requires_native_review: bool = False
 
 
 class AlertTranslationDraftRequest(BaseModel):

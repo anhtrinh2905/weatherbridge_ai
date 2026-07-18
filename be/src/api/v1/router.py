@@ -17,7 +17,6 @@ from api.v1.endpoints import (
     open_meteo,
     profile,
     residents,
-    speech,
     subscriptions,
     translations,
 )
@@ -39,7 +38,6 @@ router.include_router(open_meteo.router, prefix="/open-meteo", tags=["open-meteo
 router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
 router.include_router(geocode.router, prefix="/geocode", tags=["geocode"])
 router.include_router(translations.router, prefix="/translations", tags=["translations"])
-router.include_router(speech.router, prefix="/speech", tags=["speech"])
 router.include_router(admin.router, prefix="/admin", tags=["admin"])
 router.include_router(
     hazard_archive.router, prefix="/admin/hazard-archive", tags=["admin-hazard-archive"]

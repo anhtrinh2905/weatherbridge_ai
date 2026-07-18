@@ -17,6 +17,7 @@ from database.domain_models import (
     AuditLog,
     ContentTranslation,
     Locale,
+    LocaleReviewerAssignment,
 )
 from modules.localization.schemas import (
     AlertLocalizedContentResponse,
@@ -243,6 +244,22 @@ class LocalizationService:
                 "Only human-reviewed translations can be published",
                 "translation_not_reviewed",
             )
+        
+        if locale.code != "vi":
+            assignment = await self.session.scalar(
+                select(LocaleReviewerAssignment).where(
+                    LocaleReviewerAssignment.profile_id == translation.reviewed_by_profile_id,
+                    LocaleReviewerAssignment.locale_code == locale.code,
+                    LocaleReviewerAssignment.status == "verified",
+                )
+            )
+            if not assignment:
+                raise AppError(
+                    403,
+                    "Translation must be reviewed by a verified native speaker of this locale",
+                    "translation_unauthorized_reviewer",
+                )
+
         if not locale.is_active or locale.status != "published":
             raise AppError(409, "Locale is not enabled for recipient delivery", "locale_not_active")
 
@@ -357,6 +374,7 @@ class LocalizationService:
             is_active=locale.is_active,
             tts_enabled=locale.tts_enabled,
             fallback_locale_code=locale.fallback_locale_code,
+            requires_native_review=locale.code != "vi",
         )
 
     @staticmethod
