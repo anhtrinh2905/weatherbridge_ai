@@ -110,7 +110,15 @@ Nguồn tham khảo sự kiện mỏ neo (lũ quét Mường Pồn 25/7/2024): C
 - Nguồn: **OpenStreetMap**, relation `19571212` (boundary administrative "Xã Mường Pồn, Tỉnh Điện Biên"), lấy qua Nominatim API (`polygon_geojson=1`) ngày 2026-07-18.
 - License: **ODbL 1.0** (© OpenStreetMap contributors) — dữ liệu ranh giới công khai, không có PII.
 - Biến đổi: polygon gốc 864 đỉnh → chiếu equirectangular (hiệu chỉnh cos φ), đơn giản hoá Douglas–Peucker (ε ≈ 0,2% đường chéo bbox) còn 212 đỉnh, chuẩn hoá về hệ toạ độ đơn vị (y hướng xuống, đệm 4,5%). Tỉ lệ khung bbox gốc (rộng/cao): 1,1017.
-- Mục đích và giới hạn: mask + viền cho bản đồ raster **demo** (`/demo`); độ chính xác sau đơn giản hoá đủ cho minh hoạ, KHÔNG dùng cho nghiệp vụ đo đạc/pháp lý về ranh giới hành chính.
+- Bbox OSM (sau sáp nhập Mường Mươn): khoảng 21.484–21.690°N, 102.913–103.157°E — khớp aspect 1.1017 của FE. `BOUNDARY_GEO_BOUNDS` trong `fe/src/shared/hazard-raster/villages.ts` dùng bbox đã pad 4,5%.
+- Mục đích và giới hạn: mask + viền cho bản đồ raster **demo**; độ chính xác sau đơn giản hoá đủ cho minh hoạ, KHÔNG dùng cho nghiệp vụ đo đạc/pháp lý về ranh giới hành chính.
+
+## `data/catalogs/muong_pon_villages_v1.json` — 22 bản (ghi nhận 2026-07-18)
+
+- Tên 22 bản: Wikipedia [Mường Pồn](https://vi.wikipedia.org/wiki/Mường_Pồn) (xã sau sáp nhập 1/7/2025).
+- **Tọa độ: toàn bộ `unresolved` / `lat=lon=null`.** Không ước lượng. Tra cứu Nominatim, Photon, Overpass (2026-07-18) không trả POI `place=village` đáng tin cho từng bản; `dien_bien_locations_v1.csv` cũng ghi unresolved. Báo chí chỉ nêu Km QL12 (Km164/170/172) — không phải GPS bản.
+- Chính sách: marker bản đồ chỉ hiện khi `coordinateStatus=resolved` và có nguồn trích dẫn (UBND/GIS, trường học geocode kiểm chứng, …). FE hiện **0/22** marker.
+- `is_exercise: true` cho tới khi có dữ liệu đo chính thức.
 
 ## Audit kết quả — `households_muong_pon_sample.json` (2026-07-18)
 

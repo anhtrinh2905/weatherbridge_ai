@@ -1,10 +1,13 @@
 """Open-Meteo forecast ingest (Story 2.2, FR3).
 
-Fetches the 7-day rainfall forecast for a configured location and appends a
+Fetches the rainfall forecast for a configured location and appends a
 snapshot row to PostgreSQL. Snapshots are append-only: a failed fetch marks the
 job failed and leaves the last good snapshot in place, so the heatmap is never
 blanked by an upstream outage. Open-Meteo's forecast endpoint serves GFS/IFS
 "best match" model data — never ERA5 reanalysis (AC of Story 2.2).
+
+Also stores WMO fog proxies: daily min visibility and mean temperature /
+dew point for dew-point depression (DPD) display — not a hand-tuned fog score.
 """
 
 import logging
@@ -28,8 +31,8 @@ from risk_scoring import (
 FORECAST_INGEST_TASK = "forecast_ingest"
 SOURCE = "open-meteo:best_match"
 # Hourly variables requested from Open-Meteo: precipitation drives the trigger;
-# the rest feed the optional bias-correction model.
-HOURLY_VARS = ",".join(BIAS_CORRECTION_HOURLY_VARS)
+# the rest feed the optional bias-correction model; visibility is the WMO fog proxy.
+HOURLY_VARS = ",".join([*BIAS_CORRECTION_HOURLY_VARS, "visibility"])
 
 metadata = MetaData()
 forecast_snapshots = Table(
@@ -47,26 +50,61 @@ forecast_snapshots = Table(
 )
 
 
+def _mean(values: list[float]) -> float | None:
+    if not values:
+        return None
+    return round(sum(values) / len(values), 2)
+
+
 def build_days(data: dict) -> list[dict]:
-    """Shape the Open-Meteo response into per-day rainfall + peak intensity."""
+    """Shape the Open-Meteo response into per-day rainfall, intensity, and fog proxies."""
     daily_times: list[str] = data["daily"]["time"]
     daily_rain: list[float | None] = data["daily"]["precipitation_sum"]
 
     peak_by_date: dict[str, float] = {}
-    hourly_times: list[str] = data.get("hourly", {}).get("time", [])
-    hourly_rain: list[float | None] = data.get("hourly", {}).get("precipitation", [])
-    for stamp, value in zip(hourly_times, hourly_rain, strict=False):
-        date = stamp[:10]
-        peak_by_date[date] = max(peak_by_date.get(date, 0.0), value or 0.0)
+    min_visibility_by_date: dict[str, float] = {}
+    temps_by_date: dict[str, list[float]] = {}
+    dew_by_date: dict[str, list[float]] = {}
 
-    return [
-        {
+    hourly = data.get("hourly", {})
+    hourly_times: list[str] = hourly.get("time", [])
+    hourly_rain: list[float | None] = hourly.get("precipitation", [])
+    hourly_visibility: list[float | None] = hourly.get("visibility", [])
+    hourly_temp: list[float | None] = hourly.get("temperature_2m", [])
+    hourly_dew: list[float | None] = hourly.get("dew_point_2m", [])
+
+    for index, stamp in enumerate(hourly_times):
+        date = stamp[:10]
+        rain = hourly_rain[index] if index < len(hourly_rain) else None
+        peak_by_date[date] = max(peak_by_date.get(date, 0.0), rain or 0.0)
+        if index < len(hourly_visibility) and hourly_visibility[index] is not None:
+            visibility = float(hourly_visibility[index])
+            previous = min_visibility_by_date.get(date)
+            min_visibility_by_date[date] = (
+                visibility if previous is None else min(previous, visibility)
+            )
+        if index < len(hourly_temp) and hourly_temp[index] is not None:
+            temps_by_date.setdefault(date, []).append(float(hourly_temp[index]))
+        if index < len(hourly_dew) and hourly_dew[index] is not None:
+            dew_by_date.setdefault(date, []).append(float(hourly_dew[index]))
+
+    days: list[dict] = []
+    for date, rain in zip(daily_times, daily_rain, strict=True):
+        entry: dict = {
             "date": date,
             "rainfall_mm": round(rain or 0.0, 2),
             "peak_intensity_mm_h": round(peak_by_date.get(date, 0.0), 2),
         }
-        for date, rain in zip(daily_times, daily_rain, strict=True)
-    ]
+        if date in min_visibility_by_date:
+            entry["min_visibility_m"] = round(min_visibility_by_date[date], 1)
+        temperature = _mean(temps_by_date.get(date, []))
+        dew_point = _mean(dew_by_date.get(date, []))
+        if temperature is not None:
+            entry["temperature_2m_c"] = temperature
+        if dew_point is not None:
+            entry["dew_point_2m_c"] = dew_point
+        days.append(entry)
+    return days
 
 
 def enrich_days(
@@ -119,7 +157,7 @@ async def ingest_forecast(
         "longitude": location.longitude,
         "daily": "precipitation_sum",
         "hourly": HOURLY_VARS,
-        "forecast_days": 7,
+        "forecast_days": 8,
         "timezone": "Asia/Bangkok",
     }
     if client is not None:

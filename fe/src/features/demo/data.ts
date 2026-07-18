@@ -1,6 +1,7 @@
 import type {
   Bulletin,
   Cell,
+  FogSample,
   ForecastDay,
   HazardLevel,
   HazardType,
@@ -110,13 +111,92 @@ export const GRID: Cell[] = (() => {
   return cells;
 })();
 
-export const SIMULATED_FORECAST_DAYS: ForecastDay[] = [
-  { offset: 0, label: "Hôm nay", rainfallMm: 34, intensityMmH: 8, confidence: 0.92 },
-  { offset: 1, label: "Ngày mai", rainfallMm: 76, intensityMmH: 17, confidence: 0.86 },
-  { offset: 2, label: "+2 ngày", rainfallMm: 138, intensityMmH: 31, confidence: 0.78 },
-  { offset: 3, label: "+3 ngày", rainfallMm: 112, intensityMmH: 24, confidence: 0.68 },
-  { offset: 4, label: "+4 ngày", rainfallMm: 61, intensityMmH: 14, confidence: 0.6 },
+/**
+ * WMO International Cloud Atlas: fog = horizontal visibility < 1000 m.
+ * This is the only binary fog label used in the demo (not RH/DPD/wind scores).
+ * @see https://cloudatlas.wmo.int/en/fog.html
+ */
+export const WMO_FOG_VISIBILITY_M = 1000;
+
+/**
+ * How far visibility sits below the WMO fog threshold (0..1).
+ * 0 = at/above 1000 m (no fog); 1 = visibility → 0 m.
+ * Used only for overlay opacity — never as a substitute label.
+ */
+export function wmoVisibilityDeficit01(visibilityM: number | null | undefined): number {
+  if (visibilityM === null || visibilityM === undefined) return 0;
+  if (visibilityM >= WMO_FOG_VISIBILITY_M) return 0;
+  return Math.min(1, (WMO_FOG_VISIBILITY_M - visibilityM) / WMO_FOG_VISIBILITY_M);
+}
+
+/**
+ * Demo spatial prior for radiation-fog pooling in low valleys (cold-air drainage).
+ * Drawn only when the day is WMO-fog (visibility < 1000 m) — not a trained field
+ * and not a hand-tuned "fog score".
+ * Keep lon/lat inside BOUNDARY_GEO_BOUNDS (hazard-raster/villages.ts).
+ */
+export interface FogPatch {
+  id: string;
+  lat: number;
+  lon: number;
+  /** Approximate radius in km (converted to pixels against the commune bbox). */
+  radiusKm: number;
+  weight: number;
+}
+
+export const FOG_PATCHES: FogPatch[] = [
+  { id: "valley-muong-pon-1", lat: 21.588, lon: 103.022, radiusKm: 2.4, weight: 1 },
+  { id: "valley-linh", lat: 21.579, lon: 103.014, radiusKm: 2.0, weight: 0.95 },
+  { id: "valley-pa-cha", lat: 21.61, lon: 103.033, radiusKm: 1.9, weight: 0.9 },
+  { id: "valley-muong-muon", lat: 21.665, lon: 103.065, radiusKm: 2.2, weight: 0.95 },
+  { id: "valley-huoi-vang", lat: 21.655, lon: 103.055, radiusKm: 1.8, weight: 0.85 },
 ];
+
+/**
+ * Simulated Open-Meteo-like daily fields.
+ *
+ * Fog logic (academic):
+ * - Label: isFog ⇔ visibilityM < 1000 (WMO).
+ * - DPD = T − Td is a physical feature (near 0 ⇒ near saturation); it is NOT the label.
+ * - Fog days: authored with Td ≤ T and small DPD (typical near-saturated air).
+ * - Non-fog can still have modest DPD (mist / near-fog) when visibility ≥ 1000 m.
+ */
+export const SIMULATED_FORECAST_DAYS: ForecastDay[] = [
+  // Clear: high vis, larger DPD
+  { offset: 0, label: "Hiện tại", rainfallMm: 34, intensityMmH: 8, confidence: 0.92, visibilityM: 4500, temperatureC: 23, dewPointC: 16.5 },
+  // Near saturation but not fog (mist): DPD small, vis still ≥ 1000 m
+  { offset: 1, label: "+1 ngày", rainfallMm: 76, intensityMmH: 17, confidence: 0.86, visibilityM: 1600, temperatureC: 19.5, dewPointC: 18.2 },
+  // Dense fog: vis well below 1000 m, DPD ≈ 0.4°C
+  { offset: 2, label: "+2 ngày", rainfallMm: 138, intensityMmH: 31, confidence: 0.78, visibilityM: 380, temperatureC: 16.8, dewPointC: 16.4 },
+  // Light fog: just under WMO threshold
+  { offset: 3, label: "+3 ngày", rainfallMm: 112, intensityMmH: 24, confidence: 0.68, visibilityM: 880, temperatureC: 18.2, dewPointC: 17.5 },
+  // Clearing
+  { offset: 4, label: "+4 ngày", rainfallMm: 61, intensityMmH: 14, confidence: 0.6, visibilityM: 2800, temperatureC: 21, dewPointC: 15.5 },
+  // Just above threshold — not fog by WMO
+  { offset: 5, label: "+5 ngày", rainfallMm: 48, intensityMmH: 11, confidence: 0.52, visibilityM: 1050, temperatureC: 19.5, dewPointC: 17.2 },
+  // Moderate fog
+  { offset: 6, label: "+6 ngày", rainfallMm: 72, intensityMmH: 15, confidence: 0.45, visibilityM: 620, temperatureC: 15.8, dewPointC: 15.3 },
+  // Clear / dry air
+  { offset: 7, label: "+7 ngày", rainfallMm: 55, intensityMmH: 12, confidence: 0.4, visibilityM: 5200, temperatureC: 24, dewPointC: 14 },
+];
+
+export function fogSampleForDay(dayOffset: number): FogSample {
+  const days = getForecastDays();
+  const day = days.find((entry) => entry.offset === dayOffset) ?? days[0];
+  const visibilityM = day?.visibilityM ?? null;
+  const temperatureC = day?.temperatureC ?? null;
+  const dewPointC = day?.dewPointC ?? null;
+  const dpdC =
+    temperatureC !== null && dewPointC !== null ? Math.round((temperatureC - dewPointC) * 10) / 10 : null;
+  return {
+    // Label is visibility-only (WMO). DPD is reported for inspection, not gating.
+    isFog: visibilityM !== null && visibilityM < WMO_FOG_VISIBILITY_M,
+    visibilityM,
+    temperatureC,
+    dewPointC,
+    dpdC,
+  };
+}
 
 // Swappable forecast store: starts simulated; `useLiveForecast` replaces it
 // with real Open-Meteo data when the fetch succeeds. Every scoring function

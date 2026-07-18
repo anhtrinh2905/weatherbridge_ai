@@ -270,6 +270,28 @@ button {
   }
 }
 
+@keyframes fog-cloud-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+.fog-cloud-float {
+  animation: fog-cloud-float 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog-cloud-float {
+    animation: none;
+  }
+}
+
 .site-shell > header,
 .site-shell > nav,
 .site-shell > section,

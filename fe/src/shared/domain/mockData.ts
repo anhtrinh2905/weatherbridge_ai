@@ -21,22 +21,36 @@ import type {
  * demoed end to end; every exported function has the shape the real API would have, so wiring
  * a real `be` later means swapping the implementation, not the call sites.
  *
- * Village coordinates/elevation/flood history are the REAL researched values for xa Muong Pon
- * (see data/samples/households_muong_pon_sample.json + docs/compliance/data-provenance.md).
+ * Village names: data/catalogs/muong_pon_villages_v1.json (22 bản). Coordinates stay
+ * unresolved until a cited GPS/GIS source exists — never invent centroids for the map.
  * Resident names/ages/occupations are synthetic (is_exercise). Hazard levels/alerts below are
  * a deterministic PRNG, not a real forecast — clearly a mock, never presented as a live run.
  */
 
+/** 22 bản — names from Wikipedia; lat/lon null until resolved (see catalog). */
 export const VILLAGES: Village[] = [
-  { id: "muong-pon-1", name: "Mường Pồn 1", lat: 21.59, lon: 103.025, elevationM: 550, hazardBaseline: "cao", floodHistory2024: true },
-  { id: "muong-pon-2", name: "Mường Pồn 2", lat: 21.595, lon: 103.04, elevationM: 650, hazardBaseline: "cao", floodHistory2024: true },
-  { id: "linh", name: "Lĩnh", lat: 21.58, lon: 103.015, elevationM: 520, hazardBaseline: "cao", floodHistory2024: true },
-  { id: "tin-toc", name: "Tin Tốc", lat: 21.605, lon: 103.05, elevationM: 780, hazardBaseline: "cao", floodHistory2024: true },
-  { id: "huoi-chan-1", name: "Huổi Chan 1", lat: 21.615, lon: 103.01, elevationM: 850, hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
-  { id: "huoi-chan-2", name: "Huổi Chan 2", lat: 21.62, lon: 103.005, elevationM: 830, hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
-  { id: "pung-giat-1", name: "Púng Giắt 1", lat: 21.57, lon: 103.06, elevationM: 1100, hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
-  { id: "pung-giat-2", name: "Púng Giắt 2", lat: 21.565, lon: 103.07, elevationM: 1260, hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
-  { id: "dinh-deo", name: "Đỉnh Đèo", lat: 21.63, lon: 103.02, elevationM: 820, hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "co-chay-1", name: "Cò Chạy 1", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "co-chay-2", name: "Cò Chạy 2", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "dinh-deo", name: "Đỉnh Đèo", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "huoi-chan-1", name: "Huổi Chan 1", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "huoi-chan-2", name: "Huổi Chan 2", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "huoi-ho", name: "Huổi Ho", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "huoi-meo", name: "Huổi Meo", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "huoi-nha", name: "Huổi Nhả", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "huoi-un", name: "Huổi Un", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "huoi-vang", name: "Huổi Vang", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "ket-tinh", name: "Kết Tinh", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "linh", name: "Lĩnh", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "cao", floodHistory2024: true },
+  { id: "muong-muon-1", name: "Mường Mươn 1", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "muong-muon-2", name: "Mường Mươn 2", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "muong-pon-1", name: "Mường Pồn 1", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "cao", floodHistory2024: true },
+  { id: "muong-pon-2", name: "Mường Pồn 2", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "cao", floodHistory2024: true },
+  { id: "pa-cha", name: "Pá Chả", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "pu-cha", name: "Pú Chả", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "pu-mua", name: "Pú Múa", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "pung-giat-1", name: "Púng Giắt 1", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "pung-giat-2", name: "Púng Giắt 2", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "chua_xac_dinh", floodHistory2024: false },
+  { id: "tin-toc", name: "Tin Tốc", lat: null, lon: null, elevationM: null, coordinateStatus: "unresolved", hazardBaseline: "cao", floodHistory2024: true },
 ];
 
 const VILLAGE_NAME_TO_ID = new Map(VILLAGES.map((v) => [v.name, v.id]));
@@ -130,7 +144,7 @@ function seedHash(input: string): number {
   return (h >>> 0) / 4294967295;
 }
 
-const FORECAST_DAYS = [0, 1, 2, 3, 4, 5, 6];
+const FORECAST_DAYS = [0, 1, 2, 3, 4, 5, 6, 7];
 
 export function generateHazardLevels(): HazardDayLevel[] {
   const rows: HazardDayLevel[] = [];
@@ -139,7 +153,7 @@ export function generateHazardLevels(): HazardDayLevel[] {
       for (const day of FORECAST_DAYS) {
         const r = seedHash(`${village.id}:${hazardType}:${day}`);
         let base = village.hazardBaseline === "cao" ? 2.6 : 1.4;
-        if (hazardType === "landslide") base += village.elevationM > 1000 ? 0.9 : 0.2;
+        if (hazardType === "landslide") base += (village.elevationM ?? 0) > 1000 ? 0.9 : 0.2;
         if (hazardType === "flash_flood" && village.floodHistory2024) base += 0.8;
         const dayDecay = day * 0.12; // risk read as slightly less certain further out
         const raw = base + r * 2.2 - dayDecay;

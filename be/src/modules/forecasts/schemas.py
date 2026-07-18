@@ -8,6 +8,9 @@ class ForecastDay(BaseModel):
     date: str
     rainfall_mm: float
     peak_intensity_mm_h: float
+    min_visibility_m: float | None = None
+    temperature_2m_c: float | None = None
+    dew_point_2m_c: float | None = None
 
 
 class ForecastSnapshotResponse(BaseModel):

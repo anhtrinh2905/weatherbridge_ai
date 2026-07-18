@@ -16,6 +16,22 @@ export interface ForecastDay {
   intensityMmH: number;
   /** forecast confidence, decays with horizon */
   confidence: number;
+  /** WMO fog proxy: daily min visibility (m); fog when < 1000 */
+  visibilityM?: number;
+  /** 2 m air temperature (°C) for dew-point depression */
+  temperatureC?: number;
+  /** 2 m dew point (°C) */
+  dewPointC?: number;
+}
+
+/** WMO International Cloud Atlas: fog = visibility < 1000 m */
+export interface FogSample {
+  isFog: boolean;
+  visibilityM: number | null;
+  temperatureC: number | null;
+  dewPointC: number | null;
+  /** dew-point depression DPD = T − Td (°C); null if inputs missing */
+  dpdC: number | null;
 }
 
 export interface Cell {

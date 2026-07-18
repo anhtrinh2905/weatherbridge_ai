@@ -1,19 +1,22 @@
 import { useMemo } from "react";
 import { VILLAGES, getDominantLevel, getHazardLevel } from "../domain/mockData";
 import { HAZARD_LEVEL_COLORS, TIER_COLORS } from "../domain/labels";
-import type { HazardType, Tier } from "../domain/types";
+import type { HazardType, Tier, Village } from "../domain/types";
 import { cn } from "../lib/cn";
 
 /**
  * Lightweight substitute for the MapLibre GL raster heatmap specified in AD-4. There is no
  * COG/web-PNG pipeline behind this yet (no `ai/terrain` + worker render job exist), so this
- * plots the 9 REAL Mường Pồn village centroids (see docs/compliance/data-provenance.md) on a
+ * plots resolved Mường Pồn village centroids only (see data/catalogs/muong_pon_villages_v1.json;
+ * unresolved bản are omitted — no estimated coordinates) on a
  * normalized SVG canvas, colored by the mock hazard level. It communicates the same information
  * (which village, which level, click to inspect) without pretending to be a georeferenced raster.
  * Swap-in point for the real MapLibre component: same props (`layer`, `day`, `onVillageClick`).
  */
 
 type Layer = HazardType | "dominant";
+
+type LocatedVillage = Village & { lat: number; lon: number };
 
 interface VillageMapProps {
   layer: Layer;
@@ -37,10 +40,17 @@ function tierColorForLevel(level: number): { fill: string; tier: Tier | null } {
   return { fill: "#3DD6A4", tier: null };
 }
 
+function isLocated(village: Village): village is LocatedVillage {
+  return village.coordinateStatus === "resolved" && village.lat !== null && village.lon !== null;
+}
+
 export function VillageMap({ layer, day, detailLevel = "full", focusVillageId, onVillageClick, className }: VillageMapProps) {
-  const villages = focusVillageId ? VILLAGES.filter((v) => v.id === focusVillageId) : VILLAGES;
+  const villages = (focusVillageId ? VILLAGES.filter((v) => v.id === focusVillageId) : VILLAGES).filter(isLocated);
 
   const bounds = useMemo(() => {
+    if (villages.length === 0) {
+      return { minLat: 21.48, maxLat: 21.69, minLon: 102.91, maxLon: 103.16 };
+    }
     const lats = villages.map((v) => v.lat);
     const lons = villages.map((v) => v.lon);
     return {
@@ -66,6 +76,11 @@ export function VillageMap({ layer, day, detailLevel = "full", focusVillageId, o
           </pattern>
         </defs>
         <rect width="100" height="100" fill="url(#grid)" />
+        {villages.length === 0 && (
+          <text x="50" y="50" textAnchor="middle" fill="#8B9BB4" style={{ fontSize: 3.2 }}>
+            Chưa có tọa độ bản đã xác minh
+          </text>
+        )}
         {villages.map((village) => {
           const hazard = levelForVillage(village.id, layer, day);
           const level = hazard?.level ?? 1;
