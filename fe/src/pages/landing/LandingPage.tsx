@@ -1,5 +1,6 @@
 import { ArrowRight, BrainCircuit, Check, GitBranch, LockKeyhole, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/hooks";
 import { Button } from "../../shared/ui/Button";
 import { Logo } from "../../shared/ui/Logo";
@@ -85,6 +86,12 @@ export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authTransition, setAuthTransition] = useState<AuthTransition | null>(null);
   const { login, register } = useAuth();
+  const navigate = useNavigate();
+
+  const goToLogin = () => {
+    setMenuOpen(false);
+    navigate("/login");
+  };
 
   const beginAuth = async (mode: AuthTransition) => {
     if (authTransition) return;
@@ -116,7 +123,7 @@ export function LandingPage() {
         <nav className="hidden items-center gap-8 md:flex" aria-label="Điều hướng chính">
           <a href="#why" className="site-nav-link">Bài toán</a>
           <a href="#principles" className="site-nav-link">Cách hoạt động</a>
-          <button type="button" className="site-nav-link" onClick={() => void beginAuth("login")}>Đăng nhập</button>
+          <button type="button" className="site-nav-link" onClick={goToLogin}>Đăng nhập</button>
           <Button className="min-h-10 px-4" onClick={() => void beginAuth("register")} disabled={Boolean(authTransition)}>
             Bắt đầu <ArrowRight size={15} />
           </Button>
@@ -137,7 +144,7 @@ export function LandingPage() {
         <nav id="mobile-navigation" className="relative z-20 mx-5 grid gap-1 rounded-2xl border border-border bg-surface/95 p-2 shadow-2xl backdrop-blur md:hidden" aria-label="Điều hướng di động">
           <a href="#why" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>Bài toán</a>
           <a href="#principles" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>Cách hoạt động</a>
-          <button type="button" className="mobile-nav-link" onClick={() => void beginAuth("login")}>Đăng nhập</button>
+          <button type="button" className="mobile-nav-link" onClick={goToLogin}>Đăng nhập</button>
           <button type="button" className="mobile-nav-link mobile-nav-link--accent" onClick={() => void beginAuth("register")}>Bắt đầu</button>
         </nav>
       )}
@@ -239,7 +246,7 @@ export function LandingPage() {
               <Button onClick={() => void beginAuth("register")} disabled={Boolean(authTransition)}>
                 Tạo tài khoản <ArrowRight size={16} />
               </Button>
-              <Button variant="secondary" onClick={() => void beginAuth("login")} disabled={Boolean(authTransition)}>
+              <Button variant="secondary" onClick={goToLogin} disabled={Boolean(authTransition)}>
                 Đăng nhập
               </Button>
             </div>
