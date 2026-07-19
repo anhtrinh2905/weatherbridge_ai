@@ -6,10 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ai.speech.mms_service import MmsTtsService, SpeechConfigError
 from ai.speech.models import SpeechSynthesisRequest
-from api.deps import get_current_user, get_mms_tts_service, get_translation_cache_service
+from api.deps import (
+    get_ai_job_service,
+    get_current_user,
+    get_db,
+    get_mms_tts_service,
+    get_translation_cache_service,
+)
 from auth.keycloak import CurrentUser
 from core.errors import AppError
-from database.session import get_db
 from modules.alerts.schemas import (
     AcknowledgeAlertRequest,
     AlertCreateRequest,
@@ -25,6 +30,7 @@ from modules.localization.schemas import (
     AlertTranslationResponse,
     AlertTranslationReviewRequest,
 )
+from services.ai_job_service import AiJobService
 from services.alert_service import AlertService
 from services.localization_service import LocalizationService
 from services.translation_service import TranslationCacheService
@@ -131,8 +137,9 @@ async def publish_translation(
     translation_id: UUID,
     user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_db),
+    ai_jobs: AiJobService = Depends(get_ai_job_service),
 ) -> AlertLocalizedContentResponse:
-    return await LocalizationService(session).publish_translation(translation_id, user)
+    return await LocalizationService(session, ai_jobs).publish_translation(translation_id, user)
 
 
 @router.get("/{alert_id}/audio")

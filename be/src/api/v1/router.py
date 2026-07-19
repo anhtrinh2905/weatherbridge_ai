@@ -12,6 +12,7 @@ from api.v1.endpoints import (
     hazards,
     health,
     households,
+    internal,
     locales,
     notifications,
     open_meteo,
@@ -42,3 +43,4 @@ router.include_router(admin.router, prefix="/admin", tags=["admin"])
 router.include_router(
     hazard_archive.router, prefix="/admin/hazard-archive", tags=["admin-hazard-archive"]
 )
+router.include_router(internal.router)

@@ -26,6 +26,7 @@ from modules.localization.schemas import (
     AlertTranslationReviewRequest,
     LocaleResponse,
 )
+from services.ai_job_service import AiJobService
 from services.profile_service import AccessContext, ProfileService
 
 if TYPE_CHECKING:
@@ -35,9 +36,10 @@ if TYPE_CHECKING:
 class LocalizationService:
     """Keeps Vietnamese canonical alert content separate from reviewed translations."""
 
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: AsyncSession, ai_jobs: AiJobService | None = None) -> None:
         self.session = session
         self.profiles = ProfileService(session)
+        self.ai_jobs = ai_jobs
 
     async def list_locales(self, include_inactive: bool, user: CurrentUser) -> list[LocaleResponse]:
         context = await self.profiles.access_context(user)
@@ -310,6 +312,19 @@ class LocalizationService:
             alert.id,
             {"translation_id": str(translation.id), "locale": locale.code},
         )
+        
+        # Enqueue speech generation if TTS is enabled
+        if locale.tts_enabled and self.ai_jobs is not None:
+            await self.ai_jobs.create_system(
+                task="generate_speech",
+                payload={
+                    "alert_id": str(alert.id),
+                    "content_id": str(localized.id),
+                    "locale": locale.code
+                },
+                user_id=str(user.id)
+            )
+
         await self.session.commit()
         return self._localized_response(localized)
 

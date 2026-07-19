@@ -16,6 +16,7 @@ from job_store import ai_jobs, set_status
 from notification_dispatch import process_outbox_batch
 from open_meteo_backfill import HISTORICAL_WEATHER_BACKFILL_TASK, backfill_open_meteo
 from settings import Settings
+from speech_synthesis import GENERATE_SPEECH_TASK, generate_speech
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -60,6 +61,9 @@ async def process_job(
                 await set_status(session, job_id, "succeeded", result=result)
             elif row["task"] == TRAINING_CSV_EXPORT_TASK:
                 result = await export_training_csv(session)
+                await set_status(session, job_id, "succeeded", result=result)
+            elif row["task"] == GENERATE_SPEECH_TASK:
+                result = await generate_speech(session, row["payload"], settings)
                 await set_status(session, job_id, "succeeded", result=result)
             else:
                 request = InferenceRequest(task=row["task"], text=row["payload"]["text"])

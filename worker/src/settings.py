@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     # model weights are never committed to Git.
     bias_correction_model_path: str = ""
     ai_inference_url: str = "http://ai-service:8001/infer"
+    backend_internal_url: str = "http://be:8000/api/v1/internal"
     object_storage_s3_endpoint: str | None = None
     object_storage_access_key: str | None = None
     object_storage_secret_key: str | None = None
