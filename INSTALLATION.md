@@ -308,6 +308,22 @@ Inspect the error from `docker compose up`. The default published ports are `517
 `8025`, and `8080`. Override PostgreSQL with `POSTGRES_HOST_PORT`; use a local Compose override for
 other host ports.
 
+### PostGIS Image Has No ARM64 Manifest
+
+On Apple Silicon you may see:
+
+```text
+no matching manifest for linux/arm64/v8
+```
+
+Official `postgis/postgis:16-3.5-alpine` is published for `linux/amd64` only. Compose sets
+`platform: linux/amd64` on the `db` service so Docker Desktop can pull and run it under emulation.
+Ensure Docker Desktop → Settings → General has Rosetta / virtualization support enabled, then retry:
+
+```bash
+docker compose up --build
+```
+
 ### Keycloak Changes Do Not Appear
 
 Realm imports only initialize a new Keycloak database. For disposable local data, recreate the

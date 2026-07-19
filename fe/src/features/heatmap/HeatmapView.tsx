@@ -16,8 +16,6 @@ import { useLiveForecast } from "../demo/useLiveForecast";
 import { FOG_PATCHES, WMO_FOG_VISIBILITY_M } from "../demo/data";
 import { activeHazardDataSource } from "./dataSource";
 
-export type HeatmapVariant = "full" | "village" | "resident";
-
 const LAYERS: { key: RasterLayer; label: string }[] = [
   { key: "landslide", label: "Sạt lở" },
   { key: "flash_flood", label: "Lũ" },
@@ -37,35 +35,12 @@ function levelColor(level: 1 | 2 | 3 | 4 | 5): string {
 }
 
 /**
- * Shared raster map shell. Role pages differ in chrome / alerts / actions;
- * they only share that login lands on a map view.
+ * Shared raster hazard map. One presentation for every role — the full commune
+ * view with day tabs, hazard layers, fog toggle, level legend, and point metrics.
  */
-export function HeatmapView({
-  compact = false,
-  variant = "full",
-  day: controlledDay,
-  onDayChange,
-  hideChrome = false,
-}: {
-  compact?: boolean;
-  variant?: HeatmapVariant;
-  /** Controlled day (e.g. resident alert tabs drive the map). */
-  day?: number;
-  onDayChange?: (day: number) => void;
-  /** Skip outer panel title when the parent page already has a header. */
-  hideChrome?: boolean;
-} = {}) {
-  const isResident = variant === "resident";
-  const isVillage = variant === "village";
-  const isFull = variant === "full";
-
+export function HeatmapView() {
   const [layer, setLayer] = useState<RasterLayer>("dominant");
-  const [internalDay, setInternalDay] = useState(0);
-  const day = controlledDay ?? internalDay;
-  const setDay = (next: number) => {
-    onDayChange?.(next);
-    if (controlledDay === undefined) setInternalDay(next);
-  };
+  const [day, setDay] = useState(0);
 
   const [selectedPoint, setSelectedPoint] = useState<RasterPoint | null>(null);
   const [addressResult, setAddressResult] = useState<{
@@ -140,7 +115,7 @@ export function HeatmapView({
   }, [dayForecast]);
 
   useEffect(() => {
-    if (!isFull || !lonLat || !selectedPoint) {
+    if (!lonLat || !selectedPoint) {
       return;
     }
     const fallback = "Xã Mường Pồn, Điện Biên";
@@ -159,34 +134,23 @@ export function HeatmapView({
       }
     })();
     return () => controller.abort();
-  }, [isFull, lonLat, selectedPoint]);
-
-  const title =
-    isResident
-      ? { label: "Khu vực của bạn", heading: "Bản đồ nguy cơ gần nhà" }
-      : isVillage
-        ? { label: "Bản đồ bản tôi", heading: "Nguy cơ trong phạm vi bản" }
-        : { label: "Bản đồ nguy cơ · Xã Mường Pồn", heading: "Raster nguy cơ 5 cấp trên nền địa hình" };
+  }, [lonLat, selectedPoint]);
 
   return (
     <div>
-      <section className={cn("signal-panel", compact && "signal-panel--compact")}>
-        {!hideChrome && (
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="signal-label">{title.label}</p>
-              <h2 className="mt-1 text-xl font-semibold text-fg-strong">{title.heading}</h2>
-            </div>
-            {(isFull || isVillage) && (
-              <DataFreshnessBadge
-                status="fresh"
-                timestamp={forecastStatus.fetchedAt?.toISOString() ?? HAZARD_RUN_MOCK.forecastIssued}
-              />
-            )}
+      <section className="signal-panel">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="signal-label">Bản đồ nguy cơ · Xã Mường Pồn</p>
+            <h2 className="mt-1 text-xl font-semibold text-fg-strong">Raster nguy cơ 5 cấp trên nền địa hình</h2>
           </div>
-        )}
+          <DataFreshnessBadge
+            status="fresh"
+            timestamp={forecastStatus.fetchedAt?.toISOString() ?? HAZARD_RUN_MOCK.forecastIssued}
+          />
+        </div>
 
-        <div className={cn("mb-3 space-y-2", !hideChrome && "mt-4")}>
+        <div className="mb-3 mt-4 space-y-2">
           <div className="flex flex-wrap gap-1.5" role="group" aria-label="Chọn ngày dự báo">
             {dayOffsets.map((offset) => (
               <button
@@ -248,111 +212,46 @@ export function HeatmapView({
             layer={activeLayer}
             day={day}
             imageSrc={imageSrc}
-            selected={isFull || isVillage || isResident ? selectedPoint : null}
+            selected={selectedPoint}
             selectedVillageId={null}
             showVillageMarkers={false}
             showFog={showFog}
             aspectMode="fill"
-            className={cn(
-              "h-full min-h-[28rem] lg:min-h-[32rem]",
-              compact && "min-h-[20rem] lg:min-h-[24rem]",
-            )}
+            className="h-full min-h-[28rem] lg:min-h-[32rem]"
             onSelect={(point) => setSelectedPoint(point)}
           />
 
-          <LevelsPanel showFog={showFog} mode={isFull ? "full" : "village"} />
+          <LevelsPanel showFog={showFog} />
         </div>
 
-        {isFull && (
-          <MetricsPanel
-            dayForecast={dayForecast}
-            dayLabel={dayForecast?.label ?? dayButtonLabel(day)}
-            dayFog={dayFog}
-            showFog={showFog}
-            inspection={inspection}
-            lonLat={lonLat}
-            address={address}
-            addressStatus={addressStatus}
-            fog={fog}
-            showContributions
-            showCoordinates
-          />
-        )}
+        <MetricsPanel
+          dayForecast={dayForecast}
+          dayLabel={dayForecast?.label ?? dayButtonLabel(day)}
+          dayFog={dayFog}
+          showFog={showFog}
+          inspection={inspection}
+          lonLat={lonLat}
+          address={address}
+          addressStatus={addressStatus}
+          fog={fog}
+          showContributions
+          showCoordinates
+        />
 
-        {isVillage && inspection && (
-          <section className="mt-3 rounded-2xl border border-border bg-surface-2 p-4" aria-live="polite">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Điểm đã chọn · bản tôi</p>
-            <p className="mt-2 inline-flex items-center gap-2 text-sm">
-              <span
-                className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold text-[#1A1206]"
-                style={{ backgroundColor: levelColor(inspection.primary.level) }}
-              >
-                Cấp {inspection.primary.level}
-              </span>
-              <span className="font-semibold text-fg-strong">{HAZARD_LEVEL_LABELS[inspection.primary.level]}</span>
-            </p>
-            {fog && showFog && (
-              <p className="mt-2 text-sm text-muted">
-                {fog.isFog && fog.localIntensity > 0.05
-                  ? "Có sương mù gần điểm này"
-                  : fog.isFog
-                    ? "Ngày có sương · điểm ngoài vùng demo"
-                    : "Không sương mù"}
-                {fog.visibilityM !== null ? ` · tầm nhìn ${Math.round(fog.visibilityM)} m` : ""}
-              </p>
-            )}
-            <p className="mt-2 text-xs text-muted">Không hiện đóng góp mô hình — dùng để đi nhắc hộ, không phân tích kỹ thuật.</p>
-          </section>
-        )}
-
-        {isResident && inspection && (
-          <section className="mt-3 rounded-2xl border border-border bg-surface-2 p-4" aria-live="polite">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Điểm đã chọn</p>
-            <p className="mt-2 inline-flex flex-wrap items-center gap-2 text-sm">
-              <span
-                className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold text-[#1A1206]"
-                style={{ backgroundColor: levelColor(inspection.primary.level) }}
-              >
-                Cấp {inspection.primary.level}
-              </span>
-              <span className="font-semibold text-fg-strong">{HAZARD_LEVEL_LABELS[inspection.primary.level]}</span>
-            </p>
-            {fog && showFog && dayFog.visibilityM !== null && (
-              <p className="mt-2 text-sm text-muted">
-                {dayFog.isFog
-                  ? `Có sương mù · tầm nhìn ${Math.round(dayFog.visibilityM)} m — đi chậm trên đèo.`
-                  : `Tầm nhìn khoảng ${Math.round(dayFog.visibilityM)} m.`}
-              </p>
-            )}
-          </section>
-        )}
-
-        {isResident && !inspection && dayFog.visibilityM !== null && showFog && (
-          <p className="mt-3 text-sm text-muted">
-            {dayFog.isFog
-              ? `Ngày này có sương mù (tầm nhìn dưới 1000 m · ${Math.round(dayFog.visibilityM)} m). Đi chậm trên đèo.`
-              : `Tầm nhìn khoảng ${Math.round(dayFog.visibilityM)} m — chưa đạt mức sương mù.`}
-          </p>
-        )}
-
-        {isFull && !compact && (
-          <p className="mt-4 text-xs text-muted">
-            Raster mô phỏng phía trình duyệt; sương mù (WMO, visibility &lt; {WMO_FOG_VISIBILITY_M} m) hiện bằng icon đám mây tại{" "}
-            {FOG_PATCHES.length} vùng demo. Marker bản tạm ẩn — chờ tọa độ chính thức.
-          </p>
-        )}
+        <p className="mt-4 text-xs text-muted">
+          Raster mô phỏng phía trình duyệt; sương mù (WMO, visibility &lt; {WMO_FOG_VISIBILITY_M} m) hiện bằng icon đám mây tại{" "}
+          {FOG_PATCHES.length} vùng demo. Marker bản tạm ẩn — chờ tọa độ chính thức.
+        </p>
       </section>
 
-      {isFull && !compact && (
-        <div className="mt-4">
-          <SafetyDisclaimer />
-        </div>
-      )}
+      <div className="mt-4">
+        <SafetyDisclaimer />
+      </div>
     </div>
   );
 }
 
-function LevelsPanel({ showFog, mode }: { showFog: boolean; mode: "full" | "village" }) {
+function LevelsPanel({ showFog }: { showFog: boolean }) {
   return (
     <aside className="flex h-full flex-col rounded-2xl border border-border bg-surface-2 p-3 sm:p-4" aria-label="Cấp độ nguy cơ">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted">Cấp độ</p>
@@ -372,9 +271,7 @@ function LevelsPanel({ showFog, mode }: { showFog: boolean; mode: "full" | "vill
           </li>
         )}
       </ul>
-      <p className="mt-auto pt-4 text-xs text-muted">
-        {mode === "village" ? "Chạm bản đồ để xem cấp tại điểm trong bản." : "Chọn điểm trên bản đồ để xem số liệu bên dưới."}
-      </p>
+      <p className="mt-auto pt-4 text-xs text-muted">Chọn điểm trên bản đồ để xem số liệu bên dưới.</p>
     </aside>
   );
 }
