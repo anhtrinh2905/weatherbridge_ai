@@ -1,11 +1,154 @@
-import { CheckCircle2, HandHelping, ShieldAlert, Volume2 } from "lucide-react";
+import { CheckCircle2, CloudLightning, CloudRain, CloudSun, HandHelping, ListChecks, MapPin, ShieldAlert, Volume2 } from "lucide-react";
+import { useAuth } from "../../features/auth/hooks";
+import { useWatchPoints } from "../../features/notifications/useWatchPoints";
 import { WebPushPanel } from "../../features/notifications/WebPushPanel";
-import { operationsApi } from "../../features/operations/api";
-import { useAcknowledgeAlert, useInbox } from "../../features/operations/hooks";
+import { operationsApi, type AlertInboxItem, type WeatherActionPlan } from "../../features/operations/api";
+import { useAcknowledgeAlert, useInbox, useResidentActions, useWeatherActions } from "../../features/operations/hooks";
+import { getSelfResident } from "../../shared/domain/mockData";
+import { cn } from "../../shared/lib/cn";
 import { Button } from "../../shared/ui/Button";
 import { HazardLevelBadge, TierBadge } from "../../shared/ui/HazardBadge";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { Spinner } from "../../shared/ui/Spinner";
+
+const RISK_STYLE: Record<
+  WeatherActionPlan["risk_level"],
+  { wrap: string; accent: string; label: string; Icon: typeof CloudRain }
+> = {
+  normal: { wrap: "border-positive/30 bg-positive/5", accent: "text-positive", label: "Bình thường", Icon: CloudSun },
+  watch: { wrap: "border-accent/30 bg-accent/5", accent: "text-accent", label: "Theo dõi", Icon: CloudRain },
+  warning: { wrap: "border-accent/50 bg-accent/10", accent: "text-accent", label: "Cảnh báo", Icon: CloudRain },
+  danger: { wrap: "border-danger/50 bg-danger/10", accent: "text-danger", label: "Nguy hiểm", Icon: CloudLightning },
+};
+
+type AdvisoryLocation = { key: string; label: string; latitude: number; longitude: number };
+
+function WeatherAdvisoryCard({ label, latitude, longitude }: Omit<AdvisoryLocation, "key">) {
+  const weather = useWeatherActions({ latitude, longitude, label });
+  const plan = weather.data;
+  const style = plan ? RISK_STYLE[plan.risk_level] : null;
+  const Icon = style?.Icon ?? CloudRain;
+
+  return (
+    <article className={cn("flex flex-col gap-3 rounded-2xl border p-5", style ? style.wrap : "border-border bg-surface-2")}>
+      <header className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <MapPin size={16} className="shrink-0 text-muted" />
+          <h3 className="truncate font-semibold text-fg-strong">{label}</h3>
+        </div>
+        {style && (
+          <span className={cn("inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wide", style.accent)}>
+            <Icon size={13} /> {style.label}
+          </span>
+        )}
+      </header>
+
+      {weather.isPending && <p className="text-sm text-muted">Đang phân tích thời tiết…</p>}
+      {weather.isError && <p className="text-sm text-danger">Chưa lấy được đề xuất cho điểm này.</p>}
+
+      {plan && (
+        <>
+          <p className="flex items-start gap-2 text-sm text-muted">
+            <Icon size={16} className={cn("mt-0.5 shrink-0", style?.accent)} />
+            <span>{plan.weather_summary}</span>
+          </p>
+          {plan.risk_level !== "normal" && plan.risk_note && (
+            <p className="rounded-lg bg-surface px-3 py-2 text-sm font-medium text-fg">{plan.risk_note}</p>
+          )}
+          {plan.summary && <p className="text-sm font-semibold text-fg-strong">{plan.summary}</p>}
+          {plan.steps && plan.steps.length > 0 && (
+            <ol className="list-decimal space-y-1 pl-5 text-sm text-fg">
+              {plan.steps.map((step, index) => (
+                <li key={index}>{step}</li>
+              ))}
+            </ol>
+          )}
+          <p className="mt-auto pt-1 text-xs text-muted">Nguồn: Open-Meteo · Nội dung do AI đề xuất, chỉ tham khảo.</p>
+        </>
+      )}
+    </article>
+  );
+}
+
+function WeatherAdvisorySection() {
+  const { user } = useAuth();
+  const villageId = user?.villageId ?? "muong-pon-1";
+  const self = getSelfResident(villageId);
+  const { points } = useWatchPoints(self?.id);
+
+  const locations: AdvisoryLocation[] = [];
+  if (self && Number.isFinite(self.lat) && Number.isFinite(self.lon)) {
+    locations.push({ key: "home", label: "Nhà của bạn", latitude: self.lat, longitude: self.lon });
+  }
+  points.forEach((point, index) => {
+    if (Number.isFinite(point.lat) && Number.isFinite(point.lon)) {
+      locations.push({ key: point.id, label: `Điểm theo dõi ${index + 1}`, latitude: point.lat, longitude: point.lon });
+    }
+  });
+
+  if (locations.length === 0) return null;
+
+  return (
+    <section className="space-y-3">
+      <div className="flex items-center gap-2">
+        <CloudRain size={18} className="text-accent" />
+        <h2 className="font-semibold text-fg-strong">Đề xuất theo thời tiết</h2>
+        <span className="ml-1 rounded-full bg-surface px-2 py-0.5 text-xs text-muted">{locations.length} địa điểm</span>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        {locations.map((location) => (
+          <WeatherAdvisoryCard key={location.key} label={location.label} latitude={location.latitude} longitude={location.longitude} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AlertActionPlan({ alert }: { alert: AlertInboxItem }) {
+  const actions = useResidentActions();
+  const plan = actions.data;
+  return (
+    <div className="mt-4">
+      {!plan && (
+        <Button
+          variant="ghost"
+          className="min-h-9 px-3"
+          isLoading={actions.isPending}
+          onClick={() =>
+            actions.mutate({
+              hazard_type: (alert.hazard_type as "flash_flood" | "landslide" | "fog" | null) ?? undefined,
+              level: alert.level,
+              tier: alert.tier as "prepare" | "go_now",
+              what_happened: alert.what_happened,
+              danger_description: alert.danger_description,
+              action_instruction: alert.action_instruction,
+              language: "vi",
+            })
+          }
+        >
+          <ListChecks size={15} /> Hướng dẫn chi tiết (AI)
+        </Button>
+      )}
+      {actions.isError && (
+        <p className="text-xs text-danger">Chưa tạo được hướng dẫn chi tiết. Vui lòng làm theo hướng dẫn ở trên.</p>
+      )}
+      {plan && (
+        <div className="rounded-lg border border-accent/30 bg-accent/5 p-4">
+          <p className="flex items-center gap-2 text-sm font-semibold text-fg-strong">
+            <ListChecks size={16} className="text-accent" /> Các bước nên làm
+          </p>
+          {plan.summary && <p className="mt-1 text-sm text-muted">{plan.summary}</p>}
+          <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-fg">
+            {plan.steps.map((step, index) => (
+              <li key={index}>{step}</li>
+            ))}
+          </ol>
+          <p className="mt-3 text-xs text-muted">Nội dung do AI diễn giải từ cảnh báo — chỉ mang tính tham khảo.</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ResidentHomePage() {
   const inbox = useInbox();
@@ -26,6 +169,10 @@ export function ResidentHomePage() {
       <div className="space-y-4 px-4 sm:px-0">
         <SafetyDisclaimer />
         <WebPushPanel />
+      </div>
+
+      <div className="px-4 sm:px-0">
+        <WeatherAdvisorySection />
       </div>
 
       <div className="px-4 sm:px-0">
@@ -98,6 +245,7 @@ export function ResidentHomePage() {
                 </Button>
               )}
             </div>
+            <AlertActionPlan alert={alert} />
             {alert.acknowledged_at && (
               <p className="mt-3 text-xs text-muted">Trạng thái: {alert.acknowledgement_status}</p>
             )}

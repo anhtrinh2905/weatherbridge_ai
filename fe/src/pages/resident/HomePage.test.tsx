@@ -40,6 +40,17 @@ vi.mock("../../features/operations/hooks", () => ({
   useAcknowledgeAlert: () => ({
     mutate: vi.fn(),
     isPending: false,
+  }),
+  useResidentActions: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    data: undefined,
+  }),
+  useWeatherActions: () => ({
+    isPending: false,
+    isError: false,
+    data: undefined,
   })
 }));
 

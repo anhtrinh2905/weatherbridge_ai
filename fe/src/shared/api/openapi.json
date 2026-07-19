@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "VAI Code",
+    "title": "Weather Bridge AI",
     "description": "Weather Bridge AI production-oriented API",
     "version": "0.1.0"
   },
@@ -2019,6 +2019,132 @@
         }
       }
     },
+    "/api/v1/ai/advisory/alert-draft": {
+      "post": {
+        "tags": [
+          "ai-advisory"
+        ],
+        "summary": "Draft Alert",
+        "description": "Draft the three bulletin fields from a hazard's type/level/tier.\n\nAn authoring aid for officers \u2014 the returned text is an editable draft and must be reviewed\nbefore the alert is published (same human-in-the-loop stance as machine translation).",
+        "operationId": "draft_alert_api_v1_ai_advisory_alert_draft_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertDraft"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/advisory/resident-actions": {
+      "post": {
+        "tags": [
+          "ai-advisory"
+        ],
+        "summary": "Resident Actions",
+        "description": "Expand a published bulletin into a short, ordered action checklist for a resident.",
+        "operationId": "resident_actions_api_v1_ai_advisory_resident_actions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResidentActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResidentActionPlan"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/advisory/weather-actions": {
+      "post": {
+        "tags": [
+          "ai-advisory"
+        ],
+        "summary": "Weather Actions",
+        "description": "Auto-suggest actions for a resident from the live forecast at their location.\n\nFetches the Open-Meteo forecast for the given coordinates and asks the model what the\nresident should do over the next few days \u2014 a support tool, not an official warning.",
+        "operationId": "weather_actions_api_v1_ai_advisory_weather_actions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeatherActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherActionPlan"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/forecasts/{location_code}/latest": {
       "get": {
         "tags": [
@@ -3129,6 +3255,46 @@
           }
         }
       }
+    },
+    "/api/v1/internal/speech/synthesize": {
+      "post": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "Synthesize Speech",
+        "description": "Internal endpoint for worker to generate TTS audio without auth overhead.",
+        "operationId": "synthesize_speech_api_v1_internal_speech_synthesize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeechSynthesisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3459,6 +3625,107 @@
           "target_area_codes"
         ],
         "title": "AlertCreateRequest"
+      },
+      "AlertDraft": {
+        "properties": {
+          "what_happened": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Action Instruction"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "prompt_version": {
+            "type": "string",
+            "title": "Prompt Version",
+            "default": "advisory-v1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "what_happened",
+          "danger_description",
+          "action_instruction",
+          "model_name"
+        ],
+        "title": "AlertDraft",
+        "description": "Editable draft of the three resident-facing bulletin fields.\n\nField limits mirror ``AlertCreateRequest`` so a draft always fits the create form."
+      },
+      "AlertDraftRequest": {
+        "properties": {
+          "hazard_type": {
+            "type": "string",
+            "enum": [
+              "flash_flood",
+              "landslide",
+              "fog"
+            ],
+            "title": "Hazard Type"
+          },
+          "level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Level"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "prepare",
+              "go_now"
+            ],
+            "title": "Tier"
+          },
+          "location_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Label"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "vi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hazard_type",
+          "level",
+          "tier"
+        ],
+        "title": "AlertDraftRequest",
+        "description": "Context an officer gives the model to draft a bulletin from scratch."
       },
       "AlertInboxItem": {
         "properties": {
@@ -6702,6 +6969,107 @@
         ],
         "title": "PublishAlertResponse"
       },
+      "ResidentActionPlan": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Summary"
+          },
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Steps"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "prompt_version": {
+            "type": "string",
+            "title": "Prompt Version",
+            "default": "advisory-v1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "steps",
+          "model_name"
+        ],
+        "title": "ResidentActionPlan"
+      },
+      "ResidentActionRequest": {
+        "properties": {
+          "hazard_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "flash_flood",
+                  "landslide",
+                  "fog"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hazard Type"
+          },
+          "level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Level"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "prepare",
+              "go_now"
+            ],
+            "title": "Tier"
+          },
+          "what_happened": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "What Happened"
+          },
+          "danger_description": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Danger Description"
+          },
+          "action_instruction": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Action Instruction"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "vi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "tier",
+          "what_happened",
+          "danger_description",
+          "action_instruction"
+        ],
+        "title": "ResidentActionRequest",
+        "description": "A published bulletin the resident wants expanded into concrete steps."
+      },
       "ResidentCreateRequest": {
         "properties": {
           "full_name": {
@@ -7393,6 +7761,26 @@
         ],
         "title": "ShelterResponse"
       },
+      "SpeechSynthesisRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "hmn"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "SpeechSynthesisRequest"
+      },
       "SubscriptionCreateRequest": {
         "properties": {
           "resident_location_id": {
@@ -7725,6 +8113,107 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WeatherActionPlan": {
+        "properties": {
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "watch",
+              "warning",
+              "danger"
+            ],
+            "title": "Risk Level",
+            "default": "normal"
+          },
+          "weather_summary": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "Weather Summary"
+          },
+          "risk_note": {
+            "type": "string",
+            "maxLength": 600,
+            "title": "Risk Note"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Summary"
+          },
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Steps"
+          },
+          "forecast_source": {
+            "type": "string",
+            "title": "Forecast Source",
+            "default": "open-meteo"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "prompt_version": {
+            "type": "string",
+            "title": "Prompt Version",
+            "default": "advisory-v1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "weather_summary",
+          "risk_note",
+          "summary",
+          "model_name"
+        ],
+        "title": "WeatherActionPlan",
+        "description": "Weather-driven safety advice for one resident, derived from the live forecast.\n\nWhen ``risk_level`` is \"normal\" the plan is a calm FYI with no action ``steps``."
+      },
+      "WeatherActionRequest": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "location_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Label"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "vi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "WeatherActionRequest",
+        "description": "Coordinates of a resident's location; the server fetches the forecast itself."
       },
       "WebPushConfigResponse": {
         "properties": {
