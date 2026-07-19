@@ -390,7 +390,7 @@ class AlertService:
                 "Speech is not enabled for this alert language",
                 "speech_unavailable",
             )
-        speech_language = {"hmn-x-dienbien": "hmn"}.get(content.locale)
+        speech_language = {"hmn-x-dienbien": "hmn", "tai-x-muongpon": "blt"}.get(content.locale)
         if speech_language is None:
             raise AppError(409, "No reviewed speech voice is configured", "speech_unavailable")
         return (

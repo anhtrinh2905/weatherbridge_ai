@@ -26,11 +26,16 @@ class MmsTtsService:
         self.settings = settings
 
     async def synthesize(self, request: SpeechSynthesisRequest) -> SpeechSynthesisResult:
-        if request.language not in {"hmn", "mww"}:
-            raise SpeechConfigError("MMS TTS is currently enabled only for Hmong text.")
+        if request.language not in {"hmn", "mww", "blt", "tai"}:
+            raise SpeechConfigError("MMS TTS is currently enabled only for Hmong and Tai text.")
 
         repo_id = self.settings.mms_tts_repo_id
-        subfolder = self.settings.mms_tts_hmong_subfolder or None
+        subfolder: str | None
+        if request.language in {"blt", "tai"}:
+            subfolder = "models/blt"
+        else:
+            subfolder = self.settings.mms_tts_hmong_subfolder or None
+            
         synthesizer = _load_synthesizer(repo_id, subfolder)
         audio, sample_rate = synthesizer(request.text)
         return SpeechSynthesisResult(
