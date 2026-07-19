@@ -27,7 +27,11 @@ export const useResident = (id?: string) => useQuery({ queryKey: keys.resident(i
 export const useSubscriptions = () => useQuery({ queryKey: keys.subscriptions, queryFn: operationsApi.subscriptions });
 export const useConsents = () => useQuery({ queryKey: keys.consents, queryFn: operationsApi.consents });
 export const useNotificationChannels = () => useQuery({ queryKey: keys.channels, queryFn: operationsApi.channels });
-export const useLocales = (includeInactive = false) => useQuery({ queryKey: keys.locales(includeInactive), queryFn: () => operationsApi.locales(includeInactive) });
+export const useLocales = (includeInactive = false, enabled = true) => useQuery({
+  queryKey: keys.locales(includeInactive),
+  queryFn: () => operationsApi.locales(includeInactive),
+  enabled,
+});
 export const useAlerts = () => useQuery({ queryKey: keys.alerts, queryFn: operationsApi.alerts });
 export const useInbox = () => useQuery({ queryKey: keys.inbox, queryFn: operationsApi.inbox });
 export const useDeliverySummary = (id?: string) => useQuery({ queryKey: keys.delivery(id ?? "none"), queryFn: () => operationsApi.deliverySummary(id!), enabled: Boolean(id) });

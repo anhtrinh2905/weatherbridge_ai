@@ -47,7 +47,7 @@ class MmsTtsService:
 @lru_cache(maxsize=2)
 def _load_synthesizer(repo_id: str, subfolder: str | None):
     try:
-        import torch
+        import torch  # type: ignore[import-untyped]
         from transformers import AutoTokenizer, VitsModel
     except ImportError as exc:
         raise SpeechConfigError(

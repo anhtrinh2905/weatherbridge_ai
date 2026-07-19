@@ -1,13 +1,20 @@
 import { Languages } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../../features/auth/keycloak";
 import { useLocales } from "../../features/operations/hooks";
-import { useTranslation, type Locale } from "../i18n/I18nProvider";
+import { machineTranslationsEnabled, useTranslation, type Locale } from "../i18n/I18nProvider";
 import { cn } from "../lib/cn";
+
+const DEV_OPTIONS: { locale: Locale; label: string; hint?: string }[] = [
+  { locale: "vi", label: "Tiếng Việt" },
+  { locale: "hmn-x-dienbien", label: "Hmoob", hint: "Dịch máy — chưa qua người Hmông kiểm tra" },
+];
 
 export function LanguageSwitcher() {
   const { locale, setLocale } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { data: locales = [] } = useLocales(false);
+  const { authenticated } = useAuth();
+  const { data: locales = [] } = useLocales(false, authenticated);
 
   // Filter locales to ensure we only show active ones. The API already returns active by default.
   // We construct the options from the API response.
@@ -17,7 +24,11 @@ export function LanguageSwitcher() {
     hint: l.requires_native_review ? "Cần người bản địa duyệt" : undefined,
   }));
 
-  const options = apiOptions.length > 0 ? apiOptions : [{ locale: "vi" as Locale, label: "Tiếng Việt", hint: undefined }];
+  const fallbackOptions = machineTranslationsEnabled() ? DEV_OPTIONS : [DEV_OPTIONS[0]];
+  const options = [
+    ...apiOptions,
+    ...fallbackOptions.filter((fallback) => !apiOptions.some((option) => option.locale === fallback.locale)),
+  ];
   const current = options.find((o) => o.locale === locale) ?? options[0];
 
   return (

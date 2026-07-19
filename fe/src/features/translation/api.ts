@@ -7,6 +7,10 @@ export interface TranslationResponseBody {
   model_name: string;
 }
 
+const PROVIDER_LANGUAGE_CODES: Record<string, string> = {
+  "hmn-x-dienbien": "hmn",
+};
+
 /**
  * Live translation for dynamic content (alert bulletins, etc.) — NOT the static UI-string
  * catalog in shared/i18n/, which is generated offline. Backend caches by content hash (Redis),
@@ -15,7 +19,7 @@ export interface TranslationResponseBody {
 export function translateTexts(texts: string[], targetLanguage: string, sourceLanguage = "vi") {
   return apiClient.post<TranslationResponseBody>("/translations", {
     texts,
-    target_language: targetLanguage,
+    target_language: PROVIDER_LANGUAGE_CODES[targetLanguage] ?? targetLanguage,
     source_language: sourceLanguage,
   });
 }

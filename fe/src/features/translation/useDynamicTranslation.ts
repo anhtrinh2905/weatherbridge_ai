@@ -5,7 +5,7 @@ import { useTranslation } from "../../shared/i18n/I18nProvider";
 // Thái Điện Biên (Tai Dam) has no viable machine translation (see docs/architecture language
 // strategy) — "th" intentionally stays out of this set so dynamic content falls back to the
 // Vietnamese source text there too, same as the static UI catalog.
-const LIVE_TRANSLATABLE_LOCALES = new Set(["hmn"]);
+const LIVE_TRANSLATABLE_LOCALES = new Set(["hmn-x-dienbien"]);
 
 /**
  * Live-translates a batch of dynamic strings (alert bulletins, etc.) via the backend's
