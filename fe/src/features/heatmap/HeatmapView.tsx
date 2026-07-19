@@ -10,7 +10,7 @@ import { cn } from "../../shared/lib/cn";
 import { apiClient } from "../../shared/lib/api-client";
 import { DataFreshnessBadge } from "../../shared/ui/DataFreshnessBadge";
 import { FogCloudIcon } from "../../shared/ui/FogCloudIcon";
-import { RasterHazardMap } from "../../shared/ui/RasterHazardMap";
+import { RasterHazardMap, type RasterMapMarker } from "../../shared/ui/RasterHazardMap";
 import { SafetyDisclaimer } from "../../shared/ui/SafetyDisclaimer";
 import { useLiveForecast } from "../demo/useLiveForecast";
 import { FOG_PATCHES, WMO_FOG_VISIBILITY_M } from "../demo/data";
@@ -37,8 +37,25 @@ function levelColor(level: 1 | 2 | 3 | 4 | 5): string {
 /**
  * Shared raster hazard map. One presentation for every role — the full commune
  * view with day tabs, hazard layers, fog toggle, level legend, and point metrics.
+ *
+ * All props are optional and generic (map overlays + selection callback); role
+ * pages use them without changing the shared chrome. The resident map passes a
+ * home marker + registered watch points and reads the selected point back.
  */
-export function HeatmapView() {
+export function HeatmapView({
+  markers = [],
+  focusPoint = null,
+  focusRequest = 0,
+  onSelectPoint,
+}: {
+  /** Extra overlay pins (e.g. resident home + registered watch points). */
+  markers?: RasterMapMarker[];
+  /** Recenter the map on this point when `focusRequest` changes. */
+  focusPoint?: RasterPoint | null;
+  focusRequest?: number;
+  /** Notified whenever the inspected point changes (null when cleared). */
+  onSelectPoint?: (point: RasterPoint | null) => void;
+} = {}) {
   const [layer, setLayer] = useState<RasterLayer>("dominant");
   const [day, setDay] = useState(0);
 
@@ -216,9 +233,15 @@ export function HeatmapView() {
             selectedVillageId={null}
             showVillageMarkers={false}
             showFog={showFog}
+            markers={markers}
+            focusPoint={focusPoint}
+            focusRequest={focusRequest}
             aspectMode="fill"
             className="h-full min-h-[28rem] lg:min-h-[32rem]"
-            onSelect={(point) => setSelectedPoint(point)}
+            onSelect={(point) => {
+              setSelectedPoint(point);
+              onSelectPoint?.(point);
+            }}
           />
 
           <LevelsPanel showFog={showFog} />
