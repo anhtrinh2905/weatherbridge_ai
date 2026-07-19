@@ -21,6 +21,12 @@ export type Locale = components["schemas"]["LocaleResponse"];
 export type AlertTranslationDraft = components["schemas"]["AlertTranslationDraftRequest"];
 export type AlertTranslation = components["schemas"]["AlertTranslationResponse"];
 export type AlertLocalizedContent = components["schemas"]["AlertLocalizedContentResponse"];
+export type AlertDraft = components["schemas"]["AlertDraft"];
+export type AlertDraftRequest = components["schemas"]["AlertDraftRequest"];
+export type ResidentActionPlan = components["schemas"]["ResidentActionPlan"];
+export type ResidentActionRequest = components["schemas"]["ResidentActionRequest"];
+export type WeatherActionPlan = components["schemas"]["WeatherActionPlan"];
+export type WeatherActionRequest = components["schemas"]["WeatherActionRequest"];
 
 export const operationsApi = {
   profile: () => apiClient.get<Profile>("/profile"),
@@ -52,4 +58,7 @@ export const operationsApi = {
   alertAudio: (id: string) => apiClient.getBlob(`/alerts/${id}/audio`),
   inbox: () => apiClient.get<AlertInboxItem[]>("/alerts/inbox"),
   acknowledge: (id: string, status: "seen" | "safe" | "need_help") => apiClient.post<AlertInboxItem>(`/alerts/${id}/acknowledgements`, { status }),
+  draftAlert: (payload: AlertDraftRequest) => apiClient.post<AlertDraft>("/ai/advisory/alert-draft", payload),
+  residentActions: (payload: ResidentActionRequest) => apiClient.post<ResidentActionPlan>("/ai/advisory/resident-actions", payload),
+  weatherActions: (payload: WeatherActionRequest) => apiClient.post<WeatherActionPlan>("/ai/advisory/weather-actions", payload),
 };

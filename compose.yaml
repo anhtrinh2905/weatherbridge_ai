@@ -15,6 +15,8 @@ x-backend: &backend
     CORS_ORIGINS: http://localhost,http://localhost:5173
     LITELLM_ENABLED: "false"
     LANGFUSE_ENABLED: "false"
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
     GOOGLE_TRANSLATE_CREDENTIALS_PATH: ${GOOGLE_TRANSLATE_CREDENTIALS_PATH:-/app/secrets/vertex-key.json}
     PII_MODE: ${PII_MODE:-simulated}
     PII_ENCRYPTION_KEY: ${PII_ENCRYPTION_KEY:-}
@@ -56,7 +58,7 @@ services:
     volumes:
       - weather-bridge-minio:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 5s
       timeout: 5s
       retries: 20

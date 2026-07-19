@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from api.v1.endpoints import (
     admin,
+    advisory,
     ai_jobs,
     alerts,
     auth,
@@ -34,6 +35,7 @@ router.include_router(hazards.router, prefix="/hazards", tags=["hazards"])
 router.include_router(alerts.router, prefix="/alerts", tags=["alerts"])
 router.include_router(evacuations.router, prefix="/evacuations", tags=["evacuations"])
 router.include_router(ai_jobs.router, prefix="/ai/jobs", tags=["ai-jobs"])
+router.include_router(advisory.router, prefix="/ai/advisory", tags=["ai-advisory"])
 router.include_router(forecasts.router, prefix="/forecasts", tags=["forecasts"])
 router.include_router(open_meteo.router, prefix="/open-meteo", tags=["open-meteo"])
 router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
