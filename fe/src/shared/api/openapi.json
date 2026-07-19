@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "VAI Code",
+    "title": "Weather Bridge AI",
     "description": "Weather Bridge AI production-oriented API",
     "version": "0.1.0"
   },
@@ -2535,6 +2535,47 @@
       }
     },
     "/api/v1/notifications/web-push/subscriptions/{contact_id}": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Web Push Subscription Status",
+        "operationId": "web_push_subscription_status_api_v1_notifications_web_push_subscriptions__contact_id__get",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Contact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebPushSubscriptionStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "tags": [
           "notifications"
@@ -3123,6 +3164,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AiJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/speech/synthesize": {
+      "post": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "Synthesize Speech",
+        "description": "Internal endpoint for worker to generate TTS audio without auth overhead.",
+        "operationId": "synthesize_speech_api_v1_internal_speech_synthesize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeechSynthesisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -7393,6 +7474,26 @@
         ],
         "title": "ShelterResponse"
       },
+      "SpeechSynthesisRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "hmn"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "SpeechSynthesisRequest"
+      },
       "SubscriptionCreateRequest": {
         "properties": {
           "resident_location_id": {
@@ -7828,6 +7929,37 @@
           "last_seen_at"
         ],
         "title": "WebPushSubscriptionResponse"
+      },
+      "WebPushSubscriptionStatusResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "is_active"
+        ],
+        "title": "WebPushSubscriptionStatusResponse"
       }
     }
   }

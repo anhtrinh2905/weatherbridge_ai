@@ -19,7 +19,9 @@ from database.domain_models import (
     HazardLayer,
     HazardModelVersion,
     HazardRun,
+    NotificationOutbox,
     Resident,
+    ResidentContact,
     UserAreaAssignment,
     UserProfile,
 )
@@ -161,6 +163,152 @@ async def test_village_head_registry_is_scoped_by_database_assignment(
 
     assert response.status_code == 200, response.text
     assert [item["full_name"] for item in response.json()] == ["Resident A"]
+
+
+@pytest.mark.asyncio
+async def test_village_head_claim_is_persisted_as_area_assignment(
+    db_session: AsyncSession,
+) -> None:
+    commune = _area("commune-claim-scope", "Claim Scope Commune")
+    db_session.add(commune)
+    await db_session.flush()
+    village = _area("village-claim-scope", "Claim Scope Village", commune.id)
+    db_session.add(village)
+    await db_session.commit()
+    head = CurrentUser(
+        id="head-claim-scope",
+        email="head-claim-scope@example.test",
+        display_name="Claim Scope Head",
+        username="head-claim-scope",
+        email_verified=True,
+        roles=frozenset({"village_head"}),
+        claims={"sub": "head-claim-scope", "village_id": "claim-scope"},
+    )
+
+    async for scoped_client in _scoped_client(db_session, head):
+        response = await scoped_client.get("/api/v1/profile")
+
+    assert response.status_code == 200, response.text
+    assert response.json()["area_codes"] == [village.code]
+    profile = await db_session.scalar(
+        select(UserProfile).where(UserProfile.keycloak_subject == head.id)
+    )
+    assert profile is not None
+    assignment = await db_session.scalar(
+        select(UserAreaAssignment).where(
+            UserAreaAssignment.profile_id == profile.id,
+            UserAreaAssignment.role == "village_head",
+            UserAreaAssignment.geo_location_id == village.id,
+        )
+    )
+    assert assignment is not None
+
+
+@pytest.mark.asyncio
+async def test_village_head_only_pushes_danger_alerts_to_every_enabled_resident(
+    admin_client: AsyncClient, db_session: AsyncSession
+) -> None:
+    commune = _area("commune-village-push", "Push Commune")
+    db_session.add(commune)
+    await db_session.flush()
+    village = _area("village-push", "Push Village", commune.id)
+    db_session.add(village)
+    await db_session.commit()
+
+    resident_ids: list[UUID] = []
+    for index in range(2):
+        response = await admin_client.post(
+            "/api/v1/residents",
+            json={
+                "full_name": f"Push Resident {index}",
+                "village_code": village.code,
+                "simulated": True,
+                "source": "demo",
+            },
+        )
+        assert response.status_code == 201, response.text
+        resident_ids.append(UUID(response.json()["id"]))
+
+    now = datetime.now(UTC)
+    protector = PiiProtector(Settings())
+    for index, resident_id in enumerate(resident_ids):
+        endpoint = f"https://push.example.test/village-resident-{index}"
+        protected = protector.protect(endpoint, context="resident_contact.value")
+        db_session.add_all(
+            (
+                ConsentRecord(
+                    resident_id=resident_id,
+                    purpose="alert_delivery",
+                    policy_version="web-push-opt-in-v1",
+                    granted_at=now,
+                ),
+                ResidentContact(
+                    resident_id=resident_id,
+                    channel="web_push",
+                    value_ciphertext=protected.ciphertext,
+                    value_lookup_hash=protector.lookup_hash(endpoint),
+                    key_version=protected.key_version,
+                    verified_at=now,
+                    is_primary=False,
+                    is_active=True,
+                    delivery_metadata={},
+                    last_seen_at=now,
+                    created_at=now,
+                ),
+            )
+        )
+    await db_session.commit()
+
+    head = _user("head-village-push", "village_head")
+    async for scoped_client in _scoped_client(db_session, head):
+        assert (await scoped_client.get("/api/v1/profile")).status_code == 200
+        profile = await db_session.scalar(
+            select(UserProfile).where(UserProfile.keycloak_subject == head.id)
+        )
+        assert profile is not None
+        db_session.add(
+            UserAreaAssignment(
+                profile_id=profile.id,
+                role="village_head",
+                geo_location_id=village.id,
+                valid_from=now - timedelta(minutes=1),
+                created_at=now,
+            )
+        )
+        await db_session.commit()
+
+        async def publish(http_client: AsyncClient, tier: str) -> dict[str, object]:
+            alert = await http_client.post(
+                "/api/v1/alerts",
+                json={
+                    "source": "manual",
+                    "hazard_type": "flash_flood",
+                    "level": 5 if tier == "go_now" else 3,
+                    "tier": tier,
+                    "confidence": 1,
+                    "what_happened": "Stream level is rising",
+                    "danger_description": "Residents may be in danger",
+                    "action_instruction": "Move to a safe location",
+                    "deadline_at": (now + timedelta(minutes=30)).isoformat(),
+                    "expires_at": (now + timedelta(hours=2)).isoformat(),
+                    "target_area_codes": [village.code],
+                },
+            )
+            assert alert.status_code == 201, alert.text
+            response = await http_client.post(
+                f"/api/v1/alerts/{alert.json()['id']}/publish"
+            )
+            assert response.status_code == 200, response.text
+            return response.json()
+
+        prepare_result = await publish(scoped_client, "prepare")
+        danger_result = await publish(scoped_client, "go_now")
+
+    assert prepare_result["recipient_count"] == 2
+    assert prepare_result["delivery_count"] == 0
+    assert danger_result["recipient_count"] == 2
+    assert danger_result["delivery_count"] == 2
+    assert len(list(await db_session.scalars(select(NotificationOutbox)))) == 2
 
 
 @pytest.mark.asyncio

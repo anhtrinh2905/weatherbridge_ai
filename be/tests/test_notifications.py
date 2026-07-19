@@ -5,9 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.keycloak import CurrentUser
 from core.config import Settings
-from core.pii import PiiProtector
 from core.time import utc_now
-from database.domain_models import Resident, ResidentContact
+from database.domain_models import ConsentRecord, Resident, ResidentContact
 from database.models import GeoLocation
 from modules.notifications.schemas import WebPushSubscriptionRequest
 from services.notification_endpoint_service import NotificationEndpointService
@@ -67,26 +66,10 @@ async def test_web_push_subscription_is_encrypted_and_upserted(db_session: Async
         username="resident-test",
         email_verified=True,
         roles=frozenset({"resident"}),
-        claims={"sub": "resident-web-push-test"},
+        claims={"sub": "resident-web-push-test", "village_id": area.code},
     )
     settings = Settings()
     profile = await ProfileService(db_session).sync_user(user)
-    protector = PiiProtector(settings)
-    name = protector.protect("Synthetic Resident", context="resident.full_name")
-    resident = Resident(
-        user_profile_id=profile.id,
-        managed_geo_location_id=area.id,
-        full_name_ciphertext=name.ciphertext,
-        full_name_lookup_hash=protector.lookup_hash("Synthetic Resident"),
-        full_name_key_version=name.key_version,
-        verification_status="account_linked",
-        source="demo",
-        simulated=True,
-        created_at=now,
-        updated_at=now,
-    )
-    db_session.add(resident)
-    await db_session.commit()
     payload = WebPushSubscriptionRequest.model_validate(
         {
             "endpoint": "https://push.example.test/subscription-id",
@@ -97,13 +80,37 @@ async def test_web_push_subscription_is_encrypted_and_upserted(db_session: Async
 
     first = await service.upsert_web_push_subscription(payload, user)
     second = await service.upsert_web_push_subscription(payload, user)
+    status = await service.get_web_push_subscription_status(first.id, user)
+    resident = await db_session.scalar(
+        select(Resident).where(Resident.user_profile_id == profile.id)
+    )
+    assert resident is not None
     contacts = list(
         await db_session.scalars(
             select(ResidentContact).where(ResidentContact.resident_id == resident.id)
         )
     )
+    consents = list(
+        await db_session.scalars(
+            select(ConsentRecord).where(
+                ConsentRecord.resident_id == resident.id,
+                ConsentRecord.purpose == "alert_delivery",
+                ConsentRecord.withdrawn_at.is_(None),
+            )
+        )
+    )
 
     assert first.id == second.id
+    assert resident.managed_geo_location_id == area.id
+    assert resident.verification_status == "account_linked"
     assert len(contacts) == 1
     assert b"push.example.test" not in contacts[0].value_ciphertext
     assert contacts[0].is_active is True
+    assert status.is_active is True
+    assert len(consents) == 1
+    assert consents[0].policy_version == "web-push-opt-in-v1"
+
+    await service.revoke_web_push_subscription(first.id, user)
+    revoked_status = await service.get_web_push_subscription_status(first.id, user)
+
+    assert revoked_status.is_active is False

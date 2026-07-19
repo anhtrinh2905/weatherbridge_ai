@@ -248,7 +248,7 @@ class WebPushNotificationProvider:
             subscription = json.loads(destination)
             payload = json.dumps(
                 {
-                    "title": "Canh bao Weather Bridge AI",
+                    "title": "Thông báo",
                     "body": f"{content['what_happened']} {content['action_instruction']}".strip(),
                     "url": "/resident/alerts",
                     "tag": f"weather-bridge-{idempotency_key[:24]}",

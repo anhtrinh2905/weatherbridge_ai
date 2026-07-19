@@ -13,6 +13,7 @@ from notification_dispatch import (
     DeliveryResult,
     SimulatedNotificationProvider,
     TwilioSmsNotificationProvider,
+    WebPushNotificationProvider,
     ZaloOANotificationProvider,
     alert_contents,
     alert_recipients,
@@ -24,6 +25,38 @@ from notification_dispatch import (
     resident_contacts,
 )
 from settings import Settings
+
+
+async def test_web_push_notification_uses_plain_notification_title(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_webpush(**kwargs: object) -> None:
+        captured.update(kwargs)
+
+    monkeypatch.setattr("notification_dispatch.webpush", fake_webpush)
+    provider = object.__new__(WebPushNotificationProvider)
+    provider.subject = "mailto:test@example.test"
+    provider.private_key = "test-private-key"
+
+    result = await provider.send(
+        channel="web_push",
+        destination=json.dumps(
+            {
+                "endpoint": "https://push.example.test/subscription",
+                "keys": {"p256dh": "public-key", "auth": "auth-key"},
+            }
+        ),
+        content={
+            "what_happened": "Heavy rain",
+            "danger_description": "Flash flood risk",
+            "action_instruction": "Move to safety",
+            "deadline_instruction": "Now",
+        },
+        idempotency_key="web-push-title-test",
+    )
+
+    assert result.status == "sent"
+    assert json.loads(str(captured["data"]))["title"] == "Thông báo"
 
 
 async def test_twilio_sms_provider_uses_configured_sender_and_hides_destination() -> None:
