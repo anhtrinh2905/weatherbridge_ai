@@ -44,6 +44,8 @@ export interface RasterMapMarker {
   id: string;
   point: RasterPoint;
   label: string;
+  /** home = the resident's own location (accent pin); watch = a registered notification point (danger dot). */
+  variant?: "home" | "watch";
 }
 
 function clamp(value: number, minimum: number, maximum: number) {
@@ -446,20 +448,30 @@ export function RasterHazardMap({
             <span className="mt-0.5 block max-w-[7.5rem] truncate whitespace-nowrap">{village.name}</span>
           </button>
         ))}
-        {markers.map((marker) => (
-          <span
-            key={marker.id}
-            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
-            style={{ left: `${(marker.point.x / RASTER_W) * 100}%`, top: `${(marker.point.y / RASTER_H) * 100}%` }}
-            title={marker.label}
-            aria-label={marker.label}
-          >
-            <span className="block size-5 rounded-full border-2 border-white bg-danger shadow-[0_0_0_3px_rgba(0,0,0,0.55),0_0_18px_rgba(242,107,107,0.9)]" />
-            <span className="absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded bg-black/75 px-2 py-0.5 text-[0.62rem] font-semibold text-white">
-              {marker.label}
+        {markers.map((marker) => {
+          const isHome = marker.variant === "home";
+          return (
+            <span
+              key={marker.id}
+              className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+              style={{ left: `${(marker.point.x / RASTER_W) * 100}%`, top: `${(marker.point.y / RASTER_H) * 100}%` }}
+              title={marker.label}
+              aria-label={marker.label}
+            >
+              <span
+                className={cn(
+                  "block size-5 rounded-full border-2 border-white",
+                  isHome
+                    ? "bg-accent shadow-[0_0_0_3px_rgba(0,0,0,0.55),0_0_18px_rgba(245,166,35,0.95)]"
+                    : "bg-danger shadow-[0_0_0_3px_rgba(0,0,0,0.55),0_0_18px_rgba(242,107,107,0.9)]",
+                )}
+              />
+              <span className="absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded bg-black/75 px-2 py-0.5 text-[0.62rem] font-semibold text-white">
+                {marker.label}
+              </span>
             </span>
-          </span>
-        ))}
+          );
+        })}
         {selected && <span className="pointer-events-none absolute size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(0,0,0,0.65)]" style={{ left: `${(selected.x / RASTER_W) * 100}%`, top: `${(selected.y / RASTER_H) * 100}%` }} />}
         <span className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-lg leading-none text-black [text-shadow:0_0_3px_rgba(255,255,255,0.9)]" style={{ left: `${EVENT_MARKER.x * 100}%`, top: `${EVENT_MARKER.y * 100}%` }} aria-hidden="true">▼</span>
       </div>
