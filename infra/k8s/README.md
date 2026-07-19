@@ -60,8 +60,8 @@ Keycloak, separate PVCs. Dev cannot break prod data.
 | fe         | Deployment    | `weather-bridge/fe`, nginx serving built Vite assets         |
 
 `base/secret-template.yaml` documents the Secret shape but is intentionally NOT
-part of `kustomization.yaml`. Real secret values are pushed from GitHub Actions
-during the deploy workflow and never committed.
+part of `kustomization.yaml`. Real secret values are applied by the deploy host
+and never committed or sent through GitHub Actions.
 
 ## Prerequisites on micace-server
 
@@ -146,6 +146,28 @@ from `notification-providers-secret-template.yaml`; it is also mounted only by
 the worker. Set `NOTIFICATION_DELIVERY_MODE=configured` and the selected
 `SMS_PROVIDER` or `ZALO_PROVIDER` in the environment config. The pull agent
 refuses a deployment when any required Secret is missing.
+
+Live Hmong translation is optional and uses the `vertex-credentials` Secret. The
+`be` container mounts its `vertex-key.json` key at
+`/app/secrets/vertex-key.json`; the Secret is not part of either Kustomize
+overlay. For local dev, place the ignored `vertex-key.json` file at the
+repository root:
+
+```text
+./vertex-key.json
+```
+
+The local deploy script creates or rotates the Secret before applying the dev
+overlay. The pull-based agent uses the same file in its checkout by default;
+set `VERTEX_CREDENTIALS_FILE` in `/etc/weatherbridge/dev.env` only when the key
+is stored elsewhere on `micace-server`. The key is ignored and never committed;
+if no file exists, the existing Secret is preserved and the translation
+endpoint remains unavailable when no Secret exists.
+
+The dev frontend image is built with `VITE_ENABLE_MACHINE_TRANSLATIONS=true`,
+so it exposes the Hmong language option and can call the live endpoint. The
+production frontend keeps this flag disabled until the production backend ships
+the translation module.
 
 ## Deploy flow
 

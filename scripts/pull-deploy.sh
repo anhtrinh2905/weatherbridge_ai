@@ -102,6 +102,7 @@ if [ "$TARGET_SHA" = "$CURRENT_SHA" ] && [ "${FORCE_DEPLOY:-false}" != "true" ];
 fi
 
 git -C "$REPO_DIR" checkout --detach --force "$TARGET_SHA"
+VERTEX_CREDENTIALS_FILE="${VERTEX_CREDENTIALS_FILE:-$REPO_DIR/vertex-key.json}"
 
 export DOCKER_CONFIG="$DOCKER_CONFIG_DIR"
 if [ -n "${GHCR_USER:-}" ] && [ -n "${GHCR_TOKEN:-}" ]; then
@@ -143,6 +144,18 @@ for required_secret in app-secret db-secret keycloak-secret; do
     exit 1
   }
 done
+
+if [ -f "$VERTEX_CREDENTIALS_FILE" ]; then
+  [ -r "$VERTEX_CREDENTIALS_FILE" ] || {
+    echo "Vertex credential file is not readable: $VERTEX_CREDENTIALS_FILE" >&2
+    exit 1
+  }
+  kubectl -n "$NAMESPACE" create secret generic vertex-credentials \
+    --from-file=vertex-key.json="$VERTEX_CREDENTIALS_FILE" \
+    --dry-run=client -o yaml | kubectl apply -f -
+elif [ "$ENVIRONMENT" = "dev" ]; then
+  echo "no Vertex credential file at $VERTEX_CREDENTIALS_FILE; preserving any existing vertex-credentials Secret"
+fi
 
 if [ -n "${GHCR_USER:-}" ] && [ -n "${GHCR_TOKEN:-}" ]; then
   kubectl -n "$NAMESPACE" create secret docker-registry ghcr-pull \

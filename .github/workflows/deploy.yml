@@ -139,6 +139,7 @@ jobs:
             VITE_KEYCLOAK_URL=https://${{ needs.resolve-env.outputs.env == 'prod' && 'dienbien-auth' || 'dev-auth' }}.weatherbridge.online
             VITE_KEYCLOAK_REALM=weather-bridge
             VITE_KEYCLOAK_CLIENT_ID=weather-bridge-fe
+            VITE_ENABLE_MACHINE_TRANSLATIONS=${{ needs.resolve-env.outputs.env == 'dev' && 'true' || 'false' }}
           tags: |
             ${{ env.REGISTRY }}/${{ steps.meta.outputs.owner }}/weather-bridge-fe:${{ env.IMAGE_TAG }}
             ${{ env.REGISTRY }}/${{ steps.meta.outputs.owner }}/weather-bridge-fe:${{ steps.meta.outputs.channel }}

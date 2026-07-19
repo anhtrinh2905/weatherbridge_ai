@@ -64,6 +64,10 @@ spec:
                 name: app-config
             - secretRef:
                 name: app-secret
+          volumeMounts:
+            - name: vertex-credentials
+              mountPath: /app/secrets
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /api/v1/health/ready
@@ -90,3 +94,12 @@ spec:
             limits:
               cpu: 1000m
               memory: 1Gi
+      volumes:
+        - name: vertex-credentials
+          secret:
+            secretName: vertex-credentials
+            optional: true
+            defaultMode: 0400
+            items:
+              - key: vertex-key.json
+                path: vertex-key.json

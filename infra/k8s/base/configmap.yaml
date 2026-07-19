@@ -18,6 +18,7 @@ data:
   LANGFUSE_ENABLED: "false"
   LANGFUSE_HOST: "https://cloud.langfuse.com"
   LANGFUSE_ENVIRONMENT: "production"
+  GOOGLE_TRANSLATE_CREDENTIALS_PATH: "/app/secrets/vertex-key.json"
   PII_MODE: "simulated"
   PII_KEY_VERSION: "v1"
   OBJECT_STORAGE_URL_TTL_SECONDS: "300"

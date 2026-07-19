@@ -71,6 +71,7 @@ else
     exit 2
   fi
 fi
+VERTEX_CREDENTIALS_FILE="${VERTEX_CREDENTIALS_FILE:-$PWD/vertex-key.json}"
 
 # ---- image refs -------------------------------------------------------------
 OWNER_LOW="${OWNER_LOW:-$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]([^/]+)/.*#\1#' | tr '[:upper:]' '[:lower:]')}"
@@ -90,6 +91,7 @@ if [ "$SOURCE" = "local" ]; then
     --build-arg VITE_KEYCLOAK_URL=https://dev-auth.weatherbridge.online \
     --build-arg VITE_KEYCLOAK_REALM=weather-bridge \
     --build-arg VITE_KEYCLOAK_CLIENT_ID=weather-bridge-fe \
+    --build-arg VITE_ENABLE_MACHINE_TRANSLATIONS=true \
     -f infra/docker/fe.Dockerfile .
   docker build -q -t weather-bridge/keycloak:local -f infra/docker/keycloak.Dockerfile .
   BE_IMG="weather-bridge/be:local"
@@ -169,6 +171,19 @@ apply_secret keycloak-secret \
   KC_DB_PASSWORD KC_DB_PASSWORD \
   KC_BOOTSTRAP_ADMIN_USERNAME KC_ADMIN_USERNAME \
   KC_BOOTSTRAP_ADMIN_PASSWORD KC_ADMIN_PASSWORD
+
+if [ -f "$VERTEX_CREDENTIALS_FILE" ]; then
+  [ -r "$VERTEX_CREDENTIALS_FILE" ] || {
+    echo "Vertex credential file is not readable: $VERTEX_CREDENTIALS_FILE" >&2
+    exit 2
+  }
+  echo "==> Applying Vertex AI credential Secret"
+  kubectl -n "$NAMESPACE" create secret generic vertex-credentials \
+    --from-file=vertex-key.json="$VERTEX_CREDENTIALS_FILE" \
+    --dry-run=client -o yaml | kubectl apply -f -
+else
+  echo "    no Vertex credential file at $VERTEX_CREDENTIALS_FILE; preserving any existing vertex-credentials Secret"
+fi
 
 # ---- imagePullSecret for private GHCR (ghcr source only) --------------------
 if [ "$SOURCE" = "ghcr" ] && [ -n "${GHCR_USER:-}" ] && [ -n "${GHCR_PAT:-}" ]; then
