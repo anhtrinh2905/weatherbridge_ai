@@ -921,7 +921,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Web Push Subscription Status */
+        get: operations["web_push_subscription_status_api_v1_notifications_web_push_subscriptions__contact_id__get"];
         put?: never;
         post?: never;
         /** Unsubscribe Web Push */
@@ -1168,6 +1169,26 @@ export interface paths {
         put?: never;
         /** Create Training Export */
         post: operations["create_training_export_api_v1_admin_hazard_archive_exports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/speech/synthesize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Synthesize Speech
+         * @description Internal endpoint for worker to generate TTS audio without auth overhead.
+         */
+        post: operations["synthesize_speech_api_v1_internal_speech_synthesize_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2740,6 +2761,16 @@ export interface components {
             /** Simulated */
             simulated: boolean;
         };
+        /** SpeechSynthesisRequest */
+        SpeechSynthesisRequest: {
+            /** Text */
+            text: string;
+            /**
+             * Language
+             * @default hmn
+             */
+            language: string;
+        };
         /** SubscriptionCreateRequest */
         SubscriptionCreateRequest: {
             /** Resident Location Id */
@@ -2889,6 +2920,18 @@ export interface components {
              * Format: date-time
              */
             last_seen_at: string;
+        };
+        /** WebPushSubscriptionStatusResponse */
+        WebPushSubscriptionStatusResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Active */
+            is_active: boolean;
+            /** Last Seen At */
+            last_seen_at?: string | null;
         };
     };
     responses: never;
@@ -4761,6 +4804,37 @@ export interface operations {
             };
         };
     };
+    web_push_subscription_status_api_v1_notifications_web_push_subscriptions__contact_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contact_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebPushSubscriptionStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     unsubscribe_web_push_api_v1_notifications_web_push_subscriptions__contact_id__delete: {
         parameters: {
             query?: never;
@@ -5178,6 +5252,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AiJobResponse"];
+                };
+            };
+        };
+    };
+    synthesize_speech_api_v1_internal_speech_synthesize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpeechSynthesisRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

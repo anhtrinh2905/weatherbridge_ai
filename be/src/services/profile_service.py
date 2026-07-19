@@ -74,6 +74,35 @@ class ProfileService:
             )
         ).all()
         root_ids = {assignment.geo_location_id for assignment in assignments}
+        if role == "village_head":
+            village_claim = user.claims.get("village_id")
+            if isinstance(village_claim, list):
+                village_claim = village_claim[0] if village_claim else None
+            if isinstance(village_claim, str) and village_claim.strip():
+                village = await self.resolve_area(village_claim)
+                if village.location_type != "village":
+                    raise AppError(
+                        409,
+                        "Village head account must be assigned to a village",
+                        "village_head_area_invalid",
+                    )
+                root_ids.add(village.id)
+                has_assignment = any(
+                    assignment.role == "village_head"
+                    and assignment.geo_location_id == village.id
+                    for assignment in assignments
+                )
+                if not has_assignment:
+                    self.session.add(
+                        UserAreaAssignment(
+                            profile_id=profile.id,
+                            role="village_head",
+                            geo_location_id=village.id,
+                            valid_from=now,
+                            created_at=now,
+                        )
+                    )
+                    await self.session.commit()
         if role == "resident":
             resident = await self.session.scalar(
                 select(Resident).where(
@@ -129,15 +158,19 @@ class ProfileService:
             raise AppError(403, "Area is outside your assigned scope", "area_forbidden")
 
     async def resolve_area(self, code: str) -> GeoLocation:
-        candidates = {code}
+        candidate_codes = [code]
         if not code.startswith(("village-", "commune-")):
-            candidates.add(f"village-{code}")
-            candidates.add(f"commune-{code}")
-        area = await self.session.scalar(
-            select(GeoLocation).where(
-                GeoLocation.code.in_(candidates), GeoLocation.is_active.is_(True)
+            candidate_codes.extend((f"village-{code}", f"commune-{code}"))
+        area = None
+        for candidate_code in candidate_codes:
+            area = await self.session.scalar(
+                select(GeoLocation).where(
+                    GeoLocation.code == candidate_code,
+                    GeoLocation.is_active.is_(True),
+                )
             )
-        )
+            if area is not None:
+                break
         if area is None:
             raise AppError(404, "Area not found", "area_not_found")
         return area
