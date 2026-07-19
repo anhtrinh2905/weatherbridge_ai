@@ -8,6 +8,9 @@
 services:
   db:
     image: postgis/postgis:16-3.5-alpine
+    # Official PostGIS tags are amd64-only; Docker Desktop on Apple Silicon
+    # runs this via emulation. Remove if/when postgis publishes arm64 builds.
+    platform: linux/amd64
     environment:
       POSTGRES_USER: vai
       POSTGRES_PASSWORD: vai
