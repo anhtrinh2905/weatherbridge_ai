@@ -91,38 +91,69 @@ function VillageBroadcastPanel({ alert }: { alert: Alert | undefined }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
   const isGoNow = alert?.tier === "go_now";
   const audioSrc = alert ? `/audio/alerts/${isGoNow ? "go-now-vi-hmn.mp3" : "prepare-vi-hmn.mp3"}` : null;
 
   useEffect(() => {
     return () => {
       audioRef.current?.pause();
+      window.speechSynthesis?.cancel();
     };
   }, []);
+
+  // No pre-recorded file is bundled in this demo (see fe/public/audio/alerts/README.md — real
+  // audio is intentionally hand-reviewed, not generated). Fall back to the browser's built-in
+  // TTS so "Phát bản tin" is still audible end to end during a demo instead of silently erroring.
+  const speakFallback = () => {
+    if (!alert || !("speechSynthesis" in window)) {
+      setIsPlaying(false);
+      setError(t("villageHead.broadcast.missingAudio"));
+      return;
+    }
+    setUsingFallback(true);
+    setError(null);
+    const script = [
+      isGoNow ? t("villageHead.broadcast.goNowTitle") : t("villageHead.broadcast.prepareTitle"),
+      alert.what,
+      alert.howDangerous,
+      alert.whatToDo,
+    ].join(". ");
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(script);
+    utterance.lang = "vi-VN";
+    utterance.rate = 0.95;
+    utterance.onend = () => setIsPlaying(false);
+    utterance.onerror = () => {
+      setIsPlaying(false);
+      setError(t("villageHead.broadcast.missingAudio"));
+    };
+    setIsPlaying(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const play = async () => {
     if (!audioSrc) return;
     setError(null);
+    setUsingFallback(false);
     audioRef.current?.pause();
+    window.speechSynthesis?.cancel();
     const audio = new Audio(audioSrc);
     audioRef.current = audio;
     audio.onended = () => setIsPlaying(false);
-    audio.onerror = () => {
-      setIsPlaying(false);
-      setError(t("villageHead.broadcast.missingAudio"));
-    };
+    audio.onerror = speakFallback;
     try {
       setIsPlaying(true);
       await audio.play();
     } catch {
-      setIsPlaying(false);
-      setError(t("villageHead.broadcast.playFailed"));
+      speakFallback();
     }
   };
 
   const stop = () => {
     audioRef.current?.pause();
     if (audioRef.current) audioRef.current.currentTime = 0;
+    window.speechSynthesis?.cancel();
     setIsPlaying(false);
   };
 
@@ -168,7 +199,7 @@ function VillageBroadcastPanel({ alert }: { alert: Alert | undefined }) {
             )}
           </div>
           <p className="mt-3 text-xs text-muted-2">
-            {t("villageHead.broadcast.assetHint", { file: audioSrc ?? "" })}
+            {usingFallback ? t("villageHead.broadcast.ttsFallback") : t("villageHead.broadcast.assetHint", { file: audioSrc ?? "" })}
           </p>
           {error && <p className="mt-2 text-xs font-semibold text-danger">{error}</p>}
         </div>

@@ -1,4 +1,6 @@
 import { getOccupationRecommendation } from "./recommendations";
+import { RASTER_H, RASTER_W, sampleHazardAt } from "../hazard-raster";
+import type { RasterPoint } from "../hazard-raster";
 import type {
   Alert,
   HazardDayLevel,
@@ -168,7 +170,44 @@ export function generateHazardLevels(): HazardDayLevel[] {
 
 export const HAZARD_LEVELS = generateHazardLevels();
 
-export function getHazardLevel(villageId: string, hazardType: HazardType, day: number) {
+// Mirrors BOUNDARY_GEO_BOUNDS in shared/hazard-raster/villages.ts. Duplicated (not imported)
+// because villages.ts imports VILLAGES from this file — importing back would create a cycle.
+// Keep the two bounds in sync if the commune boundary bbox ever changes.
+const RASTER_GEO_BOUNDS = {
+  minLat: 21.474045782967035,
+  maxLat: 21.700161717032966,
+  minLon: 102.90104066923077,
+  maxLon: 103.16895913076922,
+};
+
+function projectToRasterPoint(lat: number, lon: number): RasterPoint {
+  return {
+    x: Math.round(((lon - RASTER_GEO_BOUNDS.minLon) / (RASTER_GEO_BOUNDS.maxLon - RASTER_GEO_BOUNDS.minLon)) * (RASTER_W - 1)),
+    y: Math.round(((RASTER_GEO_BOUNDS.maxLat - lat) / (RASTER_GEO_BOUNDS.maxLat - RASTER_GEO_BOUNDS.minLat)) * (RASTER_H - 1)),
+  };
+}
+
+/**
+ * Real hazard level for a village/day, sourced from the same raster engine the map uses
+ * (shared/hazard-raster — live Open-Meteo + I–D trigger, see risk_scoring.py). Sampled at
+ * every resident's real coordinates in that village and reduced to the worst cell (safety
+ * bias, same rule the raster/village-grid scoring already uses elsewhere). Falls back to the
+ * seeded mock only for the villages with no resident coordinates yet (13 of 22 — see
+ * data/catalogs/muong_pon_villages_v1.json).
+ */
+export function getHazardLevel(villageId: string, hazardType: HazardType, day: number): HazardDayLevel | undefined {
+  const villageResidents = getResidentsByVillage(villageId);
+  if (villageResidents.length > 0) {
+    let worst: HazardDayLevel | null = null;
+    for (const resident of villageResidents) {
+      const point = projectToRasterPoint(resident.lat, resident.lon);
+      const sample = sampleHazardAt(point, hazardType, day).primary;
+      if (!worst || sample.level > worst.level) {
+        worst = { villageId, hazardType, forecastDay: day, level: sample.level, confidence: sample.confidence };
+      }
+    }
+    if (worst) return worst;
+  }
   return HAZARD_LEVELS.find((h) => h.villageId === villageId && h.hazardType === hazardType && h.forecastDay === day);
 }
 
@@ -212,37 +251,6 @@ const ALERT_COPY: Record<HazardType, { what: string; dangerByLevel: (l: number) 
     },
   },
 };
-
-export function generateAlerts(): Alert[] {
-  const alerts: Alert[] = [];
-  const now = new Date();
-  for (const village of VILLAGES) {
-    for (const hazardType of ["flash_flood", "landslide"] as HazardType[]) {
-      const today = getHazardLevel(village.id, hazardType, 0);
-      if (!today) continue;
-      const tier = tierFor(hazardType, village.id, today.level);
-      if (!tier) continue;
-      const hoursAhead = tier === "go_now" ? 4 : 18;
-      const deadline = new Date(now.getTime() + hoursAhead * 3600 * 1000);
-      const copy = ALERT_COPY[hazardType];
-      alerts.push({
-        id: `AL-${village.id}-${hazardType}`,
-        villageId: village.id,
-        hazardType,
-        level: today.level,
-        tier,
-        what: copy.what,
-        howDangerous: copy.dangerByLevel(today.level),
-        whatToDo: copy.actionByTier[tier],
-        deadlineUtc: deadline.toISOString(),
-        isCurrent: true,
-      });
-    }
-  }
-  return alerts;
-}
-
-export const ALERTS = generateAlerts();
 
 /** Deterministic mock rainfall (mm/day) for progressive-disclosure evidence — not a live forecast. */
 export interface RainfallDayMock {
@@ -294,14 +302,8 @@ export function getSelfResident(villageId: string) {
   return inVillage.find((r) => r.occupation === "nong_dan") ?? inVillage[0];
 }
 
-export function getAlertsByVillage(villageId: string) {
-  return ALERTS.filter((a) => a.villageId === villageId && a.isCurrent);
-}
-
 export function getHighestTierAlert(villageId: string): Alert | undefined {
-  const village = getAlertsByVillage(villageId);
-  const goNow = village.find((a) => a.tier === "go_now");
-  return goNow ?? village[0];
+  return getAlertForVillageDay(villageId, 0);
 }
 
 /** Build (or omit) an alert for a forecast day from mock hazard levels. */

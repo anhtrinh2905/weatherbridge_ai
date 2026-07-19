@@ -4,20 +4,31 @@ import { useLocales } from "../../features/operations/hooks";
 import { useTranslation, type Locale } from "../i18n/I18nProvider";
 import { cn } from "../lib/cn";
 
+const STATIC_OPTIONS: { locale: Locale; label: string; hint?: string }[] = [
+  { locale: "vi", label: "Tiếng Việt" },
+  { locale: "hmn-x-dienbien", label: "Hmong", hint: "Bản dịch máy, chờ người bản ngữ duyệt" },
+  { locale: "tai-x-muongpon", label: "Tai Dam", hint: "Fallback tiếng Việt + icon" },
+];
+
+function isSupportedLocale(code: string): code is Locale {
+  return code === "vi" || code === "hmn-x-dienbien" || code === "tai-x-muongpon";
+}
+
 export function LanguageSwitcher() {
   const { locale, setLocale } = useTranslation();
   const [open, setOpen] = useState(false);
   const { data: locales = [] } = useLocales(false);
 
-  // Filter locales to ensure we only show active ones. The API already returns active by default.
-  // We construct the options from the API response.
-  const apiOptions: { locale: Locale; label: string; hint?: string }[] = locales.map((l) => ({
-    locale: l.code as Locale,
-    label: l.native_name || l.display_name,
-    hint: l.requires_native_review ? "Cần người bản địa duyệt" : undefined,
-  }));
-
-  const options = apiOptions.length > 0 ? apiOptions : [{ locale: "vi" as Locale, label: "Tiếng Việt", hint: undefined }];
+  const apiOptions = new Map<Locale, { locale: Locale; label: string; hint?: string }>();
+  for (const item of locales) {
+    if (!isSupportedLocale(item.code)) continue;
+    apiOptions.set(item.code, {
+      locale: item.code,
+      label: item.native_name || item.display_name,
+      hint: item.requires_native_review ? "Cần người bản địa duyệt" : undefined,
+    });
+  }
+  const options = STATIC_OPTIONS.map((option) => apiOptions.get(option.locale) ?? option);
   const current = options.find((o) => o.locale === locale) ?? options[0];
 
   return (

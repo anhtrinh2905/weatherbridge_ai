@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, test } from "vitest";
 import { I18nProvider } from "../../shared/i18n/I18nProvider";
+import { ResidentStatusProvider } from "../../shared/domain/residentStatusStore";
 import { HeatmapView } from "./HeatmapView";
 
 afterEach(cleanup);
@@ -9,7 +10,9 @@ afterEach(cleanup);
 function renderHeatmapView() {
   return render(
     <I18nProvider>
-      <HeatmapView />
+      <ResidentStatusProvider>
+        <HeatmapView />
+      </ResidentStatusProvider>
     </I18nProvider>,
   );
 }

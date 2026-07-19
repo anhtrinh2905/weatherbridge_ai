@@ -7,7 +7,7 @@ export function ResidentShell() {
   const items: SidebarItem[] = [
     { to: "/resident", label: t("resident.nav.alerts"), icon: LayoutDashboard, end: true },
     { to: "/resident/map", label: t("resident.nav.map"), icon: Map },
-    { to: "/resident/notifications", label: "Nhận tin", icon: BellRing },
+    { to: "/resident/notifications", label: t("resident.nav.notifications"), icon: BellRing },
   ];
 
   return <DashboardLayout role="resident" items={items} />;

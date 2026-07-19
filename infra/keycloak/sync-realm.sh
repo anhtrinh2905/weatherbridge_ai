@@ -84,6 +84,38 @@ upsert_frontend_audience_mapper() {
     -s 'config."introspection.token.claim"=true' >/dev/null
 }
 
+upsert_backend_client() {
+  local client_uuid
+  client_uuid="$("$KCADM" get clients -r "$REALM" -q clientId=weather-bridge-be --fields id --format csv --noquotes)"
+  if [ -z "$client_uuid" ]; then
+    client_uuid="$("$KCADM" create clients -r "$REALM" -i \
+      -s clientId=weather-bridge-be \
+      -s 'name=Weather Bridge AI backend (service account)' \
+      -s protocol=openid-connect \
+      -s publicClient=false \
+      -s standardFlowEnabled=false \
+      -s implicitFlowEnabled=false \
+      -s directAccessGrantsEnabled=false \
+      -s serviceAccountsEnabled=true \
+      -s secret=dev-weather-bridge-be-secret)"
+  else
+    "$KCADM" update "clients/$client_uuid" -r "$REALM" \
+      -s clientId=weather-bridge-be \
+      -s 'name=Weather Bridge AI backend (service account)' \
+      -s protocol=openid-connect \
+      -s publicClient=false \
+      -s standardFlowEnabled=false \
+      -s implicitFlowEnabled=false \
+      -s directAccessGrantsEnabled=false \
+      -s serviceAccountsEnabled=true \
+      -s secret=dev-weather-bridge-be-secret >/dev/null
+  fi
+
+  "$KCADM" add-roles -r "$REALM" --uusername "service-account-weather-bridge-be" \
+    --cclientid realm-management --rolename view-users --rolename query-users \
+    --rolename manage-users --rolename view-realm >/dev/null
+}
+
 upsert_demo_user() {
   local username="$1" first="$2" last="$3" role="$4" village="${5:-}"
   local user_id update_args
@@ -133,6 +165,7 @@ client_id="$("$KCADM" get clients -r "$REALM" -q clientId=weather-bridge-fe --fi
 
 upsert_village_mapper "$client_id"
 upsert_frontend_audience_mapper "$client_id"
+upsert_backend_client
 upsert_demo_user admin@weather-bridge.local Admin Demo admin
 upsert_demo_user canbo@weather-bridge.local "Can Bo" "PCTT Demo" commune_officer
 upsert_demo_user truongban@weather-bridge.local "Truong Ban" "Muong Pon 1 Demo" village_head muong-pon-1

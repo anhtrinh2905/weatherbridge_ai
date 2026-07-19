@@ -1,0 +1,168 @@
+{
+  "_meta": {
+    "description": "ActionProtocol v1 — bảng hành động khuyến nghị đã duyệt sẵn theo (hazard, public_level, occupation, locality). Theo đúng AD-4 của ARCHITECTURE-SPINE.md: AI chỉ được sắp xếp/diễn đạt lại các hành động đã có trong bảng này, không được tự tạo, không được tự suy luận điểm sơ tán hay hành động mới.",
+    "version": "v1",
+    "status": "draft — chưa được cán bộ/chuyên gia thật duyệt, chỉ dùng cho demo/diễn tập",
+    "effective_date": "2026-07-17",
+    "expiry": null,
+    "supersedes": null,
+    "is_exercise": true,
+    "author": "team (demo, chưa có chuyên gia KTTV/PCTT duyệt nội dung)",
+    "reviewer": "pending",
+    "approver": "pending",
+    "note_scope": "Sương muối/rét hại là hiện tượng 'sống' duy nhất được claim trong bài thi (theo ARCHITECTURE-SPINE.md). Mưa lớn/lũ quét chỉ là chỉ báo rủi ro/kịch bản diễn tập — không bao giờ trình bày là dự báo lũ quét chính xác."
+  },
+
+  "destinations": [
+    {"destination_id": "DEST-MUONGPON1", "village_name_demo": "Mường Pồn 1", "description": "Điểm tập kết an toàn (demo, CHƯA xác thực với chính quyền địa phương) — nhà văn hoá bản, khu vực cao ráo cách suối tối thiểu 200m", "status": "exercise_only_unverified"},
+    {"destination_id": "DEST-MUONGPON2", "village_name_demo": "Mường Pồn 2", "description": "Điểm tập kết an toàn (demo, CHƯA xác thực) — khu vực trường tiểu học bản, nền cao", "status": "exercise_only_unverified"},
+    {"destination_id": "DEST-LINH", "village_name_demo": "Lĩnh", "description": "Điểm tập kết an toàn (demo, CHƯA xác thực) — khu đất cao phía sau UBND xã", "status": "exercise_only_unverified"},
+    {"destination_id": "DEST-TINTOC", "village_name_demo": "Tin Tốc", "description": "Điểm tập kết an toàn (demo, CHƯA xác thực) — nhà văn hoá bản Tin Tốc", "status": "exercise_only_unverified"}
+  ],
+
+  "protocols": [
+    {
+      "action_id": "AP-FROST-PREPARE-NONGDAN-001",
+      "hazard": "suong_muoi_ret_hai",
+      "public_level": "PREPARE",
+      "occupation": "nong_dan",
+      "locality_scope": "elevation_gte_800m",
+      "action_text_vi": "Che phủ mạ non và cây trồng bằng bạt/nilon trước khi trời tối. Không tưới nước vào chiều tối để tránh đóng băng.",
+      "source_authority": "Tiêu chí khí tượng thủy văn VN: sương muối khi nhiệt độ 2m ≤4°C kèm đủ độ ẩm",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FROST-PREPARE-CHANNUOI-001",
+      "hazard": "suong_muoi_ret_hai",
+      "public_level": "PREPARE",
+      "occupation": "chan_nuoi",
+      "locality_scope": "elevation_gte_800m",
+      "action_text_vi": "Lùa trâu, bò, dê về chuồng trước 18h. Che kín chuồng trại, đốt sưởi giữ ấm, không thả rông qua đêm.",
+      "source_authority": "Tiêu chí rét hại (nhiệt độ trung bình ngày <13°C) — KTTV Việt Nam",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FROST-PREPARE-TAIXE-001",
+      "hazard": "suong_muoi_ret_hai",
+      "public_level": "PREPARE",
+      "occupation": "tai_xe",
+      "locality_scope": "elevation_gte_800m",
+      "action_text_vi": "Hạn chế di chuyển sáng sớm (5h-8h) do sương mù dày kèm rét, đường trơn trượt. Bật đèn sương mù nếu bắt buộc phải đi.",
+      "source_authority": "Suy luận từ điều kiện sương muối + độ cao",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FROST-PREPARE-GIAOVIEN-001",
+      "hazard": "suong_muoi_ret_hai",
+      "public_level": "PREPARE",
+      "occupation": "giao_vien",
+      "locality_scope": "elevation_gte_800m",
+      "action_text_vi": "Cân nhắc lùi giờ vào lớp buổi sáng, nhắc phụ huynh giữ ấm cho học sinh khi tới trường.",
+      "source_authority": "Suy luận từ ngưỡng rét hại",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FROST-PREPARE-DEFAULT-001",
+      "hazard": "suong_muoi_ret_hai",
+      "public_level": "PREPARE",
+      "occupation": "default",
+      "locality_scope": "elevation_gte_800m",
+      "action_text_vi": "Giữ ấm cơ thể, hạn chế ra ngoài sớm/tối muộn, chuẩn bị củi/chăn ấm cho người già và trẻ nhỏ trong nhà.",
+      "source_authority": "Tiêu chí rét đậm/rét hại — KTTV Việt Nam",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FROST-PREPARE-KHONGCO-001",
+      "hazard": "suong_muoi_ret_hai",
+      "public_level": "PREPARE",
+      "occupation": "khong_co",
+      "locality_scope": "elevation_gte_800m",
+      "action_text_vi": "Giữ ấm, hạn chế ra ngoài. Nếu thuộc Sổ hộ dễ tổn thương, trưởng bản sẽ ghé thăm trước tối.",
+      "source_authority": "Tiêu chí rét đậm/rét hại — KTTV Việt Nam",
+      "status": "draft"
+    },
+
+    {
+      "action_id": "AP-FLOOD-PREPARE-NONGDAN-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "PREPARE",
+      "occupation": "nong_dan",
+      "locality_scope": "all",
+      "action_text_vi": "Thu dọn nông cụ, không ra nương/ruộng gần suối. Di chuyển vật nuôi nhỏ, thóc lúa lên nơi cao ráo.",
+      "source_authority": "Chỉ báo rủi ro theo lượng mưa tích luỹ 24h (QĐ 18/2021/QĐ-TTg) — KHÔNG phải dự báo lũ quét chính xác",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FLOOD-PREPARE-CHANNUOI-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "PREPARE",
+      "occupation": "chan_nuoi",
+      "locality_scope": "all",
+      "action_text_vi": "Di chuyển gia súc lên khu vực cao hơn, kiểm tra và gia cố chuồng trại chắc chắn.",
+      "source_authority": "Chỉ báo rủi ro theo lượng mưa tích luỹ 24h (QĐ 18/2021/QĐ-TTg)",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FLOOD-PREPARE-TAIXE-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "PREPARE",
+      "occupation": "tai_xe",
+      "locality_scope": "all",
+      "action_text_vi": "Tránh đi qua ngầm tràn, suối, khu vực từng sạt lở. Theo dõi cảnh báo trước khi di chuyển đường xa.",
+      "source_authority": "Chỉ báo rủi ro theo lượng mưa tích luỹ 24h (QĐ 18/2021/QĐ-TTg)",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FLOOD-PREPARE-GIAOVIEN-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "PREPARE",
+      "occupation": "giao_vien",
+      "locality_scope": "all",
+      "action_text_vi": "Theo dõi sát bản tin, chuẩn bị phương án cho học sinh nghỉ học nếu đường đến trường qua ngầm/suối có nguy cơ ngập.",
+      "source_authority": "Chỉ báo rủi ro theo lượng mưa tích luỹ 24h (QĐ 18/2021/QĐ-TTg)",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FLOOD-PREPARE-DEFAULT-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "PREPARE",
+      "occupation": "default",
+      "locality_scope": "all",
+      "action_text_vi": "Theo dõi bản tin, chuẩn bị đèn pin, giấy tờ tuỳ thân và đồ dùng thiết yếu đề phòng phải di chuyển gấp.",
+      "source_authority": "Chỉ báo rủi ro theo lượng mưa tích luỹ 24h (QĐ 18/2021/QĐ-TTg)",
+      "status": "draft"
+    },
+
+    {
+      "action_id": "AP-FLOOD-GONOW-DEFAULT-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "GO_NOW",
+      "occupation": "default",
+      "locality_scope": "all",
+      "action_text_vi": "Sơ tán NGAY tới điểm tập kết an toàn của bản, mang theo giấy tờ tuỳ thân và vật dụng thiết yếu, đi theo hướng dẫn của trưởng bản. Không quay lại lấy đồ đạc.",
+      "destination_ref": "theo village_id — xem bảng destinations",
+      "source_authority": "Kịch bản diễn tập — cần cán bộ xã có thẩm quyền duyệt phát lệnh trước khi released (AD-3)",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FLOOD-GONOW-TRUONGBAN-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "GO_NOW",
+      "occupation": "truong_ban",
+      "locality_scope": "all",
+      "action_text_vi": "Đến trực tiếp từng hộ trong Danh sách đến nhắc (Sổ hộ dễ tổn thương thuộc Bản), nhắc sơ tán, bấm xác nhận 'Đã đến nhắc' hoặc 'Không gặp' cho từng hộ.",
+      "source_authority": "FR-20/FR-21 — Tầng con người, ARCHITECTURE-SPINE.md AD-16",
+      "status": "draft"
+    },
+    {
+      "action_id": "AP-FLOOD-GONOW-CANBOXA-001",
+      "hazard": "mua_lon_lu_quet",
+      "public_level": "GO_NOW",
+      "occupation": "can_bo_xa",
+      "locality_scope": "all",
+      "action_text_vi": "Duyệt hoặc từ chối lệnh sơ tán sau khi kiểm tra dữ liệu còn hiệu lực. Theo dõi trạng thái các hộ trong danh sách đến nhắc realtime, tiếp nhận leo thang từ trưởng bản khi 'Không gặp'.",
+      "source_authority": "FR-4 cổng duyệt con người, FR-21 — ARCHITECTURE-SPINE.md AD-3",
+      "status": "draft"
+    }
+  ]
+}

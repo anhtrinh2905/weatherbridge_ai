@@ -33,6 +33,7 @@ build/
 *.sqlite3
 *.tsbuildinfo
 node_modules/
+.pnpm-store/
 fe/dist/
 fe/coverage/
 .vite/

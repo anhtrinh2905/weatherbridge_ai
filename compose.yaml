@@ -25,7 +25,7 @@ x-backend: &backend
     OBJECT_STORAGE_ACCESS_KEY: ${OBJECT_STORAGE_ACCESS_KEY:-minioadmin}
     OBJECT_STORAGE_SECRET_KEY: ${OBJECT_STORAGE_SECRET_KEY:-minioadmin}
     OBJECT_STORAGE_BUCKET: ${OBJECT_STORAGE_BUCKET:-weatherbridge}
-    OBJECT_STORAGE_SIGNING_KEY: ${OBJECT_STORAGE_SIGNING_KEY:-}
+    OBJECT_STORAGE_SIGNING_KEY: ${OBJECT_STORAGE_SIGNING_KEY:-dev-weatherbridge-object-signing-key}
     OBJECT_STORAGE_URL_TTL_SECONDS: ${OBJECT_STORAGE_URL_TTL_SECONDS:-300}
     NOTIFICATION_DELIVERY_MODE: ${NOTIFICATION_DELIVERY_MODE:-disabled}
     WEB_PUSH_SUBJECT: ${WEB_PUSH_SUBJECT:-mailto:dev@weatherbridge.local}
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   minio:
-    image: minio/minio:RELEASE.2024-01-31T20-20-55Z
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_USER:-minioadmin}
@@ -69,7 +69,7 @@ services:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
       /usr/bin/mc mb myminio/weatherbridge || true;
       /usr/bin/mc anonymous set download myminio/weatherbridge;
       exit 0;
@@ -172,6 +172,21 @@ services:
       start_period: 30s
     restart: unless-stopped
 
+  keycloak-sync:
+    image: weather-bridge-keycloak:local
+    entrypoint:
+      - /bin/bash
+      - /opt/keycloak/bin/sync-weather-bridge-realm.sh
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KEYCLOAK_SYNC_SERVER: http://keycloak:8080
+      KEYCLOAK_SYNC_REALM: weather-bridge
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    restart: "no"
+
   migrate:
     <<: *backend
     command:
@@ -205,8 +220,8 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
-      keycloak:
-        condition: service_healthy
+      keycloak-sync:
+        condition: service_completed_successfully
     healthcheck:
       test:
         - CMD
@@ -250,6 +265,7 @@ services:
         VITE_KEYCLOAK_URL: http://localhost:8080
         VITE_KEYCLOAK_REALM: weather-bridge
         VITE_KEYCLOAK_CLIENT_ID: weather-bridge-fe
+        VITE_HAZARD_SOURCE: ${VITE_HAZARD_SOURCE:-api}
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
       interval: 10s

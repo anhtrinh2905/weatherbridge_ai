@@ -1,6 +1,8 @@
 import base64
 import io
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import numpy as np
 import rasterio
@@ -8,6 +10,10 @@ from fastapi import FastAPI, HTTPException
 from PIL import Image
 from pydantic import BaseModel
 from rasterio.features import shapes
+
+SRC_DIR = Path(__file__).resolve().parent
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 from data import load_dem
 from risk import (

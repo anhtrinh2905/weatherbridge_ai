@@ -293,11 +293,16 @@ export function hazardDayContext(type: HazardType, dayOffset: number): HazardDay
   }
 
   // Prefer the authoritative backend rainfall trigger when loaded (the offline-
-  // trained bias-correction + I–D pipeline, served via /hazards). It is the
-  // unified "Kích hoạt mưa" factor for both hazard types; the per-type terrain
-  // susceptibility below stays client-side, so risk = susceptibility × trigger.
-  const backend = getBackendRisk()?.[dayOffset];
-  if (backend) trigger = backend.trigger;
+  // trained bias-correction + I–D pipeline, served via /hazards). The worker
+  // pipeline only ever scores flash_flood (see worker/src/forecast_ingest.py) —
+  // landslide has no backend run, so it must keep its own client I–D heuristic
+  // above. Applying the backend trigger to both would collapse them onto one
+  // shared curve, which is exactly what this function's own doc comment says
+  // never to do.
+  if (type === "flood") {
+    const backend = getBackendRisk()?.[dayOffset];
+    if (backend) trigger = backend.trigger;
+  }
 
   return {
     trigger,

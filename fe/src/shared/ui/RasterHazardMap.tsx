@@ -9,6 +9,7 @@ import { FogCloudIcon } from "./FogCloudIcon";
 import { getBackendRisk, getForecastDays, isInsideBoundary, RASTER_H, RASTER_W, renderHazardRaster } from "../hazard-raster";
 import { BOUNDARY_GEO_BOUNDS, RASTER_VILLAGES, nearestRasterVillage } from "../hazard-raster/villages";
 import type { RasterLayer, RasterPoint } from "../hazard-raster";
+import { useTranslation } from "../i18n/I18nProvider";
 
 /** Zoom step: ±10 percentage points on the toolbar readout. */
 const ZOOM_STEP_PCT = 10;
@@ -16,6 +17,9 @@ const MIN_ZOOM_PCT = 50;
 const MAX_ZOOM_PCT = 400;
 const MIN_ZOOM = MIN_ZOOM_PCT / 100;
 const MAX_ZOOM_CAP = MAX_ZOOM_PCT / 100;
+const SATELLITE_BASEMAP_URL =
+  "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export";
+const SATELLITE_ATTRIBUTION = "Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community";
 
 interface Viewport {
   zoom: number;
@@ -44,7 +48,20 @@ export interface RasterMapMarker {
   id: string;
   point: RasterPoint;
   label: string;
+  /** visual tone, e.g. resident safety status. Defaults to "danger" (the original event-pin look). Ignored when `color` is set. */
+  tone?: "safe" | "warning" | "danger" | "muted";
+  /** exact hex/css color, e.g. the hazard-level color of the cell the marker sits on. Takes priority over `tone`. */
+  color?: string;
+  /** whether to render the text tag under the pin. Defaults to true; set false for dense marker sets (e.g. residents). */
+  showLabel?: boolean;
 }
+
+const MARKER_TONE_CLASSES: Record<NonNullable<RasterMapMarker["tone"]>, string> = {
+  safe: "bg-positive",
+  warning: "bg-accent",
+  danger: "bg-danger",
+  muted: "bg-white/80",
+};
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
@@ -129,6 +146,23 @@ function fogPatchPoint(patch: (typeof FOG_PATCHES)[number]): RasterPoint {
   };
 }
 
+function satelliteBasemapUrl(): string {
+  const params = new URLSearchParams({
+    bbox: [
+      BOUNDARY_GEO_BOUNDS.minLon,
+      BOUNDARY_GEO_BOUNDS.minLat,
+      BOUNDARY_GEO_BOUNDS.maxLon,
+      BOUNDARY_GEO_BOUNDS.maxLat,
+    ].join(","),
+    bboxSR: "4326",
+    imageSR: "4326",
+    size: `${RASTER_W * 2},${RASTER_H * 2}`,
+    format: "jpg",
+    f: "image",
+  });
+  return `${SATELLITE_BASEMAP_URL}?${params.toString()}`;
+}
+
 export function RasterHazardMap({
   layer,
   day,
@@ -159,6 +193,7 @@ export function RasterHazardMap({
   aspectMode?: "fill" | "natural";
   className?: string;
 }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointersRef = useRef(new Map<number, PointerPosition>());
@@ -392,9 +427,14 @@ export function RasterHazardMap({
         className,
       )}
       role="group"
-      aria-label="Bản đồ raster nguy cơ"
+      aria-label={t("rasterMap.groupAria")}
     >
       <div className="absolute inset-0 origin-top-left" style={{ transform: `translate(${viewport.panX}px, ${viewport.panY}px) scale(${viewport.zoom})` }}>
+        <div
+          className="pointer-events-none absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url("${satelliteBasemapUrl()}")` }}
+          aria-hidden="true"
+        />
         <canvas
           ref={canvasRef}
           width={RASTER_W}
@@ -411,8 +451,8 @@ export function RasterHazardMap({
           onPointerMove={handlePointerMove}
           onPointerUp={finishPointer}
           onPointerCancel={finishPointer}
-          className={cn("block size-full", isPanning ? "cursor-grabbing" : viewport.zoom > 1 ? "cursor-grab" : "cursor-crosshair")}
-          aria-label="Bản đồ raster nguy cơ 5 cấp"
+          className={cn("relative block size-full", !imageSrc && "opacity-80 mix-blend-multiply", isPanning ? "cursor-grabbing" : viewport.zoom > 1 ? "cursor-grab" : "cursor-crosshair")}
+          aria-label={t("rasterMap.canvasAria")}
         />
         {showFogMarkers &&
           FOG_PATCHES.map((patch) => {
@@ -426,7 +466,7 @@ export function RasterHazardMap({
                   left: `${(point.x / RASTER_W) * 100}%`,
                   top: `${(point.y / RASTER_H) * 100}%`,
                 }}
-                title={`Sương mù · tầm nhìn ${Math.round(dayFog.visibilityM ?? 0)} m`}
+                title={t("rasterMap.fogTitle", { visibility: Math.round(dayFog.visibilityM ?? 0) })}
                 aria-hidden="true"
               >
                 <FogCloudIcon size={size} severity={fogSeverity * patch.weight} />
@@ -454,22 +494,35 @@ export function RasterHazardMap({
             title={marker.label}
             aria-label={marker.label}
           >
-            <span className="block size-5 rounded-full border-2 border-white bg-danger shadow-[0_0_0_3px_rgba(0,0,0,0.55),0_0_18px_rgba(242,107,107,0.9)]" />
-            <span className="absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded bg-black/75 px-2 py-0.5 text-[0.62rem] font-semibold text-white">
-              {marker.label}
-            </span>
+            <span
+              className={cn(
+                "block rounded-full",
+                marker.showLabel === false
+                  ? "size-2 border border-white/90 shadow-[0_0_0_1px_rgba(0,0,0,0.45)]"
+                  : "size-5 border-2 border-white shadow-[0_0_0_3px_rgba(0,0,0,0.55),0_0_18px_rgba(242,107,107,0.9)]",
+                !marker.color && MARKER_TONE_CLASSES[marker.tone ?? "danger"],
+              )}
+              style={marker.color ? { backgroundColor: marker.color } : undefined}
+            />
+            {marker.showLabel !== false && (
+              <span className="absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded bg-black/75 px-2 py-0.5 text-[0.62rem] font-semibold text-white">
+                {marker.label}
+              </span>
+            )}
           </span>
         ))}
         {selected && <span className="pointer-events-none absolute size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(0,0,0,0.65)]" style={{ left: `${(selected.x / RASTER_W) * 100}%`, top: `${(selected.y / RASTER_H) * 100}%` }} />}
         <span className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-lg leading-none text-black [text-shadow:0_0_3px_rgba(255,255,255,0.9)]" style={{ left: `${EVENT_MARKER.x * 100}%`, top: `${EVENT_MARKER.y * 100}%` }} aria-hidden="true">▼</span>
       </div>
-      <div className="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-white/15 bg-black/65 p-1 shadow" role="toolbar" aria-label="Điều khiển bản đồ">
-        <button type="button" onClick={() => zoomFromCenter(-1)} disabled={zoomPct <= MIN_ZOOM_PCT} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Thu nhỏ bản đồ" title="Thu nhỏ 10%"><ZoomOut size={17} /></button>
-        <span className="min-w-12 text-center font-mono text-xs text-white" aria-label={`Mức zoom ${zoomPct}%`} title="Zoom: nút ± hoặc Ctrl+lăn chuột">{zoomPct}%</span>
-        <button type="button" onClick={() => zoomFromCenter(1)} disabled={zoomPct >= MAX_ZOOM_PCT} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Phóng to bản đồ" title="Phóng to 10%"><ZoomIn size={17} /></button>
-        <button type="button" onClick={applyFit} disabled={isAtFit} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Đặt lại góc nhìn" title="Đặt lại góc nhìn"><RotateCcw size={16} /></button>
+      <div className="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-white/15 bg-black/65 p-1 shadow" role="toolbar" aria-label={t("rasterMap.controlsAria")}>
+        <button type="button" onClick={() => zoomFromCenter(-1)} disabled={zoomPct <= MIN_ZOOM_PCT} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label={t("rasterMap.zoomOutAria")} title={t("rasterMap.zoomOutTitle")}><ZoomOut size={17} /></button>
+        <span className="min-w-12 text-center font-mono text-xs text-white" aria-label={t("rasterMap.zoomLevelAria", { zoom: zoomPct })} title={t("rasterMap.zoomHelp")}>{zoomPct}%</span>
+        <button type="button" onClick={() => zoomFromCenter(1)} disabled={zoomPct >= MAX_ZOOM_PCT} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label={t("rasterMap.zoomInAria")} title={t("rasterMap.zoomInTitle")}><ZoomIn size={17} /></button>
+        <button type="button" onClick={applyFit} disabled={isAtFit} className="grid size-9 place-items-center rounded text-white enabled:hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40" aria-label={t("rasterMap.resetViewAria")} title={t("rasterMap.resetViewAria")}><RotateCcw size={16} /></button>
       </div>
-      <span className="absolute bottom-2 left-2 rounded bg-black/55 px-1.5 py-0.5 text-[0.6rem] text-white/80">Ranh giới: © OpenStreetMap contributors</span>
+      <span className="absolute bottom-2 left-2 rounded bg-black/60 px-1.5 py-0.5 text-[0.6rem] text-white/85">
+        {t("rasterMap.boundaryAttribution")} · {SATELLITE_ATTRIBUTION}
+      </span>
     </div>
   );
 }

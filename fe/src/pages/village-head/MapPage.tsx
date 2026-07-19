@@ -17,7 +17,7 @@ export function VillageHeadMapPage() {
         title={t("villageHead.map.title", { village: village?.name ?? t("villageHead.map.unknownVillage") })}
         description={t("villageHead.map.description")}
       />
-      <HeatmapView />
+      <HeatmapView villageId={villageId} />
     </div>
   );
 }
