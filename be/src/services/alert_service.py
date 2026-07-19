@@ -125,7 +125,7 @@ class AlertService:
 
     async def publish_alert(self, alert_id: UUID, user: CurrentUser) -> PublishAlertResponse:
         context = await self.profiles.access_context(user)
-        if context.domain_role not in {"admin", "commune_officer"}:
+        if context.domain_role not in {"admin", "commune_officer", "village_head"}:
             raise AppError(403, "This role cannot publish alerts", "alert_publish_forbidden")
         alert = await self._scoped_alert(alert_id, context)
         if alert.status not in {"draft", "pending_review"}:
@@ -183,6 +183,9 @@ class AlertService:
 
         recipient_count = 0
         delivery_count = 0
+        is_village_head_danger_broadcast = (
+            context.domain_role == "village_head" and alert.tier == "go_now"
+        )
         for resident in residents:
             existing = await self.session.scalar(
                 select(AlertRecipient).where(
@@ -257,7 +260,13 @@ class AlertService:
                 if not self._is_quiet_hour(item.quiet_hours_start, item.quiet_hours_end, now)
             }
             for contact in contacts:
-                if alert.source != "evacuation" and contact.channel not in subscription_channels:
+                if context.domain_role == "village_head" and alert.tier != "go_now":
+                    continue
+                if (
+                    not is_village_head_danger_broadcast
+                    and alert.source != "evacuation"
+                    and contact.channel not in subscription_channels
+                ):
                     continue
                 idempotency_key = hashlib.sha256(
                     f"{alert.id}:{resident.id}:{contact.id}:{contact.channel}".encode()

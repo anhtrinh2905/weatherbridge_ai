@@ -19,9 +19,12 @@ self.addEventListener("push", (event) => {
   const title = payload.title || "Weather Bridge AI";
   const options = {
     body: payload.body || "Bạn có thông báo mới.",
-    icon: "/weather-bridge-mark.svg",
-    badge: "/weather-bridge-mark.svg",
+    icon: "/weather-bridge-icon-192.png",
+    badge: "/weather-bridge-icon-192.png",
     tag: payload.tag || "weather-bridge-alert",
+    renotify: true,
+    requireInteraction: true,
+    silent: false,
     data: {
       url: payload.url || "/resident",
     },

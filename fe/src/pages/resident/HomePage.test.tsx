@@ -40,6 +40,17 @@ vi.mock("../../features/operations/hooks", () => ({
   useAcknowledgeAlert: () => ({
     mutate: vi.fn(),
     isPending: false,
+  }),
+  useResidentActions: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    data: undefined,
+  }),
+  useWeatherActions: () => ({
+    isPending: false,
+    isError: false,
+    data: undefined,
   })
 }));
 
@@ -61,5 +72,5 @@ test("resident home displays inbox alerts and heatmap", () => {
   expect(screen.getByText(/Sạt lở đất/i)).toBeInTheDocument();
   expect(screen.getByText(/Chủ động di dời/i)).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /Tôi an toàn/i })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Cần hỗ trợ/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Tôi cần giúp đỡ/i })).toBeInTheDocument();
 });

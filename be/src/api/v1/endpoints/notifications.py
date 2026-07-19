@@ -13,6 +13,7 @@ from modules.notifications.schemas import (
     WebPushConfigResponse,
     WebPushSubscriptionRequest,
     WebPushSubscriptionResponse,
+    WebPushSubscriptionStatusResponse,
 )
 from services.notification_endpoint_service import NotificationEndpointService
 
@@ -64,6 +65,21 @@ async def subscribe_web_push(
 ) -> WebPushSubscriptionResponse:
     return await NotificationEndpointService(session, settings).upsert_web_push_subscription(
         subscription, user
+    )
+
+
+@router.get(
+    "/web-push/subscriptions/{contact_id}",
+    response_model=WebPushSubscriptionStatusResponse,
+)
+async def web_push_subscription_status(
+    contact_id: UUID,
+    user: CurrentUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> WebPushSubscriptionStatusResponse:
+    return await NotificationEndpointService(session, settings).get_web_push_subscription_status(
+        contact_id, user
     )
 
 

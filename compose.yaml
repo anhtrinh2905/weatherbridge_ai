@@ -15,7 +15,9 @@ x-backend: &backend
     CORS_ORIGINS: http://localhost,http://localhost:5173
     LITELLM_ENABLED: "false"
     LANGFUSE_ENABLED: "false"
-    GOOGLE_TRANSLATE_CREDENTIALS_PATH: ${GOOGLE_TRANSLATE_CREDENTIALS_PATH:-}
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+    GOOGLE_TRANSLATE_CREDENTIALS_PATH: ${GOOGLE_TRANSLATE_CREDENTIALS_PATH:-/app/secrets/vertex-key.json}
     PII_MODE: ${PII_MODE:-simulated}
     PII_ENCRYPTION_KEY: ${PII_ENCRYPTION_KEY:-}
     PII_HASH_KEY: ${PII_HASH_KEY:-}
@@ -56,14 +58,14 @@ services:
     volumes:
       - weather-bridge-minio:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 5s
       timeout: 5s
       retries: 20
     restart: unless-stopped
 
   minio-createbucket:
-    image: minio/mc
+    image: minio/mc:RELEASE.2024-01-31T08-59-40Z
     depends_on:
       minio:
         condition: service_healthy
@@ -266,6 +268,7 @@ services:
         VITE_KEYCLOAK_REALM: weather-bridge
         VITE_KEYCLOAK_CLIENT_ID: weather-bridge-fe
         VITE_HAZARD_SOURCE: ${VITE_HAZARD_SOURCE:-api}
+        VITE_ENABLE_MACHINE_TRANSLATIONS: "true"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
       interval: 10s

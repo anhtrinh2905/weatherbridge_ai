@@ -1,7 +1,8 @@
 import { Languages } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../../features/auth/keycloak";
 import { useLocales } from "../../features/operations/hooks";
-import { useTranslation, type Locale } from "../i18n/I18nProvider";
+import { machineTranslationsEnabled, useTranslation, type Locale } from "../i18n/I18nProvider";
 import { cn } from "../lib/cn";
 
 const STATIC_OPTIONS: { locale: Locale; label: string; hint?: string }[] = [
@@ -17,7 +18,8 @@ function isSupportedLocale(code: string): code is Locale {
 export function LanguageSwitcher() {
   const { locale, setLocale } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { data: locales = [] } = useLocales(false);
+  const { authenticated } = useAuth();
+  const { data: locales = [] } = useLocales(false, authenticated);
 
   const apiOptions = new Map<Locale, { locale: Locale; label: string; hint?: string }>();
   for (const item of locales) {
@@ -28,7 +30,12 @@ export function LanguageSwitcher() {
       hint: item.requires_native_review ? "Cần người bản địa duyệt" : undefined,
     });
   }
-  const options = STATIC_OPTIONS.map((option) => apiOptions.get(option.locale) ?? option);
+  // Hmong depends on live machine translation; hide it when that flag is off so the switcher
+  // doesn't offer a locale the deployment can't actually translate into.
+  const visibleStaticOptions = machineTranslationsEnabled()
+    ? STATIC_OPTIONS
+    : STATIC_OPTIONS.filter((option) => option.locale !== "hmn-x-dienbien");
+  const options = visibleStaticOptions.map((option) => apiOptions.get(option.locale) ?? option);
   const current = options.find((o) => o.locale === locale) ?? options[0];
 
   return (

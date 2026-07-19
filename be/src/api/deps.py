@@ -5,6 +5,7 @@ from fastapi import Depends, Request
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ai.advisory.openai_service import OpenAIAdvisoryService
 from ai.forecast import OpenMeteoService
 from ai.speech.mms_service import MmsTtsService
 from ai.translation.gemini_service import GeminiTranslateService
@@ -21,6 +22,7 @@ from services.forecast_service import ForecastService
 from services.hazard_archive_service import HazardArchiveService
 from services.hazard_risk_service import HazardRiskService
 from services.translation_service import TranslationCacheService
+from services.weather_advisory_service import WeatherAdvisoryService
 
 
 @lru_cache
@@ -122,6 +124,19 @@ def get_gemini_translate_service(
 
 def get_mms_tts_service(settings: Settings = Depends(get_settings)) -> MmsTtsService:
     return MmsTtsService(settings)
+
+
+def get_advisory_service(
+    settings: Settings = Depends(get_settings),
+) -> OpenAIAdvisoryService:
+    return OpenAIAdvisoryService(settings)
+
+
+def get_weather_advisory_service(
+    open_meteo: OpenMeteoService = Depends(get_open_meteo_service),
+    advisory: OpenAIAdvisoryService = Depends(get_advisory_service),
+) -> WeatherAdvisoryService:
+    return WeatherAdvisoryService(open_meteo, advisory)
 
 
 async def get_translation_cache_service(

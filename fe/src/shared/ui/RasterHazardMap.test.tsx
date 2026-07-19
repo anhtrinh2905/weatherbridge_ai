@@ -1,12 +1,17 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, test } from "vitest";
+import { I18nProvider } from "../i18n/I18nProvider";
 import { fitBoundaryViewport, RasterHazardMap } from "./RasterHazardMap";
 
 afterEach(cleanup);
 
 function renderMap(day = 0, layer: "dominant" | "flash_flood" | "landslide" = "flash_flood") {
-  return render(<RasterHazardMap layer={layer} day={day} selected={null} selectedVillageId={null} showVillageMarkers={false} onSelect={() => undefined} />);
+  return render(
+    <I18nProvider>
+      <RasterHazardMap layer={layer} day={day} selected={null} selectedVillageId={null} showVillageMarkers={false} onSelect={() => undefined} />
+    </I18nProvider>,
+  );
 }
 
 function readZoomPct() {
@@ -39,7 +44,11 @@ test("resets the viewport when the forecast day changes", async () => {
   const view = renderMap();
   const initialPct = readZoomPct();
   await user.click(screen.getByRole("button", { name: "Phóng to bản đồ" }));
-  view.rerender(<RasterHazardMap layer="flash_flood" day={1} selected={null} selectedVillageId={null} showVillageMarkers={false} onSelect={() => undefined} />);
+  view.rerender(
+    <I18nProvider>
+      <RasterHazardMap layer="flash_flood" day={1} selected={null} selectedVillageId={null} showVillageMarkers={false} onSelect={() => undefined} />
+    </I18nProvider>,
+  );
   expect(screen.getByLabelText(`Mức zoom ${initialPct}%`)).toBeInTheDocument();
 });
 

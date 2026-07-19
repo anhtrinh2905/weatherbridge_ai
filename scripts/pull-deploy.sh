@@ -102,6 +102,7 @@ if [ "$TARGET_SHA" = "$CURRENT_SHA" ] && [ "${FORCE_DEPLOY:-false}" != "true" ];
 fi
 
 git -C "$REPO_DIR" checkout --detach --force "$TARGET_SHA"
+VERTEX_CREDENTIALS_FILE="${VERTEX_CREDENTIALS_FILE:-$REPO_DIR/vertex-key.json}"
 
 export DOCKER_CONFIG="$DOCKER_CONFIG_DIR"
 if [ -n "${GHCR_USER:-}" ] && [ -n "${GHCR_TOKEN:-}" ]; then
@@ -143,6 +144,28 @@ for required_secret in app-secret db-secret keycloak-secret; do
     exit 1
   }
 done
+
+# app-secret existing is not enough: it must actually carry OPENAI_API_KEY, otherwise the AI
+# advisory endpoints 503 at runtime on a "successful" deploy. Fail fast on a stale Secret that
+# predates this key rather than shipping a silently broken feature.
+for required_key in OPENAI_API_KEY; do
+  if [ -z "$(kubectl -n "$NAMESPACE" get secret app-secret -o "jsonpath={.data.$required_key}" 2>/dev/null)" ]; then
+    echo "Secret $NAMESPACE/app-secret is missing key $required_key (rotate app-secret to include it)" >&2
+    exit 1
+  fi
+done
+
+if [ -f "$VERTEX_CREDENTIALS_FILE" ]; then
+  [ -r "$VERTEX_CREDENTIALS_FILE" ] || {
+    echo "Vertex credential file is not readable: $VERTEX_CREDENTIALS_FILE" >&2
+    exit 1
+  }
+  kubectl -n "$NAMESPACE" create secret generic vertex-credentials \
+    --from-file=vertex-key.json="$VERTEX_CREDENTIALS_FILE" \
+    --dry-run=client -o yaml | kubectl apply -f -
+elif [ "$ENVIRONMENT" = "dev" ]; then
+  echo "no Vertex credential file at $VERTEX_CREDENTIALS_FILE; preserving any existing vertex-credentials Secret"
+fi
 
 if [ -n "${GHCR_USER:-}" ] && [ -n "${GHCR_TOKEN:-}" ]; then
   kubectl -n "$NAMESPACE" create secret docker-registry ghcr-pull \

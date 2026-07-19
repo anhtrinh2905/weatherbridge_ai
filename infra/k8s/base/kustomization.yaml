@@ -23,4 +23,5 @@ resources:
 
 # secret-template.yaml, web-push-secret-template.yaml, and
 # notification-providers-secret-template.yaml are intentionally NOT listed here:
-# real secrets are applied from GitHub Actions secrets, never committed.
+# real secrets are applied by the deploy scripts, never committed. The optional
+# vertex-credentials Secret is mounted by be when live translation is configured.

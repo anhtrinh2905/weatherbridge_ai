@@ -693,6 +693,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ai/advisory/alert-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Draft Alert
+         * @description Draft the three bulletin fields from a hazard's type/level/tier.
+         *
+         *     An authoring aid for officers — the returned text is an editable draft and must be reviewed
+         *     before the alert is published (same human-in-the-loop stance as machine translation).
+         */
+        post: operations["draft_alert_api_v1_ai_advisory_alert_draft_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/advisory/resident-actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resident Actions
+         * @description Expand a published bulletin into a short, ordered action checklist for a resident.
+         */
+        post: operations["resident_actions_api_v1_ai_advisory_resident_actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/advisory/weather-actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Weather Actions
+         * @description Auto-suggest actions for a resident from the live forecast at their location.
+         *
+         *     Fetches the Open-Meteo forecast for the given coordinates and asks the model what the
+         *     resident should do over the next few days — a support tool, not an official warning.
+         */
+        post: operations["weather_actions_api_v1_ai_advisory_weather_actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/forecasts/{location_code}/latest": {
         parameters: {
             query?: never;
@@ -921,7 +987,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Web Push Subscription Status */
+        get: operations["web_push_subscription_status_api_v1_notifications_web_push_subscriptions__contact_id__get"];
         put?: never;
         post?: never;
         /** Unsubscribe Web Push */
@@ -1174,6 +1241,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/internal/speech/synthesize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Synthesize Speech
+         * @description Internal endpoint for worker to generate TTS audio without auth overhead.
+         */
+        post: operations["synthesize_speech_api_v1_internal_speech_synthesize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1310,6 +1397,54 @@ export interface components {
             expires_at: string;
             /** Target Area Codes */
             target_area_codes: string[];
+        };
+        /**
+         * AlertDraft
+         * @description Editable draft of the three resident-facing bulletin fields.
+         *
+         *     Field limits mirror ``AlertCreateRequest`` so a draft always fits the create form.
+         */
+        AlertDraft: {
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /** Model Name */
+            model_name: string;
+            /**
+             * Prompt Version
+             * @default advisory-v1
+             */
+            prompt_version: string;
+        };
+        /**
+         * AlertDraftRequest
+         * @description Context an officer gives the model to draft a bulletin from scratch.
+         */
+        AlertDraftRequest: {
+            /**
+             * Hazard Type
+             * @enum {string}
+             */
+            hazard_type: "flash_flood" | "landslide" | "fog";
+            /** Level */
+            level: number;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "prepare" | "go_now";
+            /** Location Label */
+            location_label?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /**
+             * Language
+             * @default vi
+             */
+            language: string;
         };
         /** AlertInboxItem */
         AlertInboxItem: {
@@ -2494,6 +2629,46 @@ export interface components {
             /** Delivery Count */
             delivery_count: number;
         };
+        /** ResidentActionPlan */
+        ResidentActionPlan: {
+            /** Summary */
+            summary: string;
+            /** Steps */
+            steps: string[];
+            /** Model Name */
+            model_name: string;
+            /**
+             * Prompt Version
+             * @default advisory-v1
+             */
+            prompt_version: string;
+        };
+        /**
+         * ResidentActionRequest
+         * @description A published bulletin the resident wants expanded into concrete steps.
+         */
+        ResidentActionRequest: {
+            /** Hazard Type */
+            hazard_type?: ("flash_flood" | "landslide" | "fog") | null;
+            /** Level */
+            level: number;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "prepare" | "go_now";
+            /** What Happened */
+            what_happened: string;
+            /** Danger Description */
+            danger_description: string;
+            /** Action Instruction */
+            action_instruction: string;
+            /**
+             * Language
+             * @default vi
+             */
+            language: string;
+        };
         /** ResidentCreateRequest */
         ResidentCreateRequest: {
             /** Full Name */
@@ -2740,6 +2915,16 @@ export interface components {
             /** Simulated */
             simulated: boolean;
         };
+        /** SpeechSynthesisRequest */
+        SpeechSynthesisRequest: {
+            /** Text */
+            text: string;
+            /**
+             * Language
+             * @default hmn
+             */
+            language: string;
+        };
         /** SubscriptionCreateRequest */
         SubscriptionCreateRequest: {
             /** Resident Location Id */
@@ -2850,6 +3035,57 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /**
+         * WeatherActionPlan
+         * @description Weather-driven safety advice for one resident, derived from the live forecast.
+         *
+         *     When ``risk_level`` is "normal" the plan is a calm FYI with no action ``steps``.
+         */
+        WeatherActionPlan: {
+            /**
+             * Risk Level
+             * @default normal
+             * @enum {string}
+             */
+            risk_level: "normal" | "watch" | "warning" | "danger";
+            /** Weather Summary */
+            weather_summary: string;
+            /** Risk Note */
+            risk_note: string;
+            /** Summary */
+            summary: string;
+            /** Steps */
+            steps?: string[];
+            /**
+             * Forecast Source
+             * @default open-meteo
+             */
+            forecast_source: string;
+            /** Model Name */
+            model_name: string;
+            /**
+             * Prompt Version
+             * @default advisory-v1
+             */
+            prompt_version: string;
+        };
+        /**
+         * WeatherActionRequest
+         * @description Coordinates of a resident's location; the server fetches the forecast itself.
+         */
+        WeatherActionRequest: {
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Location Label */
+            location_label?: string | null;
+            /**
+             * Language
+             * @default vi
+             */
+            language: string;
+        };
         /** WebPushConfigResponse */
         WebPushConfigResponse: {
             /** Public Key */
@@ -2889,6 +3125,18 @@ export interface components {
              * Format: date-time
              */
             last_seen_at: string;
+        };
+        /** WebPushSubscriptionStatusResponse */
+        WebPushSubscriptionStatusResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Active */
+            is_active: boolean;
+            /** Last Seen At */
+            last_seen_at?: string | null;
         };
     };
     responses: never;
@@ -4346,6 +4594,105 @@ export interface operations {
             };
         };
     };
+    draft_alert_api_v1_ai_advisory_alert_draft_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resident_actions_api_v1_ai_advisory_resident_actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResidentActionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResidentActionPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    weather_actions_api_v1_ai_advisory_weather_actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeatherActionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeatherActionPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     latest_forecast_api_v1_forecasts__location_code__latest_get: {
         parameters: {
             query?: never;
@@ -4748,6 +5095,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WebPushSubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    web_push_subscription_status_api_v1_notifications_web_push_subscriptions__contact_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contact_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebPushSubscriptionStatusResponse"];
                 };
             };
             /** @description Validation Error */
@@ -5178,6 +5556,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AiJobResponse"];
+                };
+            };
+        };
+    };
+    synthesize_speech_api_v1_internal_speech_synthesize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpeechSynthesisRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

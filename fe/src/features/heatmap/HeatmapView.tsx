@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Mountain, Users, Waves } from "lucide-react";
 import { getResidentsByVillage, HAZARD_RUN_MOCK, RESIDENTS } from "../../shared/domain/mockData";
 import type { HazardType } from "../../shared/domain/types";
@@ -38,18 +38,31 @@ function levelColor(level: 1 | 2 | 3 | 4 | 5): string {
 /**
  * Shared raster hazard map. One presentation for every role — the full commune
  * view with day tabs, hazard layers, fog toggle, level legend, and point metrics.
+ *
+ * All props are optional and generic (map overlays + selection callback); role
+ * pages use them without changing the shared chrome. The resident map passes a
+ * home marker + registered watch points and reads the selected point back.
  */
 export function HeatmapView({
-  watchPointSlot,
   villageId,
+  markers = [],
+  focusPoint = null,
+  focusRequest = 0,
+  onSelectPoint,
 }: {
-  watchPointSlot?: (input: { selectedPoint: RasterPoint | null; lonLat: { lat: number; lon: number } | null }) => ReactNode;
   /** Scope the resident-status layer to one village (village_head); omit to show the whole commune (admin/commune_officer). */
   villageId?: string;
-}) {
+  /** Extra overlay pins (e.g. resident home + registered watch points). */
+  markers?: RasterMapMarker[];
+  /** Recenter the map on this point when `focusRequest` changes. */
+  focusPoint?: RasterPoint | null;
+  focusRequest?: number;
+  /** Notified whenever the inspected point changes (null when cleared). */
+  onSelectPoint?: (point: RasterPoint | null) => void;
+} = {}) {
   const { t } = useTranslation();
   const labels = useLocalizedLabels();
-  const [layer, setLayer] = useState<RasterLayer>("landslide");
+  const [layer, setLayer] = useState<RasterLayer>("dominant");
   const [day, setDay] = useState(0);
   const [showResidents, setShowResidents] = useState(true);
 
@@ -268,13 +281,18 @@ export function HeatmapView({
             selectedVillageId={null}
             showVillageMarkers={false}
             showFog={showFog}
-            markers={showResidents ? residentMarkers : []}
+            markers={showResidents ? [...residentMarkers, ...markers] : markers}
+            focusPoint={focusPoint}
+            focusRequest={focusRequest}
             aspectMode="fill"
             className="h-full min-h-[28rem] lg:min-h-[32rem]"
-            onSelect={(point) => setSelectedPoint(point)}
+            onSelect={(point) => {
+              setSelectedPoint(point);
+              onSelectPoint?.(point);
+            }}
           />
 
-          <LevelsPanel showFog={showFog} levelLabels={labels.hazardLevel} watchPointSlot={watchPointSlot?.({ selectedPoint, lonLat })} />
+          <LevelsPanel showFog={showFog} levelLabels={labels.hazardLevel} />
         </div>
 
         <MetricsPanel
@@ -309,7 +327,7 @@ export function HeatmapView({
   );
 }
 
-function LevelsPanel({ showFog, levelLabels, watchPointSlot }: { showFog: boolean; levelLabels: Record<1 | 2 | 3 | 4 | 5, string>; watchPointSlot?: ReactNode }) {
+function LevelsPanel({ showFog, levelLabels }: { showFog: boolean; levelLabels: Record<1 | 2 | 3 | 4 | 5, string> }) {
   const { t } = useTranslation();
   return (
     <aside className="flex h-full flex-col rounded-2xl border border-border bg-surface-2 p-3 sm:p-4" aria-label={t("heatmap.levelPanelAria")}>
@@ -332,7 +350,6 @@ function LevelsPanel({ showFog, levelLabels, watchPointSlot }: { showFog: boolea
       </ul>
       <div className="mt-auto space-y-3 pt-4">
         <p className="text-xs text-muted">{t("heatmap.selectPointHelper")}</p>
-        {watchPointSlot}
       </div>
     </aside>
   );

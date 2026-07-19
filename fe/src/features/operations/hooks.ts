@@ -27,7 +27,11 @@ export const useResident = (id?: string) => useQuery({ queryKey: keys.resident(i
 export const useSubscriptions = () => useQuery({ queryKey: keys.subscriptions, queryFn: operationsApi.subscriptions });
 export const useConsents = () => useQuery({ queryKey: keys.consents, queryFn: operationsApi.consents });
 export const useNotificationChannels = () => useQuery({ queryKey: keys.channels, queryFn: operationsApi.channels });
-export const useLocales = (includeInactive = false) => useQuery({ queryKey: keys.locales(includeInactive), queryFn: () => operationsApi.locales(includeInactive) });
+export const useLocales = (includeInactive = false, enabled = true) => useQuery({
+  queryKey: keys.locales(includeInactive),
+  queryFn: () => operationsApi.locales(includeInactive),
+  enabled,
+});
 export const useAlerts = () => useQuery({ queryKey: keys.alerts, queryFn: operationsApi.alerts });
 export const useInbox = () => useQuery({ queryKey: keys.inbox, queryFn: operationsApi.inbox });
 export const useDeliverySummary = (id?: string) => useQuery({ queryKey: keys.delivery(id ?? "none"), queryFn: () => operationsApi.deliverySummary(id!), enabled: Boolean(id) });
@@ -48,3 +52,13 @@ export function useGenerateAlertTranslation() { const client = useQueryClient();
 export function useReviewAlertTranslation() { const client = useQueryClient(); return useMutation({ mutationFn: ({ id, decision }: { id: string; decision: "approve" | "reject" }) => operationsApi.reviewAlertTranslation(id, { decision }), onSuccess: () => client.invalidateQueries({ queryKey: keys.alerts }) }); }
 export function usePublishAlertTranslation() { const client = useQueryClient(); return useMutation({ mutationFn: operationsApi.publishAlertTranslation, onSuccess: () => client.invalidateQueries({ queryKey: keys.alerts }) }); }
 export function useAcknowledgeAlert() { const client = useQueryClient(); return useMutation({ mutationFn: ({ id, status }: { id: string; status: "seen" | "safe" | "need_help" }) => operationsApi.acknowledge(id, status), onSuccess: () => client.invalidateQueries({ queryKey: keys.inbox }) }); }
+export function useDraftAlert() { return useMutation({ mutationFn: (payload: import("./api").AlertDraftRequest) => operationsApi.draftAlert(payload) }); }
+export function useResidentActions() { return useMutation({ mutationFn: (payload: import("./api").ResidentActionRequest) => operationsApi.residentActions(payload) }); }
+export const useWeatherActions = (coords?: { latitude: number; longitude: number; label?: string | null }) => useQuery({
+  queryKey: ["weather-actions", coords?.latitude, coords?.longitude],
+  queryFn: () => operationsApi.weatherActions({ latitude: coords!.latitude, longitude: coords!.longitude, location_label: coords?.label ?? null, language: "vi" }),
+  enabled: Boolean(coords && Number.isFinite(coords.latitude) && Number.isFinite(coords.longitude)),
+  staleTime: 1000 * 60 * 30,
+  retry: false,
+  refetchOnWindowFocus: false,
+});
