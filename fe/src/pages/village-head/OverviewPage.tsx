@@ -31,6 +31,7 @@ import { useTranslation } from "../../shared/i18n/I18nProvider";
 import { useLocalizedLabels } from "../../shared/i18n/useLocalizedLabels";
 import { useResidentStatusStore } from "../../shared/domain/residentStatusStore";
 import type { Alert, ResidentSim } from "../../shared/domain/types";
+import { SendAlertPanel } from "./SendAlertPanel";
 
 function StatCard({
   icon: Icon,
@@ -258,6 +259,8 @@ export function VillageHeadOverviewPage() {
         </div>
 
         <aside className="space-y-4">
+          <SendAlertPanel villageId={village?.id} />
+
           <VillageBroadcastPanel alert={alert} />
 
           <Card className="rounded-lg">
