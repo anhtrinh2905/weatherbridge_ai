@@ -145,6 +145,16 @@ for required_secret in app-secret db-secret keycloak-secret; do
   }
 done
 
+# app-secret existing is not enough: it must actually carry OPENAI_API_KEY, otherwise the AI
+# advisory endpoints 503 at runtime on a "successful" deploy. Fail fast on a stale Secret that
+# predates this key rather than shipping a silently broken feature.
+for required_key in OPENAI_API_KEY; do
+  if [ -z "$(kubectl -n "$NAMESPACE" get secret app-secret -o "jsonpath={.data.$required_key}" 2>/dev/null)" ]; then
+    echo "Secret $NAMESPACE/app-secret is missing key $required_key (rotate app-secret to include it)" >&2
+    exit 1
+  fi
+done
+
 if [ -f "$VERTEX_CREDENTIALS_FILE" ]; then
   [ -r "$VERTEX_CREDENTIALS_FILE" ] || {
     echo "Vertex credential file is not readable: $VERTEX_CREDENTIALS_FILE" >&2
