@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:26.5.2
+FROM quay.io/keycloak/keycloak:26.8.0
 
 COPY infra/keycloak/realm-export.json /opt/keycloak/data/import/weather-bridge-realm.json
 COPY infra/keycloak/user-profile.json /opt/keycloak/data/migrations/weather-bridge-user-profile.json
